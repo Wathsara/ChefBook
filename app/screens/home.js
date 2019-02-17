@@ -32,12 +32,16 @@ class home extends React.Component {
         database.ref('recepies').orderByChild('posted').once('value').then(function (snapshot) {
             const exsist = (snapshot.val() != null);
             if(exsist) data = snapshot.val();
+            // console.log(data);
             var photo = that.state.photo;
             for(var photos in data){
-                var photoO = data[photos];
+                let photoO = data[photos];
+                console.log(photoO);
                 database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                     const exsist = (snapshot.val() != null);
                     if(exsist) data = snapshot.val();
+
+
                     photo.push({
                         id:photos,
                         url: photoO.image,
@@ -50,6 +54,7 @@ class home extends React.Component {
 
 
                     });
+
                     that.setState({
                         refresh: false,
                         loading: false

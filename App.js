@@ -8,13 +8,15 @@ import profile from './app/screens/profile.js';
 import notification from './app/screens/notification.js';
 import userProfile from './app/screens/userProfile.js';
 import comment from './app/screens/comment.js';
+import newR from './app/screens/newR.js';
 // import foodFind from './app/screens/foodfind.js'
 const TabStack = createBottomTabNavigator(
   {
     home: { screen: home },
     discover: { screen: discover },
+    New : { screen : newR},
     profile: { screen: profile },
-    notification: { screen: notification } 
+    notification: { screen: notification }
     // foodFind: { screen: foodFind}
 
   } 

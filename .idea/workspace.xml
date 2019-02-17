@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a3bca127-f117-4984-ba72-a7d0dd44d11c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/App.js" afterPath="$PROJECT_DIR$/App.js" />
-      <change beforePath="$PROJECT_DIR$/app/screens/discover.js" afterPath="$PROJECT_DIR$/app/screens/discover.js" />
       <change beforePath="$PROJECT_DIR$/app/screens/home.js" afterPath="$PROJECT_DIR$/app/screens/home.js" />
-      <change beforePath="$PROJECT_DIR$/app/screens/profile.js" afterPath="$PROJECT_DIR$/app/screens/profile.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -23,8 +20,20 @@
       <file leaf-file-name="home.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/screens/home.js">
           <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="272">
+              <caret line="94" column="63" lean-forward="true" selection-start-line="94" selection-start-column="63" selection-end-line="94" selection-end-column="63" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="newR.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/screens/newR.js">
+          <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="459">
-              <caret line="159" column="126" lean-forward="false" selection-start-line="159" selection-start-column="126" selection-end-line="159" selection-end-column="126" />
+              <caret line="162" column="0" lean-forward="false" selection-start-line="162" selection-start-column="0" selection-end-line="162" selection-end-column="0" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -35,8 +44,8 @@
       <file leaf-file-name="App.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/App.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="27" column="36" lean-forward="false" selection-start-line="27" selection-start-column="36" selection-end-line="27" selection-end-column="36" />
+            <state relative-caret-position="-346">
+              <caret line="16" column="4" lean-forward="false" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -59,8 +68,8 @@
       <file leaf-file-name="profile.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/screens/profile.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="22" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="90" selection-end-column="24" />
+            <state relative-caret-position="136">
+              <caret line="20" column="18" lean-forward="true" selection-start-line="20" selection-start-column="18" selection-end-line="20" selection-end-column="18" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -79,9 +88,11 @@
         <option value="$PROJECT_DIR$/config/config.js" />
         <option value="$PROJECT_DIR$/app/screens/discover.js" />
         <option value="$PROJECT_DIR$/app/screens/profile.js" />
-        <option value="$PROJECT_DIR$/App.js" />
         <option value="$PROJECT_DIR$/app/screens/comment.js" />
         <option value="$PROJECT_DIR$/app/screens/userProfile.js" />
+        <option value="$PROJECT_DIR$/app/screens/new.js" />
+        <option value="$PROJECT_DIR$/App.js" />
+        <option value="$PROJECT_DIR$/app/screens/newR.js" />
         <option value="$PROJECT_DIR$/app/screens/home.js" />
       </list>
     </option>
@@ -97,7 +108,7 @@
   <component name="NodeModulesDirectoryManager">
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-98" />
     <option name="y" value="5" />
     <option name="width" value="895" />
@@ -182,16 +193,15 @@
       <updated>1550332204830</updated>
       <workItem from="1550332208563" duration="6419000" />
       <workItem from="1550372533996" duration="11826000" />
-      <workItem from="1550391871309" duration="10409000" />
+      <workItem from="1550391871309" duration="26185000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28654000" />
+    <option name="totallyTimeSpent" value="44430000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="784" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24963397" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -288,26 +298,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/App.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="27" column="36" lean-forward="false" selection-start-line="27" selection-start-column="36" selection-end-line="27" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/screens/profile.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="22" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="90" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/screens/discover.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
@@ -336,6 +326,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/screens/profile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="20" column="18" lean-forward="true" selection-start-line="20" selection-start-column="18" selection-end-line="20" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/screens/userProfile.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
@@ -346,10 +346,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/screens/home.js">
+    <entry file="file://$PROJECT_DIR$/App.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-346">
+          <caret line="16" column="4" lean-forward="false" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/screens/newR.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
-          <caret line="159" column="126" lean-forward="false" selection-start-line="159" selection-start-column="126" selection-end-line="159" selection-end-column="126" />
+          <caret line="162" column="0" lean-forward="false" selection-start-line="162" selection-start-column="0" selection-end-line="162" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/screens/home.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="94" column="63" lean-forward="true" selection-start-line="94" selection-start-column="63" selection-end-line="94" selection-end-column="63" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
           </folding>
