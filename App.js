@@ -1,13 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View, Container } from 'react-native';
-import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator, createAppContainer , createStackNavigator } from 'react-navigation';
 import{ f, auth , database , storage} from "./config/config";
 import home from './app/screens/home.js';
 import discover from './app/screens/discover.js';
 import profile from './app/screens/profile.js';
 import notification from './app/screens/notification.js';
+import userProfile from './app/screens/userProfile.js';
+import comment from './app/screens/comment.js';
 // import foodFind from './app/screens/foodfind.js'
-const MainStack = createBottomTabNavigator(
+const TabStack = createBottomTabNavigator(
   {
     home: { screen: home },
     discover: { screen: discover },
@@ -19,7 +21,20 @@ const MainStack = createBottomTabNavigator(
 
   
 )
-const AppContainer = createAppContainer(MainStack);
+const MainStack = createStackNavigator(
+    {
+        Home: { screen : TabStack},
+        userProfile : { screen : userProfile },
+        comment : { screen : comment}
+
+    },
+    {
+        initialRoute: 'Home',
+        mode: 'modal',
+        headerMode: 'none'
+    }
+)
+const MainContainer = createAppContainer(MainStack);
 
 export default class App extends React.Component {
 
@@ -37,7 +52,7 @@ export default class App extends React.Component {
   render() {
     return (
       
-        <AppContainer />
+        <MainContainer />
       
     );
   }

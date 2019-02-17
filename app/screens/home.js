@@ -45,7 +45,8 @@ class home extends React.Component {
                         author: data.username,
                         authorPhoto: data.avatar,
                         authorName: data.name,
-                        posted: that.timeConvertor(photoO.posted)
+                        posted: that.timeConvertor(photoO.posted),
+                        authorId: photoO.author
 
 
                     });
@@ -110,7 +111,7 @@ class home extends React.Component {
       return (
         <View style={{flex: 1}}>
             <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
-                <Text style = {{fontSize: 18}}>Home</Text>
+                <Text style = {{fontSize: 24}}>Home</Text>
             </View>
 
             { this.state.loading == true ? (
@@ -128,7 +129,7 @@ class home extends React.Component {
                     <View key={index} style={{width: '100%', marginBottom: 10 , borderBottomWidth:1.5, borderColor:'#7CFC00', overflow:'hidden', justifyContent: 'space-between'}}>
                         <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
                             <View style={{flexDirection:'row'}}>
-                                <TouchableOpacity style={{flexDirection:'row'}}>
+                                <TouchableOpacity style={{flexDirection:'row'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : item.authorId})}>
                                     <Image source={{uri: item.authorPhoto}} style={{width:30 , height:30, borderRadius:100}}/>
                                     <Text>{ item.authorName}</Text>
                                 </TouchableOpacity>
@@ -156,7 +157,7 @@ class home extends React.Component {
                                         <Image source={{uri:'https://cdn4.iconfinder.com/data/icons/smiley-5-1/32/421-512.png'}} style={{width:30 , height:30 , marginLeft:12}}/>
                                     </TouchableOpacity>
                                 </View>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { id : item.id})}>
                                         <Image source={{uri:'https://cdn1.iconfinder.com/data/icons/social-object-set-2-1/74/42-512.png'}} style={{width:30 , height:30}}/>
                                     </TouchableOpacity>
                             </View>
