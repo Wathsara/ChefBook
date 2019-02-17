@@ -1,24 +1,110 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, FlatList, Image, ImageBackground } from 'react-native';
+import { f, auth, database , storage} from "../../config/config";
 
 class home extends React.Component {
     constructor(props){
         super(props);
+    ;
         this.state = {
-            photo: [0,1,2,3,4],
-            refresh: false
+            photo: [],
+            refresh: false,
+            loading: true
+        }
+
+    }
+
+    componentDidMount = () => {
+        this.loadFeed();
+
+
+
+    }
+
+    loadFeed = () => {
+        this.setState({
+            refresh:true,
+            photo: []
+
+        });
+
+        var that = this;
+        database.ref('recepies').orderByChild('posted').once('value').then(function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if(exsist) data = snapshot.val();
+            var photo = that.state.photo;
+            for(var photos in data){
+                var photoO = data[photos];
+                database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
+                    const exsist = (snapshot.val() != null);
+                    if(exsist) data = snapshot.val();
+                    photo.push({
+                        id:photos,
+                        url: photoO.image,
+                        fName: photoO.foodName,
+                        author: data.username,
+                        authorPhoto: data.avatar,
+                        authorName: data.name,
+                        posted: that.timeConvertor(photoO.posted)
+
+
+                    });
+                    that.setState({
+                        refresh: false,
+                        loading: false
+                    });
+                }).catch(error => console.log(error));
+
+
+                }
+
+        }).catch(error => console.log(error));
+
+    }
+
+    loadNew = () => {
+        this.loadFeed();
+
+    }
+
+    timePlural = (s) => {
+        if(s==1){
+            return ' ago'
+        }else{
+            return 's ago'
         }
     }
 
-    loadnew = () => {
-        this.setState({
-            refresh: true
-        });
-        this.setState({
-            photo: [0,4],
-            refresh: false
-        });
+    timeConvertor = (timestamp) => {
+        var a = new Date(timestamp * 1000);
+        var seconds = Math.floor((new Date() - a)/ 1000 );
 
+        var interval = Math.floor(seconds/31536000);
+        if(interval > 1){
+            return interval+' Year'+this.timePlural(interval);
+        }
+
+        var interval = Math.floor(seconds/2592000);
+        if(interval > 1){
+            return interval+' Month'+this.timePlural(interval);
+        }
+
+        var interval = Math.floor(seconds/86400);
+        if(interval > 1){
+            return interval+' Day'+this.timePlural(interval);
+        }
+
+        var interval = Math.floor(seconds/3600);
+        if(interval > 1){
+            return interval+' Hour'+this.timePlural(interval);
+        }
+
+        var interval = Math.floor(seconds/60);
+        if(interval > 1){
+            return interval+' Minute'+this.timePlural(interval);
+        }
+
+        return Math.floor(seconds)+' Second'+this.timePlural(seconds)
     }
     render() {
       return (
@@ -26,9 +112,15 @@ class home extends React.Component {
             <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
                 <Text style = {{fontSize: 18}}>Home</Text>
             </View>
-            <FlatList
+
+            { this.state.loading == true ? (
+                <View style={{flex: 1 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style = {{fontSize: 18}}>LOADING ...</Text>
+                </View>
+            ): (
+                <FlatList
                 refreshing = {this.state.refresh}
-                onRefresh = {this.loadnew}
+                onRefresh = {this.loadNew}
                 data = {this.state.photo}
                 keyExtractor = {(item , index) => index.toString()}
                 style={{flex:1}}
@@ -37,17 +129,17 @@ class home extends React.Component {
                         <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
                             <View style={{flexDirection:'row'}}>
                                 <TouchableOpacity style={{flexDirection:'row'}}>
-                                    <Image source={{uri:'https://amp.businessinsider.com/images/5b21635a1ae6621f008b51cd-750-562.jpg'}} style={{width:30 , height:30, borderRadius:100}}/>
-                                    <Text>Thuhini Lourdes</Text>
+                                    <Image source={{uri: item.authorPhoto}} style={{width:30 , height:30, borderRadius:100}}/>
+                                    <Text>{ item.authorName}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text>2min ago</Text>
+                            <Text>{ item.posted}</Text>
                         </View>
                         <View>
                             <TouchableOpacity>
-                                <ImageBackground source={{uri: 'https://dev-recipes.instantpot.com/wp-content/uploads/2017/06/Instant-Pot-Cajun-Chicken-Rice-Image.jpg'}} style={{height: 275 , width: '100%' , resizeMode: 'cover'}}>
+                                <ImageBackground source={{uri: item.url }} style={{height: 275 , width: '100%' , resizeMode: 'cover'}}>
                                     <ImageBackground source={{uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg'}} style={{height: 275 , width: '100%' , resizeMode: 'cover' , opacity:0.7, justifyContent:'center', alignItems:'center'}}>
-                                        <Text style={{fontSize: 32 , color: 'white', textAlign: 'center'}}>Thuhi Rice</Text>
+                                        <Text style={{fontSize: 32 , color: 'white', textAlign: 'center'}}>{ item.fName}</Text>
 
                                     </ImageBackground>
                                 </ImageBackground>
@@ -71,7 +163,8 @@ class home extends React.Component {
                         </View>
                     </View>
                 )}
-            />
+                />
+            )}
 
         </View>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Container } from 'react-native';
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
-
+import{ f, auth , database , storage} from "./config/config";
 import home from './app/screens/home.js';
 import discover from './app/screens/discover.js';
 import profile from './app/screens/profile.js';
@@ -22,7 +22,18 @@ const MainStack = createBottomTabNavigator(
 const AppContainer = createAppContainer(MainStack);
 
 export default class App extends React.Component {
- 
+
+   constructor(props){
+        super(props);
+        this.login();
+    }
+  login = async() => {
+    try {
+        let user = await auth.signInWithEmailAndPassword('wvd.51461@gmail.com', '111111');
+    }catch (error){
+        console.log(error);
+    }
+  }
   render() {
     return (
       
