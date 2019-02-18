@@ -9,6 +9,7 @@ import notification from './app/screens/notification.js';
 import userProfile from './app/screens/userProfile.js';
 import comment from './app/screens/comment.js';
 import newR from './app/screens/newR.js';
+import recipe from './app/screens/recipe.js';
 // import foodFind from './app/screens/foodfind.js'
 const TabStack = createBottomTabNavigator(
   {
@@ -27,7 +28,8 @@ const MainStack = createStackNavigator(
     {
         Home: { screen : TabStack},
         userProfile : { screen : userProfile },
-        comment : { screen : comment}
+        comment : { screen : comment},
+        recipe : { screen : recipe}
 
     },
     {

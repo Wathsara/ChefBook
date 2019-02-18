@@ -36,14 +36,14 @@ class home extends React.Component {
             var photo = that.state.photo;
             for(var photos in data){
                 let photoO = data[photos];
-                console.log(photoO);
+                let tempId = photos;
                 database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                     const exsist = (snapshot.val() != null);
                     if(exsist) data = snapshot.val();
 
 
                     photo.push({
-                        id:photos,
+                        id:tempId,
                         url: photoO.image,
                         fName: photoO.foodName,
                         author: data.username,
@@ -54,6 +54,7 @@ class home extends React.Component {
 
 
                     });
+                    // console.log(photo);
 
                     that.setState({
                         refresh: false,
@@ -142,7 +143,7 @@ class home extends React.Component {
                             <Text>{ item.posted}</Text>
                         </View>
                         <View>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe' , { id : item.id})}>
                                 <ImageBackground source={{uri: item.url }} style={{height: 275 , width: '100%' , resizeMode: 'cover'}}>
                                     <ImageBackground source={{uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg'}} style={{height: 275 , width: '100%' , resizeMode: 'cover' , opacity:0.7, justifyContent:'center', alignItems:'center'}}>
                                         <Text style={{fontSize: 32 , color: 'white', textAlign: 'center'}}>{ item.fName}</Text>

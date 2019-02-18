@@ -206,20 +206,20 @@ class newR extends React.Component {
                                     <View style={{justifyContent:'center' , alignItems:'center'}}>
                                         <Image source={{uri: this.state.uri}} style={{width:120 , height:120, alignSelf:'center'}}/>
                                     </View>
-                                    <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5 }}
+                                    <TextInput selectionColor='#428AF8' underlineColorAndroid = "#428AF8"  style={{ borderRadius:5, borderColor:'grey', marginHorizontal:10, marginVertical:10 , padding:5 }}
                                                placeholder={'Enter Food Name Here'}
                                                editable={true}
                                                maxlength={50}
                                                onChangeText={(text) => this.setState({foodName:text}) }
                                     />
-                                    <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5, height:75 }}
+                                    <TextInput underlineColorAndroid = "#428AF8" style={{borderRadius:5, borderColor:'grey' , marginHorizontal:10, marginVertical:10 , padding:5, height:75 }}
                                                placeholder={'Enter Ingrediants Here'}
                                                editable={true}
                                                multiline={true}
                                                maxlength={750}
                                                onChangeText={(text) => this.setState({ingrediants:text}) }
                                     />
-                                    <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5, height:150 }}
+                                    <TextInput underlineColorAndroid = "#428AF8" style={{borderRadius:5, borderColor:'grey',  marginHorizontal:10, marginVertical:10 , padding:5, height:150 }}
                                                placeholder={'Enter how to Cook Here'}
                                                editable={true}
                                                multiline={true}
