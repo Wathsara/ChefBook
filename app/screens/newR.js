@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Image , TouchableOpacity , TextInput , ActivityIndicator , ScrollView } from 'react-native';
+import { Text, View, Image , TouchableOpacity , TextInput , ActivityIndicator , ScrollView , KeyboardAvoidingView  } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 import { Permissions , ImagePicker } from 'expo';
 class newR extends React.Component {
@@ -184,41 +184,53 @@ class newR extends React.Component {
 
     render() {
         return (
-            <View style={{flex:1}}>
+            <KeyboardAvoidingView  style={{flex:1}} enabled={true} behavior = "padding">
                 <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
                     <Text style = {{fontSize: 18}}>New Recipe</Text>
                 </View>
                 { this.state.loggedin == true ? (
                     <View style={{flex:1 }}>
                         { this.state.imageSelected == true ? (
-                            <ScrollView>
-                                <View style={{justifyContent:'center' , alignItems:'center'}}>
-                                    <Image source={{uri: this.state.uri}} style={{width:120 , height:120, alignSelf:'center'}}/>
-                                </View>
-                                <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5 }}
-                                           placeholder={'Enter Food Name Here'}
-                                           editable={true}
-                                           maxlength={50}
-                                           onChangeText={(text) => this.setState({foodName:text}) }
-                                />
-                                <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5, height:75 }}
-                                           placeholder={'Enter Ingrediants Here'}
-                                           editable={true}
-                                           multiline={true}
-                                           maxlength={750}
-                                           onChangeText={(text) => this.setState({ingrediants:text}) }
-                                />
-                                <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5, height:150 }}
-                                           placeholder={'Enter how to Cook Here'}
-                                           editable={true}
-                                           multiline={true}
-                                           maxlength={750}
-                                           onChangeText={(text) => this.setState({discription:text}) }
-                                />
 
-                                <TouchableOpacity onPress={this.publish} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5}}>
-                                    <Text style={{textAlign:'center', color:'white' , fontSize:20}}>Publish</Text>
-                                </TouchableOpacity>
+                            <ScrollView>
+                                <KeyboardAvoidingView enabled={true}>
+                                    <View style={{flex:1}}>
+                                        { this.state.uploading == true ? (
+                                            <View style={{flex:1 , justifyContent: 'center' , alignItems:'center'}}>
+                                                <ActivityIndicator size="large" color="#0000ff"/>
+                                            </View>
+                                        ) : (
+                                            <View/>
+                                        )}
+                                    </View>
+                                    <View style={{justifyContent:'center' , alignItems:'center'}}>
+                                        <Image source={{uri: this.state.uri}} style={{width:120 , height:120, alignSelf:'center'}}/>
+                                    </View>
+                                    <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5 }}
+                                               placeholder={'Enter Food Name Here'}
+                                               editable={true}
+                                               maxlength={50}
+                                               onChangeText={(text) => this.setState({foodName:text}) }
+                                    />
+                                    <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5, height:75 }}
+                                               placeholder={'Enter Ingrediants Here'}
+                                               editable={true}
+                                               multiline={true}
+                                               maxlength={750}
+                                               onChangeText={(text) => this.setState({ingrediants:text}) }
+                                    />
+                                    <TextInput style={{borderRadius:5, borderColor:'grey', borderWidth:1 , marginHorizontal:10, marginVertical:10 , padding:5, height:150 }}
+                                               placeholder={'Enter how to Cook Here'}
+                                               editable={true}
+                                               multiline={true}
+                                               maxlength={750}
+                                               onChangeText={(text) => this.setState({discription:text}) }
+                                    />
+
+                                    <TouchableOpacity onPress={this.publish} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5}}>
+                                        <Text style={{textAlign:'center', color:'white' , fontSize:20}}>Publish</Text>
+                                    </TouchableOpacity>
+                                </KeyboardAvoidingView>
                             </ScrollView>
 
 
@@ -242,7 +254,7 @@ class newR extends React.Component {
 
                 )}
 
-            </View>
+            </KeyboardAvoidingView>
         );
     }
 }
