@@ -54,7 +54,7 @@ class home extends React.Component {
 
 
                     });
-                    // console.log(photo);
+                    console.log(photo);
 
                     that.setState({
                         refresh: false,
@@ -164,7 +164,7 @@ class home extends React.Component {
                                         <Image source={{uri:'https://cdn4.iconfinder.com/data/icons/smiley-5-1/32/421-512.png'}} style={{width:30 , height:30 , marginLeft:12}}/>
                                     </TouchableOpacity>
                                 </View>
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { id : item.id})}>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : item.id})}>
                                         <Image source={{uri:'https://cdn1.iconfinder.com/data/icons/social-object-set-2-1/74/42-512.png'}} style={{width:30 , height:30}}/>
                                     </TouchableOpacity>
                             </View>
