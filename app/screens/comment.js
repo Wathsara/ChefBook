@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, View , TextInput , Image , ActivityIndicator , KeyboardAvoidingView} from 'react-native';
+import { TouchableOpacity, Text, View , TextInput , Image , ActivityIndicator , KeyboardAvoidingView , ToastAndroid} from 'react-native';
 import {database, f} from "../../config/config";
 import { Input } from 'react-native-elements';
 class comment extends React.Component {
@@ -10,9 +10,21 @@ class comment extends React.Component {
             loggedin: false,
             commentsList: [],
             loaded: false,
-            newComment:''
+            newComment:'',
+            newCommentId: this.uniqueId(),
+            newNotificationId: this.uniqueId(),
+
         }
     }
+
+    s4 = () => {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
+
+    uniqueId = () => {
+        return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4();
+    }
+
     timePlural = (s) => {
         if(s==1){
             return ' ago'
@@ -55,12 +67,39 @@ class comment extends React.Component {
 
     check = () => {
         var params = this.props.navigation.state.params;
+        var userId = f.auth().currentUser.uid;
         if(params){
             if(params.recipeId){
                 this.setState({
                     recipeId: params.recipeId
                 });
                 this.fetchInfo(params.recipeId);
+                var that = this;
+                database.ref('recepies').child(params.recipeId).child('author').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    that.setState({
+                        owner:data
+                    });
+                });
+                database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        name:data
+                    });
+                });
+
+                database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        avatar:data,
+
+                    });
+                });
 
             }
         }
@@ -151,6 +190,68 @@ class comment extends React.Component {
         })
 
     }
+    postComment = () => {
+
+        var comment = this.state.newComment;
+        var recipeId = this.state.recipeId;
+        var userId = f.auth().currentUser.uid;
+        var date = Date.now();
+        var posted = Math.floor(date / 1000 )
+        var newCommentId = this.uniqueId()
+        var newNotificationId = this.uniqueId()
+        var that = this;
+
+
+
+        var userName = this.state.name;
+        var image = this.state.avatar;
+        var owner = this.state.owner;
+        var message = "Commented On Your Recipe"
+
+
+        if(comment == '') {
+            ToastAndroid.show('Please Enter A Comment', ToastAndroid.SHORT);
+
+        }else{
+            this.setState({
+                comment: ''
+            });
+
+            var newCommentObject = {
+               author:userName,
+               authorId:userId,
+               posted:posted,
+               avatar:image,
+               comment:comment
+            }
+
+            var notification = {
+                author:userName,
+                authorId:userId,
+                posted:posted,
+                avatar:image,
+                message:message,
+                recipe:recipeId
+            }
+            console.log("name "+ this.state.name );
+            database.ref('/comments/'+recipeId+'/'+newCommentId).set(newCommentObject);
+            if(userId != owner){
+                database.ref('/notifications/'+owner+'/'+newNotificationId).set(notification);
+            }
+
+            this.reload()
+
+
+        }
+    }
+
+    reload = () => {
+        this.setState({
+            commentsList:[],
+
+        })
+        this.fetchInfo(this.state.recipeId);
+    }
     render() {
         return (
             <View style={{flex: 1}}>
@@ -194,7 +295,7 @@ class comment extends React.Component {
                                    maxlength={750}
                                    onChangeText={(text) => this.setState({newComment:text}) }
                         />
-                        <TouchableOpacity onPress={this.publish} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5}}>
+                        <TouchableOpacity onPress={this.postComment} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5}}>
                             <Text style={{textAlign:'center', color:'white' , fontSize:14}}>Comment</Text>
                         </TouchableOpacity>
                     </KeyboardAvoidingView>
