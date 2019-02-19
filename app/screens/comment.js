@@ -1,7 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, View , TextInput , Image , ActivityIndicator , KeyboardAvoidingView , ToastAndroid} from 'react-native';
+import { TouchableOpacity, Text, View , TextInput , Image , ActivityIndicator , KeyboardAvoidingView , ToastAndroid , ScrollView} from 'react-native';
 import {database, f} from "../../config/config";
-import { Input } from 'react-native-elements';
+import { SocialIcon } from 'react-native-elements';
 class comment extends React.Component {
     constructor(props){
         super(props);
@@ -67,7 +67,7 @@ class comment extends React.Component {
 
     check = () => {
         var params = this.props.navigation.state.params;
-        var userId = f.auth().currentUser.uid;
+
         if(params){
             if(params.recipeId){
                 this.setState({
@@ -82,24 +82,7 @@ class comment extends React.Component {
                         owner:data
                     });
                 });
-                database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
-                    const exist = (snapshot.val() != null);
-                    if(exist) data = snapshot.val();
-                    console.log(data)
-                    that.setState({
-                        name:data
-                    });
-                });
 
-                database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
-                    const exist = (snapshot.val() != null);
-                    if(exist) data = snapshot.val();
-                    console.log(data)
-                    that.setState({
-                        avatar:data,
-
-                    });
-                });
 
             }
         }
@@ -149,7 +132,7 @@ class comment extends React.Component {
             {console.log(items.image)}
             return (
 
-                <View>
+                <ScrollView>
                     <View key={index} style={{ borderColor:'grey' , borderWidth:1 , marginTop:3 , height:'auto'}}>
                         <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
                             <View style={{flexDirection:'row'}}>
@@ -164,7 +147,7 @@ class comment extends React.Component {
                             <Text style={{fontSize:16,paddingHorizontal:15}}> {items.comment} </Text>
                         </View>
                     </View>
-                </View>
+                </ScrollView>
             )
         });
 
@@ -177,6 +160,25 @@ class comment extends React.Component {
             if(user){
                 that.setState({
                     loggedin: true,
+                });
+                var userId = f.auth().currentUser.uid;
+                database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        name:data
+                    });
+                });
+
+                database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        avatar:data,
+
+                    });
                 });
 
 
@@ -254,7 +256,7 @@ class comment extends React.Component {
     }
     render() {
         return (
-            <View style={{flex: 1}}>
+            <ScrollView style={{flex: 1}}>
                 <View style={{flexDirection:'row', height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'space-between', alignItems: 'center' }}>
                     <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
                         <Text style={{fontWeight:'bold', padding:10 , fontSize:14 , width:100}}>Back</Text>
@@ -300,11 +302,13 @@ class comment extends React.Component {
                         </TouchableOpacity>
                     </KeyboardAvoidingView>
                 ) : (
-                    <View style={{flex:1}}>
-                        <Text>Please Log in to Enter Comments</Text>
+                    <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
+                        <TouchableOpacity>
+                            <SocialIcon style={{width:200}} title='Sign In With Facebook'  button  type='facebook' />
+                        </TouchableOpacity>
                     </View>
                 )}
-            </View>
+            </ScrollView>
         );
     }
 }

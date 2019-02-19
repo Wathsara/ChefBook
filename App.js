@@ -84,16 +84,16 @@ export default class App extends React.Component {
 
    constructor(props){
         super(props);
-        this.login();
+        // this.login();
     }
     homeIcon =  <Icon name='camera-retro'   type='font-awesome'  color='#517fa4'  />
-  login = async() => {
-    try {
-        let user = await auth.signInWithEmailAndPassword('wvd.51461@gmail.com', '111111');
-    }catch (error){
-        console.log(error);
-    }
-  }
+  // login = async() => {
+  //   try {
+  //       let user = await auth.signInWithEmailAndPassword('wvd.51461@gmail.com', '111111');
+  //   }catch (error){
+  //       console.log(error);
+  //   }
+  // }
   render() {
     return (
       

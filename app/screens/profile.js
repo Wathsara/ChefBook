@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, Image , TouchableOpacity , Dimensions , ScrollView } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
-import { Icon } from 'react-native-elements';
+import { Icon,SocialIcon  } from 'react-native-elements';
 var {width , height} = Dimensions.get('window');
 class profile extends React.Component {
     constructor(props){
@@ -25,7 +25,52 @@ class profile extends React.Component {
                     loggedin: true,
                     active:0
                 });
+                let us = f.auth().currentUser;
+                let userId = f.auth().currentUser.uid;
 
+                database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if (exist) {
+                        var data= snapshot.val();
+                        that.setState({
+                            name: data
+                        })
+                        database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
+                            const exist = (snapshot.val() != null);
+                            if (exist){
+                                var data = snapshot.val();
+                                that.setState({
+                                    avatar: data,
+                                });
+                            }
+
+                        })
+                        that.loadFeed();
+                    } else {
+                        var newUser = {
+                            name: us.displayName,
+                            email: us.email,
+                            avatar: us.photoURL
+                        }
+                        database.ref('users/' +userId).set(newUser);
+                        database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
+                            const exist = (snapshot.val() != null);
+                            if (exist) data = snapshot.val();
+                            that.setState({
+                                name: data,
+                            });
+                        })
+                        database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
+                            const exist = (snapshot.val() != null);
+                            if (exist) data = snapshot.val();
+                            that.setState({
+                                avatar: data,
+                            });
+                        })
+                        that.loadFeed();
+                    }
+
+                })
 
             }else{
                 that.setState({
@@ -127,6 +172,29 @@ class profile extends React.Component {
         }
     }
 
+    logout = () => {
+        f.auth().signOut();
+        this.setState({
+            loggedin: false,
+            active:0
+        });
+    }
+
+
+    loginWithFacebook = async () => {
+        const { type , token } = await Expo.Facebook.logInWithReadPermissionsAsync(
+            '558501394651388' ,
+            { permissions : ['email' , 'public_profile']}
+        )
+        if(type == 'success'){
+            const credentials = f.auth.FacebookAuthProvider.credential(token) ;
+            f.auth().signInWithCredential(credentials).catch((error) => {
+                console.log(error)
+            })
+        }
+
+    }
+
 
 
 
@@ -142,11 +210,11 @@ class profile extends React.Component {
 
                     <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5}}>
                         <View>
-                            <Image source={{uri: 'https://amp.businessinsider.com/images/5b21635a1ae6621f008b51cd-750-562.jpg'}} style={{width:100 , height:100 , borderRadius:50}}/>
+                            <Image source={{uri: this.state.avatar}} style={{width:100 , height:100 , borderRadius:50}}/>
                         </View>
                         <View style={{flexDirection:'column', height:45}}>
                             <View style={{justifyContent:'center' , alignItems:'center'}}>
-                                <Text style={{fontSize:18,fontWeight: 'bold' }}>Wathsara Daluwatta</Text>
+                                <Text style={{fontSize:18,fontWeight: 'bold' }}>{ this.state.name}</Text>
                             </View>
                             <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5, marginVertical:25}}>
                                 <View style={{marginLeft:5 , justifyContent:'center' , alignItems:'center'}}>
@@ -163,9 +231,12 @@ class profile extends React.Component {
                                 </View>
                             </View>
 
-                            <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center'}}>
+                            <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
                                 <TouchableOpacity >
-                                    <Text style={{fontSize: 18, width:200 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Edit Profile</Text>
+                                    <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Edit Profile</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={this.logout}>
+                                    <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center' , marginLeft:5}}>Logout</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -213,9 +284,10 @@ class profile extends React.Component {
                 </View>
 
             ) : (
-                <View>
-
-                   <Text>Please login</Text>
+                <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
+                    <TouchableOpacity onPress={this.loginWithFacebook}>
+                        <SocialIcon style={{width:200}} title='Sign In With Facebook'  button  type='facebook' />
+                    </TouchableOpacity>
 
                 </View>
 

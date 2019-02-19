@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View, Image , TouchableOpacity , TextInput , ActivityIndicator , ScrollView , KeyboardAvoidingView  } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 import { Permissions , ImagePicker } from 'expo';
-import { Icon } from 'react-native-elements';
+import { Icon , SocialIcon} from 'react-native-elements';
 class newR extends React.Component {
     constructor(props){
         super(props);
@@ -252,8 +252,10 @@ class newR extends React.Component {
                                 </View>
                             ) : (
                                 <View style={{flex:1 , justifyContent:'center' , alignItems:'center'}}>
-
-                                    <Text>Please login</Text>
+                                    <Text style={{marginVertical:5}}>SignIn to Publish</Text>
+                                     <TouchableOpacity>
+                                        <SocialIcon style={{width:200}} title='Sign In With Facebook'  button  type='facebook' />
+                                     </TouchableOpacity>
 
                                 </View>
 
