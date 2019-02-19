@@ -10,14 +10,54 @@ import userProfile from './app/screens/userProfile.js';
 import comment from './app/screens/comment.js';
 import newR from './app/screens/newR.js';
 import recipe from './app/screens/recipe.js';
+import { Icon } from 'react-native-elements';
 // import foodFind from './app/screens/foodfind.js'
+
+
+const homeIcon =  <Icon name='camera-retro'   type='font-awesome'  color='#517fa4'  />
+
 const TabStack = createBottomTabNavigator(
   {
-    home: { screen: home },
-    discover: { screen: discover },
-    New : { screen : newR},
-    profile: { screen: profile },
-    notification: { screen: notification }
+    homeIcon: { screen: home ,
+        navigationOptions: {
+            tabBarLabel:"home",
+            tabBarIcon: ({ tintColor }) => (
+                <Icon name='ios-home'   type='ionicon'  color='#517fa4'  />
+            )
+        },
+    },
+    discover: { screen: discover ,
+        navigationOptions: {
+            tabBarLabel:"Discover",
+            tabBarIcon: ({ tintColor }) => (
+                <Icon name='ios-paper-plane'   type='ionicon'  color='#517fa4'  />
+            )
+        },
+    },
+    New : { screen : newR ,
+        navigationOptions: {
+            tabBarLabel:"New",
+            tabBarIcon: ({ tintColor }) => (
+                <Icon name='ios-add'   type='ionicon'  color='#517fa4'  />
+            )
+        },
+    },
+    profile: { screen: profile ,
+        navigationOptions: {
+            tabBarLabel:"Profile",
+            tabBarIcon: ({ tintColor }) => (
+                <Icon name='ios-person'   type='ionicon'  color='#517fa4'  />
+            )
+        },
+    },
+    notification: { screen: notification ,
+      navigationOptions: {
+          tabBarLabel:"Notifications",
+          tabBarIcon: ({ tintColor }) => (
+              <Icon name='ios-notifications'   type='ionicon'  color='#517fa4'  />
+          )
+      },
+  }
     // foodFind: { screen: foodFind}
 
   } 
@@ -46,6 +86,7 @@ export default class App extends React.Component {
         super(props);
         this.login();
     }
+    homeIcon =  <Icon name='camera-retro'   type='font-awesome'  color='#517fa4'  />
   login = async() => {
     try {
         let user = await auth.signInWithEmailAndPassword('wvd.51461@gmail.com', '111111');

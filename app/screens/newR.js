@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, View, Image , TouchableOpacity , TextInput , ActivityIndicator , ScrollView , KeyboardAvoidingView  } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 import { Permissions , ImagePicker } from 'expo';
+import { Icon } from 'react-native-elements';
 class newR extends React.Component {
     constructor(props){
         super(props);
@@ -108,7 +109,7 @@ class newR extends React.Component {
         var uploadTask = storage.ref('user/'+userId+'/img').child(filePath).put(blob);
 
         uploadTask.on('state_changed' , function (snapshot) {
-            var progress = ((snapshot.bytesTransferred / snapshot.totalBytes)*100).toFixed(0);
+            let progress = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0);
             that.setState({
                 progress:progress
             });
@@ -149,6 +150,7 @@ class newR extends React.Component {
         database.ref('/recepies/'+imageid).set(recepiesObj);
         database.ref('users/'+userID+'/recepies/'+imageid).set(recepiesObj);
 
+
         alert('SuccessFully Published!!');
 
         this.setState({
@@ -188,21 +190,13 @@ class newR extends React.Component {
                 <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
                     <Text style = {{fontSize: 18}}>New Recipe</Text>
                 </View>
-                { this.state.loggedin == true ? (
+                { this.state.loggedin == true && this.state.uploading == false ? (
                     <View style={{flex:1 }}>
                         { this.state.imageSelected == true ? (
 
                             <ScrollView>
                                 <KeyboardAvoidingView enabled={true}>
-                                    <View style={{flex:1}}>
-                                        { this.state.uploading == true ? (
-                                            <View style={{flex:1 , justifyContent: 'center' , alignItems:'center'}}>
-                                                <ActivityIndicator size="large" color="#0000ff"/>
-                                            </View>
-                                        ) : (
-                                            <View/>
-                                        )}
-                                    </View>
+
                                     <View style={{justifyContent:'center' , alignItems:'center'}}>
                                         <Image source={{uri: this.state.uri}} style={{width:120 , height:120, alignSelf:'center'}}/>
                                     </View>
@@ -239,20 +233,36 @@ class newR extends React.Component {
                             <View style={{height:'100%', width:'100%', justifyContent:'center' , alignItems:'center'}}>
                                 <TouchableOpacity onPress={() => {this.findNewIamge()}} style={{ justifyContent:'center' , alignItems:'center' , height:'100%', width:'100%', backgroundColor:'#D3D3D3', borderStyle: 'dashed', borderWidth:1.5, borderColor:'#000'}}>
                                     <Text style={{textAlign:'center', fontSize:18}}>Upload Image</Text>
+                                    <Icon name='ios-images'   type='ionicon'  color='#517fa4'  />
                                 </TouchableOpacity>
                             </View>
                         </View>
                         )}
                     </View>
 
+
                 ) : (
-                    <View>
+                    <View style={{flex:1 , justifyContent:'center' , alignItems:'center'}}>
+                        <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
+                            { this.state.uploading == true && this.state.loggedin == true ? (
+                                <View style={{flex:1 , justifyContent: 'center' , alignItems:'center'}}>
+                                    <Text style={{fontSize:15,marginVertical:10}}>{this.state.progress}%</Text>
+                                    <ActivityIndicator size="large" color="#0000ff"/>
+                                    <Text style={{fontSize:15,marginVertical:10}} >Publishing ...</Text>
+                                </View>
+                            ) : (
+                                <View style={{flex:1 , justifyContent:'center' , alignItems:'center'}}>
 
-                        <Text>Please login</Text>
+                                    <Text>Please login</Text>
 
+                                </View>
+
+                            )}
+                        </View>
                     </View>
 
                 )}
+
 
             </KeyboardAvoidingView>
         );

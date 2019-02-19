@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, FlatList, Image, ImageBackground, ActivityIndicator } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
-
+import { Icon } from 'react-native-elements';
 class home extends React.Component {
     constructor(props){
         super(props);

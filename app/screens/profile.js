@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, Image , TouchableOpacity , Dimensions , ScrollView } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
-
+import { Icon } from 'react-native-elements';
 var {width , height} = Dimensions.get('window');
 class profile extends React.Component {
     constructor(props){
@@ -103,7 +103,7 @@ class profile extends React.Component {
                 return (
                     <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe' , { id : image.id})}>
                         <View key={index} style={[{width:(width)/3} , {height:(width)/3}]}>
-                            <Image source={{uri:image.url}} style={{width:undefined , height:undefined , flex:1}}/>
+                            <Image source={{uri:image.url}} style={{width:undefined , height:undefined , flex:1 , marginHorizontal:1 , marginVertical:2}}/>
                         </View>
                     </TouchableOpacity>
                 )
@@ -177,13 +177,15 @@ class profile extends React.Component {
                     <View style={{flex:1, marginTop:20}}>
                         <View style={{flexDirection:'row', justifyContent:'space-around' , height:15 , alignItems:'center'}}>
                             <TouchableOpacity onPress={() => this.photoClick(0) }  >
-                                <Text style={{fontSize: 18, width:undefined, textAlign:'center'}}>Photo</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.postClick(1) } active={ this.state.active == 1 }>
-                                <Text style={{fontSize: 18, width:undefined,  textAlign:'center'}}>Post</Text>
+                                <Icon name='ios-images'   type='ionicon'  color='#517fa4'  />
+
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => this.saveClick(2) } active={ this.state.active == 2 }>
-                                <Text style={{fontSize: 18, width:undefined, textAlign:'center'}}>Saved</Text>
+                                <Icon
+                                    name='save'
+                                    type='font-awesome'
+                                    color='#517fa4'
+                                />
                             </TouchableOpacity>
 
                         </View>
@@ -191,7 +193,7 @@ class profile extends React.Component {
                         <View style={{flex:1}}>
                             <ScrollView style={{flex:1, marginTop:10}}>
                                 {this.state.loaded == true ? (
-                                    <View style={{flexDirection:'row'}}>
+                                    <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
                                         {this.renderSection()}
 
                                     </View>
