@@ -12,7 +12,8 @@
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-google-signin": "^0.8.1",
-    "react-navigation": "^3.2.3"
+    "react-navigation": "^3.2.3",
+    "react-photo-gallery": "^6.3.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"

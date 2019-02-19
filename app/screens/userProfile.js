@@ -1,12 +1,16 @@
 import React from 'react';
-import { Text, View, Image , TouchableOpacity } from 'react-native';
+import {Text, View, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 
+var {width , height} = Dimensions.get('window');
 class userProfile extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            loaded: false
+            loaded: false,
+            active: 0,
+            photo: [],
+            ploaded: false
 
         }
     }
@@ -19,6 +23,7 @@ class userProfile extends React.Component {
                     userId: params.userId
                 });
                 this.fetchInfo(params.userId);
+                this.loadFeed(params.userId);
 
             }
         }
@@ -26,6 +31,7 @@ class userProfile extends React.Component {
     }
 
     fetchInfo = (userId) => {
+
         var that = this;
         database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
@@ -52,8 +58,97 @@ class userProfile extends React.Component {
             });
         })
     }
+
+    loadFeed = (uid) => {
+
+
+        this.setState({
+            photo: [],
+            active:0
+
+        });
+
+        var that = this;
+        database.ref('users').child(uid).child('recepies').once('value').then(function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if(exsist) data = snapshot.val();
+            var photo = that.state.photo;
+            for(var photos in data){
+                let photoO = data[photos];
+                let tempId = photos;
+                photo.push({
+                    id:tempId,
+                    url: photoO.image,
+                    fName: photoO.foodName,
+
+                });
+
+                console.log(photo);
+            }
+            that.setState({
+                ploaded:true
+            })
+
+        }).catch(error => console.log(error));
+    }
+
+    photoClick = (active) => {
+        this.setState({
+            active:active
+        })
+
+    }
+
+    postClick = (active) => {
+        this.setState({
+            active:active
+        })
+
+    }
+
+    saveClick = (active) => {
+        this.setState({
+            active:active
+        })
+
+
+    }
+    renderSection = () => {
+
+
+        if(this.state.active == 0){
+
+            return this.state.photo.map((image , index) => {
+                return (
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe' , { id : image.id})}>
+                        <View key={index} style={[{width:(width)/3} , {height:(width)/3}]}>
+                            <Image source={{uri:image.url}} style={{width:undefined , height:undefined , flex:1}}/>
+                        </View>
+                    </TouchableOpacity>
+                )
+            });
+        }
+
+        if(this.state.active == 1){
+            return (
+                <View>
+                    <Text>Post Section</Text>
+                </View>
+            )
+        }
+
+        if(this.state.active == 2){
+            return (
+                <View>
+                    <Text>Saved Section</Text>
+                </View>
+            )
+        }
+    }
+
     componentDidMount = () => {
         this.check();
+
     }
 
 
@@ -104,6 +199,37 @@ class userProfile extends React.Component {
 
                             </View>
 
+                        </View>
+                        <View style={{flex:1, marginTop:20}}>
+                            <View style={{flexDirection:'row', justifyContent:'space-around' , height:15 , alignItems:'center'}}>
+                                <TouchableOpacity onPress={() => this.photoClick(0) }  >
+                                    <Text style={{fontSize: 18, width:undefined, textAlign:'center'}}>Photo</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.postClick(1) } active={ this.state.active == 1 }>
+                                    <Text style={{fontSize: 18, width:undefined,  textAlign:'center'}}>Post</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.saveClick(2) } active={ this.state.active == 2 }>
+                                    <Text style={{fontSize: 18, width:undefined, textAlign:'center'}}>Saved</Text>
+                                </TouchableOpacity>
+
+                            </View>
+
+                            <View style={{flex:1}}>
+                                <ScrollView style={{flex:1, marginTop:10}}>
+                                    {this.state.ploaded == true ? (
+                                        <View style={{flexDirection:'row'}}>
+                                            {this.renderSection()}
+
+                                        </View>
+                                    ) : (
+                                        <View style={{flexDirection:'row'}}>
+
+
+                                        </View>
+                                    )}
+
+                                </ScrollView>
+                            </View>
                         </View>
 
 

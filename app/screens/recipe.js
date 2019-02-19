@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Image , TouchableOpacity , ScrollView  } from 'react-native';
+import { Text, View, Image , TouchableOpacity , ScrollView, ActivityIndicator  } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 
 
@@ -104,7 +104,7 @@ class userProfile extends React.Component {
 
                 ) : (
                     <View style={{flex:1 , justifyContent:'center', alignItems: 'center'}}>
-
+                        <ActivityIndicator size="large" color="#0000ff"/>
                         <Text>LOADING...</Text>
 
                     </View>

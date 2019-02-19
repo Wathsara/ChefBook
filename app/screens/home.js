@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, FlatList, Image, ImageBackground } from 'react-native';
+import { TouchableOpacity, Text, View, FlatList, Image, ImageBackground, ActivityIndicator } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 
 class home extends React.Component {
@@ -122,6 +122,7 @@ class home extends React.Component {
 
             { this.state.loading == true ? (
                 <View style={{flex: 1 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#0000ff"/>
                     <Text style = {{fontSize: 18}}>LOADING ...</Text>
                 </View>
             ): (
