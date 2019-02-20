@@ -2,9 +2,12 @@ import React from 'react';
 import { TouchableOpacity, Text, View , TextInput , Image , ActivityIndicator , KeyboardAvoidingView , ToastAndroid , ScrollView} from 'react-native';
 import {database, f} from "../../config/config";
 import { SocialIcon } from 'react-native-elements';
+import PTRView from 'react-native-pull-to-refresh';
+
 class comment extends React.Component {
     constructor(props){
         super(props);
+
         this.state = {
             refresh: false,
             loggedin: false,
@@ -15,6 +18,12 @@ class comment extends React.Component {
             newNotificationId: this.uniqueId(),
 
         }
+    }
+    _refresh = () => {
+        return new Promise((resolve) => {
+            setTimeout(()=>{resolve()}, 2000)
+            this.reload();
+        });
     }
 
     s4 = () => {
@@ -65,7 +74,10 @@ class comment extends React.Component {
         return Math.floor(seconds)+' Second'+this.timePlural(seconds)
     }
 
-    check = () => {
+    check = async () => {
+        this.setState({
+            commentList: []
+        });
         var params = this.props.navigation.state.params;
 
         if(params){
@@ -93,6 +105,7 @@ class comment extends React.Component {
         this.setState({
             commentList: []
         });
+
 
         var that = this;
         database.ref('comments').child(recipeId).orderByChild('posted').once('value').then(function (snapshot) {
@@ -123,6 +136,7 @@ class comment extends React.Component {
                     loaded:true
                 })
             }
+
         }).catch(error => console.log(error))
 
     }
@@ -152,11 +166,18 @@ class comment extends React.Component {
                 </View>
             )
         });
+        this.setState({
+            commentsList:[],
+
+        })
+
+
 
     }
 
     componentDidMount = () => {
-        this.check();
+        this.check()
+
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
             if(user){
@@ -258,6 +279,7 @@ class comment extends React.Component {
     }
     render() {
         return (
+
             <View style={{flex: 1}}>
                 <View style={{flexDirection:'row', height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'space-between', alignItems: 'center' }}>
                     <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
@@ -266,6 +288,7 @@ class comment extends React.Component {
                     <Text style = {{fontSize: 20}}>Comments</Text>
                     <Text style = {{fontSize: 18, width:100}}></Text>
                 </View>
+                <PTRView onRefresh={this._refresh} >
                 <View style={{flex:1}}>
                     {this.state.loaded == true ? (
                         <View style={{flex:1}}>
@@ -288,6 +311,7 @@ class comment extends React.Component {
                     )}
 
                 </View>
+                </PTRView>
 
 
                 {this.state.loggedin == true ? (
@@ -311,6 +335,7 @@ class comment extends React.Component {
                     </View>
                 )}
             </View>
+
         );
     }
 }

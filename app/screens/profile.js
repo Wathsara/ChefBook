@@ -3,6 +3,7 @@ import { Text, View, Image , TouchableOpacity , Dimensions , ScrollView } from '
 import { f, auth, database , storage} from "../../config/config";
 import { Icon,SocialIcon  } from 'react-native-elements';
 var {width , height} = Dimensions.get('window');
+import { Permissions, Notifications } from 'expo';
 class profile extends React.Component {
     constructor(props){
         super(props);
@@ -27,6 +28,7 @@ class profile extends React.Component {
                 });
                 let us = f.auth().currentUser;
                 let userId = f.auth().currentUser.uid;
+                that.registerForPushNotificationsAsync(userId)
 
                 database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
                     const exist = (snapshot.val() != null);
@@ -96,23 +98,26 @@ class profile extends React.Component {
         var that = this;
         database.ref('users').child(uid).child('recepies').once('value').then(function (snapshot) {
             const exsist = (snapshot.val() != null);
-            if(exsist) data = snapshot.val();
-            var photo = that.state.photo;
-            for(var photos in data){
-                let photoO = data[photos];
-                let tempId = photos;
-                photo.push({
-                    id:tempId,
-                    url: photoO.image,
-                    fName: photoO.foodName,
+            if(exsist) {
+                data = snapshot.val();
+                var photo = that.state.photo;
+                for (var photos in data) {
+                    let photoO = data[photos];
+                    let tempId = photos;
+                    photo.push({
+                        id: tempId,
+                        url: photoO.image,
+                        fName: photoO.foodName,
 
-                });
+                    });
 
-                console.log(photo);
+                    console.log(photo);
+                }
+                that.setState({
+
+                    loaded: true
+                })
             }
-            that.setState({
-                loaded:true
-            })
 
          }).catch(error => console.log(error));
     }
@@ -191,9 +196,33 @@ class profile extends React.Component {
             const credentials = f.auth.FacebookAuthProvider.credential(token) ;
             f.auth().signInWithCredential(credentials).catch((error) => {
                 console.log(error)
-            })
+            });
+
         }
 
+    }
+
+    registerForPushNotificationsAsync = async(userId) => {
+        const { status: existingStatus } = await Permissions.getAsync(
+            Permissions.NOTIFICATIONS
+        );
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            // Android remote notification permissions are granted during the app
+            // install, so this will only ask on iOS
+            const { status } =  await Permissions.askAsync(Permissions.NOTIFICATIONS);
+            finalStatus = status;
+        }
+
+        // Stop here if the user did not grant permissions
+        if (finalStatus !== 'granted') {
+            return;
+        }
+
+        // Get the token that uniquely identifies this device
+        let token = await Notifications.getExpoPushTokenAsync();
+        console.log("token = " + token )
+        alert(token)
     }
 
 

@@ -71,23 +71,26 @@ class userProfile extends React.Component {
         var that = this;
         database.ref('users').child(uid).child('recepies').once('value').then(function (snapshot) {
             const exsist = (snapshot.val() != null);
-            if(exsist) data = snapshot.val();
-            var photo = that.state.photo;
-            for(var photos in data){
-                let photoO = data[photos];
-                let tempId = photos;
-                photo.push({
-                    id:tempId,
-                    url: photoO.image,
-                    fName: photoO.foodName,
+            if( exsist) {
+                data = snapshot.val();
+                var photo = that.state.photo;
+                for (var photos in data) {
+                    let photoO = data[photos];
+                    let tempId = photos;
+                    photo.push({
+                        id: tempId,
+                        url: photoO.image,
+                        fName: photoO.foodName,
 
-                });
+                    });
 
-                console.log(photo);
+                    console.log(photo);
+                }
+                that.setState({
+
+                    ploaded: true
+                })
             }
-            that.setState({
-                ploaded:true
-            })
 
         }).catch(error => console.log(error));
     }
@@ -164,7 +167,7 @@ class userProfile extends React.Component {
                             <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
                                 <Text style={{fontWeight:'bold', padding:10 , fontSize:14 , width:100}}>Back</Text>
                             </TouchableOpacity>
-                            <Text style = {{fontSize: 20}}>@{this.state.userName}</Text>
+                            <Text style = {{fontSize: 14, flexWrap:'wrap'}}>{this.state.userName}</Text>
                             <Text style = {{fontSize: 18, width:100}}></Text>
                         </View>
 
@@ -178,7 +181,7 @@ class userProfile extends React.Component {
                                 </View>
                                 <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5, marginVertical:25}}>
                                     <View style={{marginLeft:5 , justifyContent:'center' , alignItems:'center'}}>
-                                        <Text style={{fontSize:18,fontWeight: 'bold' }}>256</Text>
+                                        <Text style={{fontSize:18,fontWeight: 'bold' }}>{this.state.photo.length}</Text>
                                         <Text>Recepies</Text>
                                     </View>
                                     <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center'}}>

@@ -14,6 +14,7 @@ import { Icon } from 'react-native-elements';
 // import foodFind from './app/screens/foodfind.js'
 
 
+
 const homeIcon =  <Icon name='camera-retro'   type='font-awesome'  color='#517fa4'  />
 
 const TabStack = createBottomTabNavigator(
@@ -86,14 +87,7 @@ export default class App extends React.Component {
         super(props);
         // this.login();
     }
-    homeIcon =  <Icon name='camera-retro'   type='font-awesome'  color='#517fa4'  />
-  // login = async() => {
-  //   try {
-  //       let user = await auth.signInWithEmailAndPassword('wvd.51461@gmail.com', '111111');
-  //   }catch (error){
-  //       console.log(error);
-  //   }
-  // }
+
   render() {
     return (
       

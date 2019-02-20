@@ -1,5 +1,8 @@
 import React from 'react';
-import { Text, View, Image , TouchableOpacity , TextInput , ActivityIndicator , ScrollView , KeyboardAvoidingView  } from 'react-native';
+import {
+    Text, View, Image, TouchableOpacity, TextInput, ActivityIndicator, ScrollView, KeyboardAvoidingView, Picker,
+    ToastAndroid
+} from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 import { Permissions , ImagePicker } from 'expo';
 import { Icon , SocialIcon} from 'react-native-elements';
@@ -70,7 +73,8 @@ class newR extends React.Component {
             if (this.state.discription != '' && this.state.foodName != '' && this.state.ingrediants != ''){
                 this.uploadImage(this.state.uri)
             }else{
-                alert("Please Fill Out All the Fields!..")
+                ToastAndroid.show('Please Fill Out All the Fields!..', ToastAndroid.SHORT);
+
             }
         }else {
             console.log("Ignoring");
@@ -135,7 +139,7 @@ class newR extends React.Component {
         var discription = this.state.discription;
         var foodName = this.state.foodName;
         var ingrediants = this.state.ingrediants;
-
+        var category = this.state.category;
         var date = Date.now();
         var posted = Math.floor(date / 1000 )
         const recepiesObj = {
@@ -144,11 +148,14 @@ class newR extends React.Component {
             foodName: foodName,
             image: imageURL,
             ingrediants:ingrediants,
+            category:category,
             posted: posted
         };
 
         database.ref('/recepies/'+imageid).set(recepiesObj);
         database.ref('users/'+userID+'/recepies/'+imageid).set(recepiesObj);
+        database.ref('users/'+userID+'/'+category+'/'+imageid).set(recepiesObj);
+        database.ref(category+'/'+imageid).set(recepiesObj);
 
 
         alert('SuccessFully Published!!');
@@ -163,6 +170,11 @@ class newR extends React.Component {
         });
 
 
+    }
+    changeImage = () => {
+        this.setState({
+            imageSelected:false
+        })
     }
 
     componentDidMount = () => {
@@ -187,8 +199,12 @@ class newR extends React.Component {
     render() {
         return (
             <KeyboardAvoidingView  style={{flex:1}} enabled={true} behavior = "padding">
-                <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style = {{fontSize: 18}}>New Recipe</Text>
+                <View style={{flexDirection:'row', height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'space-between', alignItems: 'center' }}>
+                    <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
+                        <Text style={{fontWeight:'bold', padding:10 , fontSize:12 , width:100}}>Go Back</Text>
+                    </TouchableOpacity>
+                    <Text style = {{fontSize: 20}}>New Recipe</Text>
+                    <Text style = {{fontSize: 18, width:100}}></Text>
                 </View>
                 { this.state.loggedin == true && this.state.uploading == false ? (
                     <View style={{flex:1 }}>
@@ -199,6 +215,9 @@ class newR extends React.Component {
 
                                     <View style={{justifyContent:'center' , alignItems:'center'}}>
                                         <Image source={{uri: this.state.uri}} style={{width:120 , height:120, alignSelf:'center'}}/>
+                                        <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.changeImage()}>
+                                            <Text style={{fontWeight:'bold', padding:10 , fontSize:12 , width:100}}>Change Image</Text>
+                                        </TouchableOpacity>
                                     </View>
                                     <TextInput selectionColor='#428AF8' underlineColorAndroid = "#428AF8"  style={{ borderRadius:5, borderColor:'grey', marginHorizontal:10, marginVertical:10 , padding:5 }}
                                                placeholder={'Enter Food Name Here'}
@@ -206,6 +225,23 @@ class newR extends React.Component {
                                                maxlength={50}
                                                onChangeText={(text) => this.setState({foodName:text}) }
                                     />
+                                    <Picker
+                                        mode='dropdown'
+                                        selectedValue={this.state.category}
+                                        style={{height: 50, width: '100%' , padding:15, marginHorizontal:10 }}
+                                        onValueChange={(itemValue, itemIndex) =>
+                                            this.setState({category: itemValue})
+                                        }>
+                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Breakfast" value="breakfast" />
+                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Dinner" value="dinner" />
+                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Lunch" value="lunch" />
+                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Cake" value="cake" />
+                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Beverages" value="beverages" />
+                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Sweet" value="other" />
+                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Other" value="other" />
+
+                                    </Picker>
+
                                     <TextInput underlineColorAndroid = "#428AF8" style={{borderRadius:5, borderColor:'grey' , marginHorizontal:10, marginVertical:10 , padding:5, height:75 }}
                                                placeholder={'Enter Ingrediants Here'}
                                                editable={true}
