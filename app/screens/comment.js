@@ -109,7 +109,7 @@ class comment extends React.Component {
                         author: commentOBJ.author,
                         authorId: commentOBJ.authorId,
                         comment: commentOBJ.comment,
-                        posted: that.timeConvertor(commentOBJ.posted),
+                        posted: commentOBJ.posted,
 
                     });
                 }
@@ -127,12 +127,14 @@ class comment extends React.Component {
 
     }
     renderComments = () => {
+        this.state.commentsList.sort((a,b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
+        this.state.commentsList.reverse();
 
         return this.state.commentsList.map((items , index) => {
             {console.log(items.image)}
             return (
 
-                <ScrollView>
+                <View>
                     <View key={index} style={{ borderColor:'grey' , borderWidth:1 , marginTop:3 , height:'auto'}}>
                         <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
                             <View style={{flexDirection:'row'}}>
@@ -141,13 +143,13 @@ class comment extends React.Component {
                                     <Text>{ items.author}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text>{ items.posted}</Text>
+                            <Text>{ this.timeConvertor(items.posted)}</Text>
                         </View>
                         <View style={{flexWrap:'wrap'}}>
                             <Text style={{fontSize:16,paddingHorizontal:15}}> {items.comment} </Text>
                         </View>
                     </View>
-                </ScrollView>
+                </View>
             )
         });
 
@@ -256,7 +258,7 @@ class comment extends React.Component {
     }
     render() {
         return (
-            <ScrollView style={{flex: 1}}>
+            <View style={{flex: 1}}>
                 <View style={{flexDirection:'row', height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'space-between', alignItems: 'center' }}>
                     <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
                         <Text style={{fontWeight:'bold', padding:10 , fontSize:14 , width:100}}>Back</Text>
@@ -272,9 +274,9 @@ class comment extends React.Component {
                                     <Text>No comments..</Text>
                                 </View>
                             ) : (
-                                <View style={{flex: 1}}>
+                                <ScrollView style={{flex: 1}}>
                                     {this.renderComments()}
-                                </View>
+                                </ScrollView>
                             )}
 
                         </View>
@@ -308,7 +310,7 @@ class comment extends React.Component {
                         </TouchableOpacity>
                     </View>
                 )}
-            </ScrollView>
+            </View>
         );
     }
 }

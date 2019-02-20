@@ -47,26 +47,27 @@ class profile extends React.Component {
                         })
                         that.loadFeed();
                     } else {
+                        let us = f.auth().currentUser;
                         var newUser = {
                             name: us.displayName,
                             email: us.email,
                             avatar: us.photoURL
                         }
-                        database.ref('users/' +userId).set(newUser);
+                        database.ref('users/' +userId).set(newUser).catch((error) => console.log(error));
                         database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
                             const exist = (snapshot.val() != null);
                             if (exist) data = snapshot.val();
                             that.setState({
                                 name: data,
                             });
-                        })
+                        }).catch((error) => console.log(error))
                         database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
                             const exist = (snapshot.val() != null);
                             if (exist) data = snapshot.val();
                             that.setState({
                                 avatar: data,
                             });
-                        })
+                        }).catch((error) => console.log(error))
                         that.loadFeed();
                     }
 
