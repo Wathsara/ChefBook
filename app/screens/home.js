@@ -369,31 +369,36 @@ class home extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <View>
-                            <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
+                            <View >
                                 { this.state.loggedin == true ? (
-                                    <View style={{flexDirection:'row'}}>
-                                        <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {this.insertYummy(item.id)}}>
-                                            <Image source={{uri:'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png'}} style={{width:30 , height:30,borderRadius:15}}/>
-                                            <Text>{item.yummy} Yummies</Text>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity>
-                                            <Image source={{uri:'https://www.svgimages.com/svg-image/s5/yummy-smiley-icon-256x256.png'}} style={{width:30 , height:30 ,  borderRadius:15}}/>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity >
-                                            <Image source={{uri:'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png'}} style={{width:30 , height:30,borderRadius:15}}/>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : item.id})}>
-                                            <Image source={{uri:'https://cdn4.iconfinder.com/data/icons/contact-us-19/48/61-512.png'}} style={{width:30 , height:30 , marginLeft:12}}/>
-                                        </TouchableOpacity>
-
-
+                                    <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
+                                        <View>
+                                            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {this.insertYummy(item.id)}}>
+                                                <Image source={{uri:'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png'}} style={{width:30 , height:30,borderRadius:15}}/>
+                                                <Image source={{uri:'https://www.svgimages.com/svg-image/s5/yummy-smiley-icon-256x256.png'}} style={{width:30 , height:30 ,  borderRadius:15}}/>
+                                                <Text>{item.yummy} Yummies</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View>
+                                           <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : item.id})}>
+                                                <Image source={{uri:'https://cdn4.iconfinder.com/data/icons/contact-us-19/48/61-512.png'}} style={{width:30 , height:30 , marginLeft:12}}/>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 ):(
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : item.id})}>
-                                        <Image source={{uri:'https://cdn1.iconfinder.com/data/icons/social-object-set-2-1/74/42-512.png'}} style={{width:30 , height:30}}/>
-                                    </TouchableOpacity>
+                                    <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
+                                        <View>
+                                            <View style={{flexDirection:'row'}} >
+                                                <Image source={{uri:'https://www.svgimages.com/svg-image/s5/yummy-smiley-icon-256x256.png'}} style={{width:30 , height:30 ,  borderRadius:15}}/>
+                                                <Text>{item.yummy} Yummies</Text>
+                                            </View>
+                                        </View>
+                                        <View>
+                                            <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : item.id})}>
+                                                <Image source={{uri:'https://cdn4.iconfinder.com/data/icons/contact-us-19/48/61-512.png'}} style={{width:30 , height:30 , marginLeft:12}}/>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
                                 )}
 
                             </View>
