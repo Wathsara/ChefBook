@@ -10,17 +10,54 @@ class home extends React.Component {
             photo: [],
             refresh: false,
             loading: true,
-            empty:false
+            empty:false,
+            loggedin: false,
+
         }
 
     }
 
     componentDidMount = () => {
         this.loadFeed();
+        var that = this;
+        f.auth().onAuthStateChanged(function (user) {
+            if(user){
+                that.setState({
+                    loggedin: true,
+                });
+                var userId = f.auth().currentUser.uid;
+                database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        name:data
+                    });
+                });
+
+                database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        avatar:data,
+
+                    });
+                });
+
+
+            }else{
+                that.setState({
+                    loggedin: false
+                })
+
+
+            }
+        })
 
     }
 
-    loadFeed = () => {
+    loadFeed = async () => {
         this.setState({
             refresh:true,
             photo: []
@@ -39,38 +76,29 @@ class home extends React.Component {
                     let tempId = photos;
                     database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                         const exsist = (snapshot.val() != null);
-                        if (exsist) data = snapshot.val();
-
-
-                        photo.push({
-                            id: tempId,
-                            url: photoO.image,
-                            fName: photoO.foodName,
-                            author: data.username,
-                            authorPhoto: data.avatar,
-                            authorName: data.name,
-                            posted: photoO.posted,
-                            authorId: photoO.author,
-                            category: photoO.category
-
-
-                        });
-                        console.log(photo);
-
+                        if (exsist){
+                            data = snapshot.val();
+                            photo.push({
+                                id: tempId,
+                                url: photoO.image,
+                                fName: photoO.foodName,
+                                author: data.username,
+                                authorPhoto: data.avatar,
+                                authorName: data.name,
+                                posted: photoO.posted,
+                                authorId: photoO.author,
+                                category: photoO.category,
+                                yummy:photoO.yummies
+                            });
+                        }
                         that.setState({
                             refresh: false,
                             loading: false
                         });
-
-                    }).catch(error => console.log(error));
-
-
+                    })
                 }
             }
-        }).catch(error => console.log(error));
-
-
-
+        })
     }
 
     maekOrder = () => {
@@ -143,39 +171,79 @@ class home extends React.Component {
                     let tempId = photos;
                     database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                         const exsist = (snapshot.val() != null);
-                        if(exsist) data = snapshot.val();
+                        if(exsist){
+                            let data = snapshot.val();
+                            photo.push({
+                                id:tempId,
+                                url: photoO.image,
+                                fName: photoO.foodName,
+                                author: data.username,
+                                authorPhoto: data.avatar,
+                                authorName: data.name,
+                                posted: photoO.posted,
+                                authorId: photoO.author,
+                                category: photoO.category,
+                                yummy:photoO.yummies
 
 
-                        photo.push({
-                            id:tempId,
-                            url: photoO.image,
-                            fName: photoO.foodName,
-                            author: data.username,
-                            authorPhoto: data.avatar,
-                            authorName: data.name,
-                            posted: photoO.posted,
-                            authorId: photoO.author,
-                            category: photoO.category
+                            });
+                            console.log(photo);
 
-
-                        });
-                        console.log(photo);
+                        }
 
                         that.setState({
                             refresh: false,
                             loading: false
                         });
 
-                    }).catch(error => console.log(error));
-
-
+                    })
                 }
             }
             that.state.photo.sort((a,b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
             that.state.photo.reverse();
 
-        }).catch(error => console.log(error));
+        })
+    }
 
+    insertYummy = (rId) => {
+        var that=this;
+        database.ref('recepies').child(rId).child('yummies').once('value').then(function (snapshot) {
+            const exist = (snapshot.val() != null);
+            if (exist){
+                let data = snapshot.val();
+                let newD = data + 1;
+                let userId = f.auth().currentUser.uid;
+                likeD = {
+                    name: f.auth().currentUser.displayName
+                }
+                database.ref('recepies').child(rId).update({yummies: newD});
+
+
+            }else{
+                let userId = f.auth().currentUser.uid;
+                database.ref('recepies').child(rId).update({yummies: 1});
+                database.ref('/likes/'+rId).update({yummies: newD});
+                likeD = {
+                    name: f.auth().currentUser.displayName
+                }
+                database.ref('recepies').child(rId).update({yummies: newD});
+                database.ref('/likes/'+rId+'/'+userId).set(likeD);
+            }
+
+        }).catch((error) => console.log(error))
+    }
+
+    checkLike = (recipe) => {
+        var that = this;
+        database.ref('likes').child(recipe).child('total').on('value' , (function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if(exsist) {
+                var data = snapshot.val();
+                return (data)
+            }
+        }),function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
 
     }
     render() {
@@ -183,8 +251,8 @@ class home extends React.Component {
         <View style={{flex: 1}}>
             {this.maekOrder()}
 
-            <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
-                <Text style = {{fontSize: 24}}>Home</Text>
+            <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#FB8C00', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
+                <Text style = {{fontSize: 24, color:'#ffffff'}}>Home</Text>
             </View>
 
             <View>
@@ -272,15 +340,15 @@ class home extends React.Component {
                  </View>
 
             ): (
-
-                <FlatList
+                <View style={{flex: 1, backgroundColor:'#FB8C00'}}>
+                 <FlatList
                 refreshing = {this.state.refresh}
                 onRefresh = {this.loadNew}
                 data = {this.state.photo}
                 keyExtractor = {(item , index) => index.toString()}
-                style={{flex:1}}
+                style={{flex:1,backgroundColor:'#ffffff'}}
                 renderItem={({item , index}) => (
-                    <View key={index} style={{width: '100%', marginBottom: 10 , borderBottomWidth:1.5, borderColor:'#7CFC00', overflow:'hidden', justifyContent: 'space-between'}}>
+                    <View key={index} style={{width: '100%',backgroundColor:'##ffffff', marginBottom: 10 , borderBottomWidth:1.5, borderColor:'#FB8C00', overflow:'hidden', justifyContent: 'space-between'}}>
                         <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
                             <View style={{flexDirection:'row'}}>
                                 <TouchableOpacity style={{flexDirection:'row'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : item.authorId})}>
@@ -302,23 +370,38 @@ class home extends React.Component {
                         </View>
                         <View>
                             <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
-                                <View style={{flexDirection:'row'}}>
-                                    <TouchableOpacity>
-                                         <Image source={{uri:'https://www.clipartmax.com/png/middle/166-1667680_face-savoring-food-icon-tasty-emoji.png'}} style={{width:30 , height:30}}/>
-                                    </TouchableOpacity>
+                                { this.state.loggedin == true ? (
+                                    <View style={{flexDirection:'row'}}>
+                                        <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {this.insertYummy(item.id)}}>
+                                            <Image source={{uri:'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png'}} style={{width:30 , height:30,borderRadius:15}}/>
+                                            <Text>{item.yummy} Yummies</Text>
+                                        </TouchableOpacity>
 
-                                    <TouchableOpacity>
-                                        <Image source={{uri:'https://cdn4.iconfinder.com/data/icons/smiley-5-1/32/421-512.png'}} style={{width:30 , height:30 , marginLeft:12}}/>
-                                    </TouchableOpacity>
-                                </View>
+                                        <TouchableOpacity>
+                                            <Image source={{uri:'https://www.svgimages.com/svg-image/s5/yummy-smiley-icon-256x256.png'}} style={{width:30 , height:30 ,  borderRadius:15}}/>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity >
+                                            <Image source={{uri:'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png'}} style={{width:30 , height:30,borderRadius:15}}/>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : item.id})}>
+                                            <Image source={{uri:'https://cdn4.iconfinder.com/data/icons/contact-us-19/48/61-512.png'}} style={{width:30 , height:30 , marginLeft:12}}/>
+                                        </TouchableOpacity>
+
+
+                                    </View>
+                                ):(
                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : item.id})}>
                                         <Image source={{uri:'https://cdn1.iconfinder.com/data/icons/social-object-set-2-1/74/42-512.png'}} style={{width:30 , height:30}}/>
                                     </TouchableOpacity>
+                                )}
+
                             </View>
                         </View>
                     </View>
                 )}
                 />
+                </View>
             )}
 
         </View>

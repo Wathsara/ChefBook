@@ -10,7 +10,9 @@ import userProfile from './app/screens/userProfile.js';
 import comment from './app/screens/comment.js';
 import newR from './app/screens/newR.js';
 import recipe from './app/screens/recipe.js';
-import { Icon } from 'react-native-elements';
+import chat from './app/screens/chat.js';
+import message from './app/screens/message.js';
+import { Icon , Badge } from 'react-native-elements';
 // import foodFind from './app/screens/foodfind.js'
 
 
@@ -22,8 +24,10 @@ const TabStack = createBottomTabNavigator(
     homeIcon: { screen: home ,
         navigationOptions: {
             tabBarLabel:"home",
+
             tabBarIcon: ({ tintColor }) => (
-                <Icon name='ios-home'   type='ionicon'  color='#517fa4'  />
+                <Icon name='ios-home'   type='ionicon'  color='#517fa4'/>
+
             )
         },
     },
@@ -51,26 +55,48 @@ const TabStack = createBottomTabNavigator(
             )
         },
     },
+
     notification: { screen: notification ,
       navigationOptions: {
           tabBarLabel:"Notifications",
           tabBarIcon: ({ tintColor }) => (
-              <Icon name='ios-notifications'   type='ionicon'  color='#517fa4'  />
+              <View>
+                  {1 != 0 ? (
+                      <View>
+                          <Badge status="error" />
+                          <Icon name='ios-notifications'  type='ionicon'  color='#517fa4'/>
+                      </View>
+                  ):(
+                      <View>
+                            <Icon name='ios-notifications'   type='ionicon'  color='#517fa4'/>
+                      </View>
+                  )}
+              </View>
+
           )
       },
+  },
+  chat: { screen: chat ,
+      navigationOptions: {
+          tabBarLabel:"Chat",
+          tabBarIcon: ({ tintColor }) => (
+              <Icon name='ios-chatboxes'   type='ionicon'  color='#517fa4'  />
+          )
+      },
+  },
+// foodFind: { screen: foodFind}
+
   }
-    // foodFind: { screen: foodFind}
 
-  } 
 
-  
 )
 const MainStack = createStackNavigator(
     {
         Home: { screen : TabStack},
         userProfile : { screen : userProfile },
         comment : { screen : comment},
-        recipe : { screen : recipe}
+        recipe : { screen : recipe},
+        message : { screen : message}
 
     },
     {
@@ -85,8 +111,35 @@ export default class App extends React.Component {
 
    constructor(props){
         super(props);
-        // this.login();
+        this.state = {
+            notiC:0
+        }
+        this.notiCount();
     }
+
+    notiCount = () => {
+        var that = this;
+        f.auth().onAuthStateChanged(function (user) {
+            if(user){
+                let userId = f.auth().currentUser.uid;
+
+                database.ref('users').child(userId).child('notification').on('value' , (function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if (exist){
+                        let data=snapshot.val()
+                        that.setState({
+                            notiC: data,
+                        });
+                    }
+                }),function (errorObject) {
+                    console.log("The read failed: " + errorObject.code);
+                });
+            }
+
+
+        })
+   }
+
 
   render() {
     return (

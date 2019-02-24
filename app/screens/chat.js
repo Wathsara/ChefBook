@@ -80,7 +80,9 @@ class notification extends React.Component {
                 loaded:true
             })
             if(exsist){
-                let data = snapshot.val();
+
+                data = snapshot.val();
+
                 var notificationsList = that.state.notificationsList;
                 for(var noti in data){
                     let notiOBJ = data[noti]
@@ -115,42 +117,31 @@ class notification extends React.Component {
         return this.state.notificationsList.map((items , index) => {
             {console.log(items.image)}
             return (
-                <View style={styles.cardContainer}>
-                    <View style={styles.cardHedear}>
-                        <View style={styles.profilePicArea}>
-                            <TouchableOpacity  onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
-                                <Image style={styles.userImage} source={{uri: items.image}}/>
-                            </TouchableOpacity>
-                            {this.props.count>0 &&
-                            <View style={styles.badgeCount}>
-                                <Text style={styles.countText}>{this.props.count}</Text>
+
+                <View>
+                    <View key={index} style={{ borderColor:'grey' , borderWidth:1 , marginTop:3 , height:'auto'}}>
+                        <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
+                            <View style={{flexDirection:'row'}}>
+                                <TouchableOpacity style={{flexDirection:'row'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
+                                    <Image source={{uri: items.image}} style={{width:30 , height:30, borderRadius:100}}/>
+                                    <Text>{ items.author}</Text>
+                                </TouchableOpacity>
                             </View>
-                            }
+                            <Text>{ this.timeConvertor(items.posted)}</Text>
                         </View>
-                        <View style={styles.userDetailArea}>
-                            <View style={styles.userNameRow}>
-                                <TouchableOpacity style={{flexDirection:'row', justifyContent:'space-between'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
-                                    <Text style={styles.nameText}>{items.author}</Text>
-                                    <Text style={{alignSelf: 'flex-end'}}>{this.timeConvertor(items.posted)}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.meaasageRow}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : items.recipeId})}>
-                                    <Text style={styles.meaasageText}>{items.notification}</Text>
-                                </TouchableOpacity>
-                            </View>
+                        <View style={{flexWrap:'wrap'}}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : items.recipeId})}>
+                                <Text style={{fontSize:16,paddingHorizontal:15}}> {items.notification} </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
             )
         });
 
-
-
     }
 
     componentDidMount = () => {
-
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
             if(user){
@@ -158,7 +149,26 @@ class notification extends React.Component {
                     loggedin: true,
                 });
                 var userId = f.auth().currentUser.uid;
-                that.fetchInfo(userId);
+                database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        name:data
+                    });
+                });
+
+                database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        avatar:data,
+
+                    });
+                });
+
+
             }else{
                 that.setState({
                     loggedin: false
@@ -172,52 +182,45 @@ class notification extends React.Component {
 
     render() {
         return (
+            <View  style={{flex: 1}}>
 
-            <PTRView onRefresh={this._refresh} style={{flex: 1, backgroundColor:'#e8e8e8'}} >
-
-            <View style={{flex: 1, backgroundColor:'#e8e8e8'}} >
                 <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#FB8C00', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style = {{fontSize: 24, color:'#ffffff'}}>Notifications</Text>
+                    <Text style = {{fontSize: 24, color:'#ffffff'}}>Chat</Text>
                 </View>
-                <View style={{flex:1}}>
-                    {this.state.loaded == true ? (
-                        <View style={{flex:1}}>
-                            {this.state.notificationsList.length == 0 ? (
-                                <View style={{flex: 1 , justifyContent:'center', alignItems:'center'}}>
-                                    <Text>No Notifications..</Text>
+                <View style={styles.container}>
+                    {this.state.loggedin == true ? (
+                    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+                        <TouchableOpacity onPress={()=> this.props.navigation.navigate('message' , { userId : "a"})}>
+                                <View style={styles.cardContainer}>
+                                <View style={styles.cardHedear}>
+                                    <View style={styles.profilePicArea}>
+                                        <Image style={styles.userImage} source={{uri:'https://graph.facebook.com/1647484025351983/picture'}}/>
+                                        {this.props.count>0 &&
+                                        <View style={styles.badgeCount}>
+                                            <Text style={styles.countText}>{this.props.count}</Text>
+                                        </View>
+                                        }
+                                    </View>
+                                    <View style={styles.userDetailArea}>
+                                        <View style={styles.userNameRow}><Text style={styles.nameText}>Wathsara Daluwatta</Text></View>
+                                        <View style={styles.meaasageRow}><Text style={styles.meaasageText}>Hi There I am Using Watsapp</Text></View>
+                                    </View>
                                 </View>
-                            ) : (
-                                <View style={styles.container}>
-                                    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-                                        {this.renderNotifications()}
-                                    </ScrollView>
-                                </View>
-                            )}
-
-                        </View>
+                            </View>
+                        </TouchableOpacity>
+                    </ScrollView>
                     ):(
-                        <View style={{flex: 1, justifyContent:'center' , alignItems:'center'}}>
-                            <ActivityIndicator size="large" color="#0000ff"/>
-                            <Text>Loading Notifications..</Text>
+                        <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
+                            <TouchableOpacity>
+                                <SocialIcon style={{width:200}} title='Sign In With Facebook'  button  type='facebook' />
+                            </TouchableOpacity>
                         </View>
                     )}
-
                 </View>
 
 
-                {this.state.loggedin == true ? (
-                    <KeyboardAvoidingView style={{padding:15,marginBottom:10}} enabled={true} behavior = "padding">
 
-                    </KeyboardAvoidingView>
-                ) : (
-                    <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
-                        <TouchableOpacity>
-                            <SocialIcon style={{width:200}} title='Sign In With Facebook'  button  type='facebook' />
-                        </TouchableOpacity>
-                    </View>
-                )}
             </View>
-            </PTRView>
         );
     }
 }
@@ -267,7 +270,7 @@ const styles = StyleSheet.create({
     },
     meaasageRow:{
         flex:0.6,
-        marginTop:5
+
         // width:deviceWidth * 0.8,
         // backgroundColor:'blue'
     },

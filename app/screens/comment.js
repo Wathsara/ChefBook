@@ -1,5 +1,8 @@
 import React from 'react';
-import { TouchableOpacity, Text, View , TextInput , Image , ActivityIndicator , KeyboardAvoidingView , ToastAndroid , ScrollView} from 'react-native';
+import {
+    TouchableOpacity, Text, View, TextInput, Image, ActivityIndicator, KeyboardAvoidingView, ToastAndroid,
+    ScrollView, StyleSheet
+} from 'react-native';
 import {database, f} from "../../config/config";
 import { SocialIcon } from 'react-native-elements';
 import PTRView from 'react-native-pull-to-refresh';
@@ -108,7 +111,11 @@ class comment extends React.Component {
 
 
         var that = this;
-        database.ref('comments').child(recipeId).orderByChild('posted').once('value').then(function (snapshot) {
+        database.ref('comments').child(recipeId).orderByChild('posted').on("value" , (function (snapshot) {
+            that.setState({
+                commentsList:[],
+
+            })
             const exsist = (snapshot.val() != null);
 
             if(exsist){
@@ -125,8 +132,9 @@ class comment extends React.Component {
                         posted: commentOBJ.posted,
 
                     });
+
                 }
-                // console.log(commentsList);
+                console.log(commentsList);
                 that.setState({
                     loaded:true
                 })
@@ -137,39 +145,45 @@ class comment extends React.Component {
                 })
             }
 
-        }).catch(error => console.log(error))
+        }), function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
 
     }
     renderComments = () => {
         this.state.commentsList.sort((a,b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
         this.state.commentsList.reverse();
-
         return this.state.commentsList.map((items , index) => {
             {console.log(items.image)}
             return (
-
-                <View>
-                    <View key={index} style={{ borderColor:'grey' , borderWidth:1 , marginTop:3 , height:'auto'}}>
-                        <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
-                            <View style={{flexDirection:'row'}}>
-                                <TouchableOpacity style={{flexDirection:'row'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
-                                    <Image source={{uri: items.image}} style={{width:30 , height:30, borderRadius:100}}/>
-                                    <Text>{ items.author}</Text>
+                <View style={styles.cardContainer}>
+                    <View style={styles.cardHedear}>
+                        <View style={styles.profilePicArea}>
+                            <TouchableOpacity  onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
+                                <Image style={styles.userImage} source={{uri: items.image}}/>
+                            </TouchableOpacity>
+                            {this.props.count>0 &&
+                            <View style={styles.badgeCount}>
+                                <Text style={styles.countText}>{this.props.count}</Text>
+                            </View>
+                            }
+                        </View>
+                        <View style={styles.userDetailArea}>
+                            <View style={styles.userNameRow}>
+                                <TouchableOpacity style={{flexDirection:'row', justifyContent:'space-between' , flexWrap:'wrap'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
+                                    <Text style={styles.nameText}>{items.author}</Text>
+                                    <Text style={{alignSelf: 'flex-end'}}>{this.timeConvertor(items.posted)}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text>{ this.timeConvertor(items.posted)}</Text>
-                        </View>
-                        <View style={{flexWrap:'wrap'}}>
-                            <Text style={{fontSize:16,paddingHorizontal:15}}> {items.comment} </Text>
+                            <View style={styles.meaasageRow}>
+                                <Text style={styles.meaasageText}>{items.comment}</Text>
+                            </View>
                         </View>
                     </View>
                 </View>
+
             )
         });
-        this.setState({
-            commentsList:[],
-
-        })
 
 
 
@@ -281,7 +295,7 @@ class comment extends React.Component {
         return (
 
             <View style={{flex: 1}}>
-                <View style={{flexDirection:'row', height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{flexDirection:'row', height: 70 , paddingTop: 30 , backgroundColor: '#FB8C00', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'space-between', alignItems: 'center' }}>
                     <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
                         <Text style={{fontWeight:'bold', padding:10 , fontSize:14 , width:100}}>Back</Text>
                     </TouchableOpacity>
@@ -297,11 +311,12 @@ class comment extends React.Component {
                                     <Text>No comments..</Text>
                                 </View>
                             ) : (
-                                <ScrollView style={{flex: 1}}>
-                                    {this.renderComments()}
-                                </ScrollView>
+                                <View style={styles.container}>
+                                    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+                                        {this.renderComments()}
+                                    </ScrollView>
+                                </View>
                             )}
-
                         </View>
                     ):(
                         <View style={{flex: 1, justifyContent:'center' , alignItems:'center'}}>
@@ -315,8 +330,8 @@ class comment extends React.Component {
 
 
                 {this.state.loggedin == true ? (
-                    <KeyboardAvoidingView style={{padding:15,marginBottom:10}} enabled={true} behavior = "padding">
-                        <TextInput underlineColorAndroid = "#428AF8" style={{borderRadius:5, borderColor:'grey' , marginHorizontal:10, marginVertical:10 , padding:5, height:75 }}
+                    <KeyboardAvoidingView style={{padding:10,marginBottom:10}} enabled={true} behavior = "padding">
+                        <TextInput underlineColorAndroid = "#428AF8" style={{borderRadius:5, borderColor:'grey' , marginHorizontal:10, marginVertical:10 , padding:5 }}
                                    placeholder={'Enter Comment Here'}
                                    editable={true}
                                    multiline={true}
@@ -339,4 +354,134 @@ class comment extends React.Component {
         );
     }
 }
+const styles = StyleSheet.create({
+    cardContainer: {
+        flex:1,
+        width:'90%',
+        backgroundColor:'#fff',
+        borderRadius:5,
+        borderColor:'#FB8C00',
+        borderWidth:1,
+        // height:200,
+        alignItems:'center',
+        justifyContent:'flex-start',
+        // marginBottom:20,
+        marginTop:10
+    },
+    cardHedear:{
+        marginLeft:10,
+        marginTop:5,
+        marginRight:10,
+        // marginBottom:10,
+        // width:deviceWidth,
+        height:80,
+        flexDirection:'row'
+    },
+    profilePicArea:{
+        flex:0.25,
+        // width:deviceWidth * 0.2,
+        // backgroundColor:'red',
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    userDetailArea:{
+        flex:0.75,
+        paddingLeft:8,
+        // width:deviceWidth * 0.8,
+        flexDirection:'column',
+        // backgroundColor:'green'
+    },
+    userNameRow:{
+        flex:0.4,
+
+        // width:deviceWidth * 0.8,
+        // backgroundColor:'yellow',
+        paddingTop:10
+    },
+    meaasageRow:{
+        flex:0.6,
+        marginTop:5
+        // width:deviceWidth * 0.8,
+        // backgroundColor:'blue'
+    },
+    userImage:{
+        height:60,
+        width:60,
+        borderRadius:30
+    },
+    badgeCount:{
+        backgroundColor:'#3d9bf9',
+        height:20,
+        width:20,
+        borderRadius:10,
+        alignItems:'center',
+        justifyContent: 'center',
+        position:'absolute',
+        bottom:10,
+        right:10
+    },
+    imageThumbnails:{
+        height:70,
+        width:70,
+        borderRadius:35,
+    },
+    detailRow:{
+        width:'100%',
+        paddingLeft:10,
+        paddingRight:10,
+        paddingBottom:5,
+        marginTop:10
+    },
+    thumbnailRow:{
+        flex:1,
+        width:'100%',
+        // backgroundColor:'red',
+        flexDirection:'row',
+        justifyContent:'space-evenly',
+        paddingTop:30,
+        paddingLeft:10,
+        paddingRight:10,
+        paddingBottom:30
+    },
+
+    //Font styles
+
+    nameText:{
+        fontSize:14,
+        color:'#4e5861',
+        fontWeight:'bold'
+    },
+    meaasageText:{
+        fontSize:16,
+        color:'#95a3ad'
+    },
+    paraText:{
+        fontSize:16,
+        color:'#555f68'
+    },
+    countText:{
+        color:'#fff',
+        fontSize:12,
+        fontWeight:'bold'
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        backgroundColor: '#e8e8e8',
+        width:'100%',
+
+    },
+    scrollView:{
+        width:'100%',
+        backgroundColor:'#e8e8e8',
+
+
+    },
+    scrollViewContent:{
+        alignItems:'center',
+        paddingBottom:10
+    },
+
+});
 export default comment;

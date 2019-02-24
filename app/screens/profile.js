@@ -21,7 +21,7 @@ class profile extends React.Component {
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
             if(user){
-                that.loadFeed();
+
                 that.setState({
                     loggedin: true,
                     active:0
@@ -77,7 +77,8 @@ class profile extends React.Component {
 
             }else{
                 that.setState({
-                    loggedin: false
+                    loggedin: false,
+                    photo:[]
                 })
 
 
@@ -96,7 +97,10 @@ class profile extends React.Component {
         });
 
         var that = this;
-        database.ref('users').child(uid).child('recepies').once('value').then(function (snapshot) {
+        database.ref('users').child(uid).child('recepies').on('value' , (function (snapshot) {
+            that.setState({
+                photo: []
+            });
             const exsist = (snapshot.val() != null);
             if(exsist) {
                 data = snapshot.val();
@@ -119,7 +123,9 @@ class profile extends React.Component {
                 })
             }
 
-         }).catch(error => console.log(error));
+         }), function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
     }
 
     photoClick = (active) => {
@@ -148,7 +154,7 @@ class profile extends React.Component {
     renderSection = () => {
 
 
-        if(this.state.active == 0){
+        if(this.state.active == 0 && this.state.loggedin == true){
 
             return this.state.photo.map((image , index) => {
                 return (
@@ -176,14 +182,21 @@ class profile extends React.Component {
                 </View>
             )
         }
+        this.setState({
+            photo: []
+        });
     }
 
+
     logout = () => {
-        f.auth().signOut();
         this.setState({
             loggedin: false,
-            active:0
+            active:0,
+            photo: [],
         });
+        f.auth().signOut();
+
+
     }
 
 
@@ -196,6 +209,9 @@ class profile extends React.Component {
             const credentials = f.auth.FacebookAuthProvider.credential(token) ;
             f.auth().signInWithCredential(credentials).catch((error) => {
                 console.log(error)
+            });
+            this.setState({
+               photo: [],
             });
 
         }
@@ -222,7 +238,7 @@ class profile extends React.Component {
         // Get the token that uniquely identifies this device
         let token = await Notifications.getExpoPushTokenAsync();
         console.log("token = " + token )
-        alert(token)
+
     }
 
 
@@ -293,7 +309,7 @@ class profile extends React.Component {
 
                         <View style={{flex:1}}>
                             <ScrollView style={{flex:1, marginTop:10}}>
-                                {this.state.loaded == true ? (
+                                {this.state.loaded == true && this.state.loggedin== true ? (
                                     <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
                                         {this.renderSection()}
 

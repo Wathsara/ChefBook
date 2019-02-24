@@ -149,7 +149,8 @@ class newR extends React.Component {
             image: imageURL,
             ingrediants:ingrediants,
             category:category,
-            posted: posted
+            posted: posted,
+            yummies:0
         };
 
         database.ref('/recepies/'+imageid).set(recepiesObj);
