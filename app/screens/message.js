@@ -17,7 +17,6 @@ class notification extends React.Component {
             newMessage:'',
             newMessageId: this.uniqueId(),
             newChatId: this.uniqueId(),
-
         }
     }
 
@@ -28,9 +27,25 @@ class notification extends React.Component {
                 this.setState({
                     friendId: params.userId
                 });
+                var that = this;
+                database.ref('users').child(params.userId).child('name').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if(exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        fname:data
+                    });
+                });
+                database.ref('users').child(params.userId).child('avatar').once('value').then(function (snapshot) {
+                    const exist = (snapshot.val() != null);
+                    if (exist) data = snapshot.val();
+                    console.log(data)
+                    that.setState({
+                        favatar: data,
 
-                alert(this.state.friendId);
-                this.fetchInfo(params.userId);
+                    });
+                });
+                this.fetchMessages(params.userId);
                 this.loadFeed(params.userId);
 
             }
@@ -86,76 +101,79 @@ class notification extends React.Component {
         return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4();
     }
 
-    fetchInfo = (userId) => {
-
-        this.setState({
-            notificationsList: []
-        });
+    fetchMessages = () => {
 
         var that = this;
-        database.ref('notifications').child(userId).orderByChild('posted').on('value' , (function (snapshot) {
-            const exsist = (snapshot.val() != null);
-            that.setState({
-                notificationsList:[],
-                loaded:true
-            })
-            if(exsist){
+        var userId = f.auth().currentUser.uid;
+        database.ref('users').child(userId).child('userChats').child(this.state.friendId).once('value').then(function (snapshot) {
+            const exist = (snapshot.exists());
+            if (exist) {
 
-                data = snapshot.val();
+                var data = snapshot.val();
+                database.ref('chatMessages').child(Object.keys(data)[0]).on('value' , (function (snapshot) {
+                    const exsist = (snapshot.exists());
+                    if(exsist){
+                        that.setState({
+                            messageList:[]
+                        })
+                        var data = snapshot.val()
+                        console.log(Object.keys(data)[0].message);
+                        var messageList = that.state.messageList;
+                        Object.keys(data).forEach(key => {
+                            messageList.push({
+                                message:data[key].message,
+                                posted:data[key].posted,
+                                sendby:data[key].sendby,
+                            });
 
-                var notificationsList = that.state.notificationsList;
-                for(var noti in data){
-                    let notiOBJ = data[noti]
-                    notificationsList.push({
-                        image: notiOBJ.avatar,
-                        author: notiOBJ.author,
-                        authorId: notiOBJ.authorId,
-                        recipeId: notiOBJ.recipe,
-                        notification: notiOBJ.message,
-                        posted: notiOBJ.posted,
-                    });
-                }
-                console.log(notificationsList);
-                that.setState({
-                    loaded:true
-                })
-            }else{
-                that.setState({
-                    notificationsList:[],
-                    loaded:true
-                })
+                        });
+
+                        console.log(messageList);
+                        that.setState({
+                            loaded:true
+                        })
+                    }else{
+                        that.setState({
+                            messageList:[],
+                            loaded:true
+                        })
+                    }
+                }),function (errorObject) {
+                    console.log("The read failed: " + errorObject.code);
+                });
+
             }
-        }),function (errorObject) {
-            console.log("The read failed: " + errorObject.code);
         });
 
+
     }
-    renderNotifications = () => {
-        this.state.notificationsList.sort((a,b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
-        this.state.notificationsList.reverse();
-
-        return this.state.notificationsList.map((items , index) => {
-            {console.log(items.image)}
+    renderMessages = () => {
+        {console.log(this.state.avatar)}
+        this.state.messageList.sort((a,b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
+        // this.state.messageList.reverse();
+        return this.state.messageList.map((item , index) => {
             return (
-
                 <View>
-                    <View key={index} style={{ borderColor:'grey' , borderWidth:1 , marginTop:3 , height:'auto'}}>
-                        <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
-                            <View style={{flexDirection:'row'}}>
-                                <TouchableOpacity style={{flexDirection:'row'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
-                                    <Image source={{uri: items.image}} style={{width:30 , height:30, borderRadius:100}}/>
-                                    <Text>{ items.author}</Text>
-                                </TouchableOpacity>
+                    {item.sendby != f.auth().currentUser.uid ? (
+                    <View style={styles.cardContainerReciever}>
+                        <View style={styles.cardHedear}>
+                            <View style={styles.userDetailArea}>
+                                <View style={styles.userNameRow}><Text style={styles.nameText}>{this.timeConvertor(item.posted)}</Text></View>
+                                <View style={styles.meaasageRow}><Text style={styles.meaasageText}>{item.message}</Text></View>
                             </View>
-                            <Text>{ this.timeConvertor(items.posted)}</Text>
-                        </View>
-                        <View style={{flexWrap:'wrap'}}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : items.recipeId})}>
-                                <Text style={{fontSize:16,paddingHorizontal:15}}> {items.notification} </Text>
-                            </TouchableOpacity>
                         </View>
                     </View>
-                </View>
+                    ) : (
+                    <View style={styles.cardContainerSender}>
+                        <View style={styles.cardHedear}>
+                            <View style={styles.userDetailArea}>
+                            <View style={styles.userNameRow}><Text style={styles.nameText}>{this.timeConvertor(item.posted)}</Text></View>
+                                <View style={styles.meaasageRow}><Text style={styles.meaasageText}>{item.message}</Text></View>
+                            </View>
+                        </View>
+                    </View>
+                    )}
+            </View>
             )
         });
 
@@ -202,14 +220,26 @@ class notification extends React.Component {
         var date = Date.now();
         var posted = Math.floor(date / 1000 )
         var userId = f.auth().currentUser.uid;
-        database.ref('users').child('userChat').child(this.state.friendId).once('value').then(function (snapshot) {
-            const exist = (snapshot.val() != null);
+        database.ref('users').child(userId).child('userChats').child(this.state.friendId).once('value').then(function (snapshot) {
+            const exist = (snapshot.exists());
             if(exist){
                 data = snapshot.val();
+                let cId = (Object.keys(data)[0]);
+                var newMessage = {
+                    sendby:userId,
+                    message:that.state.newMessage,
+                    status:0,
+                    posted:posted
+
+                }
+                database.ref('/chatMessages/'+cId+'/'+that.state.newMessageId).set(newMessage);
+                database.ref('/users/'+userId+'/userChats/'+that.state.friendId+'/'+cId).update({posted: posted ,lastMessage:that.state.newMessage });
+                database.ref('/users/'+that.state.friendId+'/userChats/'+userId+'/'+cId).update({posted: posted , lastMessage:that.state.newMessage});
                 that.setState({
-                    owner:data
-                });
+                    newMessage:''
+                })
             } else {
+                // alert("no HIll")
                 var chatUserf = {
                     lastMessage:that.state.newMessage,
                     posted:posted,
@@ -217,7 +247,6 @@ class notification extends React.Component {
                 }
 
                 var chatUser = {
-                    chatId:that.state.newChatId,
                     lastMessage:that.state.newMessage,
                     posted:posted,
                     friend:userId
@@ -227,11 +256,12 @@ class notification extends React.Component {
                 var newMessage = {
                     sendby:userId,
                     message:that.state.newMessage,
+                    status:0,
                     posted:posted
 
                 }
-                database.ref('/users/'+userId+'/userChats/'+that.state.newChatId).set(chatUserf);
-                database.ref('/users/'+that.state.friendId+'/userChats/'+that.state.newChatId).set(chatUser);
+                database.ref('/users/'+userId+'/userChats/'+that.state.friendId+'/'+that.state.newChatId).set(chatUserf);
+                database.ref('/users/'+that.state.friendId+'/userChats/'+userId+'/'+that.state.newChatId).set(chatUser);
                 database.ref('/chatMessages/'+that.state.newChatId+'/'+that.state.newMessageId).set(newMessage);
 
             }
@@ -245,46 +275,16 @@ class notification extends React.Component {
                     <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
                         <Text style={{fontWeight:'bold', padding:10 , fontSize:14 , width:100}}>Back</Text>
                     </TouchableOpacity>
-                    <Text style = {{fontSize: 20}}>Thuhini</Text>
+                    <Text style = {{fontSize: 14}}>{this.state.fname}</Text>
                     <Text style = {{fontSize: 18, width:100}}></Text>
                 </View>
                 <View style={styles.container}>
                     {this.state.loggedin == true ? (
                     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-
-                        <View style={styles.cardContainerReciever}>
-                            <View style={styles.cardHedear}>
-                                <View style={styles.profilePicArea}>
-                                    <Image style={styles.userImage} source={{uri:'https://graph.facebook.com/1647484025351983/picture'}}/>
-                                    {this.props.count>0 &&
-                                    <View style={styles.badgeCount}>
-                                        <Text style={styles.countText}>{this.props.count}</Text>
-                                    </View>
-                                    }
-                                </View>
-                                <View style={styles.userDetailArea}>
-                                    <View style={styles.userNameRow}><Text style={styles.nameText}></Text></View>
-                                    <View style={styles.meaasageRow}><Text style={styles.meaasageText}>Hi There I am Using Watsapp</Text></View>
-                                </View>
-                            </View>
+                        <View>
+                            {this.renderMessages()}
                         </View>
 
-                        <View style={styles.cardContainerSender}>
-                            <View style={styles.cardHedear}>
-                                <View style={styles.userDetailArea}>
-                                    <View style={styles.userNameRow}><Text style={styles.nameText}></Text></View>
-                                    <View style={styles.meaasageRow}><Text style={styles.meaasageText}>Hi There I am Using Watsapp</Text></View>
-                                </View>
-                                <View style={styles.profilePicArea}>
-                                    <Image style={styles.userImage} source={{uri:'https://graph.facebook.com/1647484025351983/picture'}}/>
-                                    {this.props.count>0 &&
-                                    <View style={styles.badgeCount}>
-                                        <Text style={styles.countText}>{this.props.count}</Text>
-                                    </View>
-                                    }
-                                </View>
-                            </View>
-                        </View>
                     </ScrollView>
                         ):(
                         <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
@@ -321,28 +321,24 @@ class notification extends React.Component {
 }
 const styles = StyleSheet.create({
     cardContainerReciever: {
-        flex:1,
         width:'70%',
         backgroundColor:'#fff',
         borderRadius:5,
         borderColor:'#FB8C00',
         borderWidth:1,
-        // height:200,
-        alignItems:'center',
+        height:'auto',
         justifyContent:'flex-start',
         // marginBottom:20,
         marginTop:10,
         marginLeft:3,
     },
     cardContainerSender: {
-        flex:1,
         width:'70%',
         backgroundColor:'#fff',
         borderRadius:5,
         borderColor:'#FB8C00',
         borderWidth:1,
-        // height:200,
-        alignItems:'center',
+        height:'auto',
         alignSelf:'flex-end',
         // marginBottom:20,
         marginTop:5,
@@ -354,7 +350,7 @@ const styles = StyleSheet.create({
         marginRight:10,
         // marginBottom:10,
         // width:deviceWidth,
-        height:80,
+        height:'auto',
         flexDirection:'row'
     },
     profilePicArea:{
@@ -363,8 +359,8 @@ const styles = StyleSheet.create({
         justifyContent:'center'
     },
     userDetailArea:{
-        flex:0.75,
         paddingLeft:8,
+        height:'auto',
         // width:deviceWidth * 0.8,
         flexDirection:'column',
         // backgroundColor:'green'
@@ -422,13 +418,13 @@ const styles = StyleSheet.create({
     //Font styles
 
     nameText:{
-        fontSize:14,
+        fontSize:10,
         color:'#4e5861',
-        fontWeight:'bold'
+
     },
     meaasageText:{
         fontSize:16,
-        color:'#95a3ad'
+        color:'#050608'
     },
     paraText:{
         fontSize:16,
