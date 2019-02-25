@@ -267,6 +267,7 @@ class comment extends React.Component {
             }
 
         }
+        that.textInput.clear()
     }
 
 
@@ -316,6 +317,7 @@ class comment extends React.Component {
                                    multiline={true}
                                    maxlength={750}
                                    onChangeText={(text) => this.setState({newComment:text}) }
+                                   ref={input => { this.textInput = input }}
                         />
                         <TouchableOpacity onPress={this.postComment} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5}}>
                             <Text style={{textAlign:'center', color:'white' , fontSize:14}}>Comment</Text>

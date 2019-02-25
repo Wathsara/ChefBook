@@ -12,7 +12,7 @@ class notification extends React.Component {
         this.state = {
             refresh: false,
             loggedin: false,
-            notificationsList: [],
+            chatList: [],
             loaded: false,
 
         }
@@ -66,76 +66,73 @@ class notification extends React.Component {
     }
 
 
-    fetchInfo = (userId) => {
-
-        this.setState({
-            notificationsList: []
-        });
+    fetchchats = (userId) => {
 
         var that = this;
-        database.ref('notifications').child(userId).orderByChild('posted').on('value' , (function (snapshot) {
-            const exsist = (snapshot.val() != null);
+        var userId = f.auth().currentUser.uid;
+        database.ref('users').child(userId).child('userChats').on('value' , (function (snapshot) {
+            const exist = (snapshot.exists());
             that.setState({
-                notificationsList:[],
-                loaded:true
+                chatList: [],
             })
-            if(exsist){
+            if (exist) {
+                var data = snapshot.val();
+                const exsist = (snapshot.exists());
+                if(exsist){
 
-                data = snapshot.val();
-
-                var notificationsList = that.state.notificationsList;
-                for(var noti in data){
-                    let notiOBJ = data[noti]
-                    notificationsList.push({
-                        image: notiOBJ.avatar,
-                        author: notiOBJ.author,
-                        authorId: notiOBJ.authorId,
-                        recipeId: notiOBJ.recipe,
-                        notification: notiOBJ.message,
-                        posted: notiOBJ.posted,
+                    var data = snapshot.val()
+                    var chatList = that.state.chatList;
+                    Object.keys(data).forEach(key => {
+                       var tempdata = data[key];
+                        Object.keys(tempdata).forEach(key => {
+                           chatList.push({
+                               posted:tempdata[key].posted,
+                               lastMessage:tempdata[key].lastMessage,
+                               name:tempdata[key].name,
+                               avatar:tempdata[key].avatar,
+                               id:tempdata[key].friend
+                           })
+                        });
                     });
+
+                    console.log(chatList);
+                    that.setState({
+                        loaded:true
+                    })
+                }else{
+                    that.setState({
+                        chatList:[],
+                        loaded:true
+                    })
                 }
-                console.log(notificationsList);
-                that.setState({
-                    loaded:true
-                })
-            }else{
-                that.setState({
-                    notificationsList:[],
-                    loaded:true
-                })
             }
-        }),function (errorObject) {
+        }), function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
 
     }
-    renderNotifications = () => {
-        this.state.notificationsList.sort((a,b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
-        this.state.notificationsList.reverse();
+    renderMessageList = () => {
+        this.state.chatList.sort((a,b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
+        this.state.chatList.reverse();
 
-        return this.state.notificationsList.map((items , index) => {
-            {console.log(items.image)}
+        return this.state.chatList.map((items , index) => {
             return (
-
-                <View>
-                    <View key={index} style={{ borderColor:'grey' , borderWidth:1 , marginTop:3 , height:'auto'}}>
-                        <View style={{flexDirection:'row', width:'100%', padding:10 ,justifyContent: 'space-between'}}>
-                            <View style={{flexDirection:'row'}}>
-                                <TouchableOpacity style={{flexDirection:'row'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
-                                    <Image source={{uri: items.image}} style={{width:30 , height:30, borderRadius:100}}/>
-                                    <Text>{ items.author}</Text>
-                                </TouchableOpacity>
+                <TouchableOpacity  onPress={()=> this.props.navigation.navigate('message' , { userId : items.id})}>
+                    <View style={styles.cardContainer}>
+                        <View style={styles.cardHedear}>
+                            <View style={styles.profilePicArea}>
+                                <Image style={styles.userImage} source={{uri:items.avatar}}/>
                             </View>
-                            <Text>{ this.timeConvertor(items.posted)}</Text>
-                        </View>
-                        <View style={{flexWrap:'wrap'}}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : items.recipeId})}>
-                                <Text style={{fontSize:16,paddingHorizontal:15}}> {items.notification} </Text>
-                            </TouchableOpacity>
+                            <View style={styles.userDetailArea}>
+                                <View style={styles.userNameRow}>
+                                    <Text style={styles.nameText}>{items.name}</Text>
+                                    <Text style={styles.nameText}>{this.timeConvertor(items.posted)}</Text>
+                                </View>
+                                <View style={styles.meaasageRow}><Text style={styles.meaasageText}>{items.lastMessage}</Text></View>
+                            </View>
                         </View>
                     </View>
-                </View>
+                </TouchableOpacity>
             )
         });
 
@@ -148,6 +145,7 @@ class notification extends React.Component {
                 that.setState({
                     loggedin: true,
                 });
+                that.fetchchats()
                 var userId = f.auth().currentUser.uid;
                 database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
                     const exist = (snapshot.val() != null);
@@ -190,24 +188,7 @@ class notification extends React.Component {
                 <View style={styles.container}>
                     {this.state.loggedin == true ? (
                     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-                        <TouchableOpacity onPress={()=> this.props.navigation.navigate('message' , { userId : "a"})}>
-                                <View style={styles.cardContainer}>
-                                <View style={styles.cardHedear}>
-                                    <View style={styles.profilePicArea}>
-                                        <Image style={styles.userImage} source={{uri:'https://graph.facebook.com/1647484025351983/picture'}}/>
-                                        {this.props.count>0 &&
-                                        <View style={styles.badgeCount}>
-                                            <Text style={styles.countText}>{this.props.count}</Text>
-                                        </View>
-                                        }
-                                    </View>
-                                    <View style={styles.userDetailArea}>
-                                        <View style={styles.userNameRow}><Text style={styles.nameText}>Wathsara Daluwatta</Text></View>
-                                        <View style={styles.meaasageRow}><Text style={styles.meaasageText}>Hi There I am Using Watsapp</Text></View>
-                                    </View>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
+                        {this.renderMessageList()}
                     </ScrollView>
                     ):(
                         <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
@@ -226,7 +207,6 @@ class notification extends React.Component {
 }
 const styles = StyleSheet.create({
     cardContainer: {
-        flex:1,
         width:'90%',
         backgroundColor:'#fff',
         borderRadius:5,
@@ -244,29 +224,25 @@ const styles = StyleSheet.create({
         marginRight:10,
         // marginBottom:10,
         // width:deviceWidth,
-        height:80,
+        height:'auto',
         flexDirection:'row'
     },
     profilePicArea:{
         flex:0.25,
-        // width:deviceWidth * 0.2,
-        // backgroundColor:'red',
         alignItems:'center',
         justifyContent:'center'
     },
     userDetailArea:{
         flex:0.75,
         paddingLeft:8,
-        // width:deviceWidth * 0.8,
         flexDirection:'column',
-        // backgroundColor:'green'
+
     },
     userNameRow:{
         flex:0.4,
-
-        // width:deviceWidth * 0.8,
-        // backgroundColor:'yellow',
-        paddingTop:10
+        flexDirection:'row',
+        paddingTop:2,
+        justifyContent:'space-between'
     },
     meaasageRow:{
         flex:0.6,
@@ -275,9 +251,9 @@ const styles = StyleSheet.create({
         // backgroundColor:'blue'
     },
     userImage:{
-        height:60,
-        width:60,
-        borderRadius:30
+        height:30,
+        width:30,
+        borderRadius:15
     },
     badgeCount:{
         backgroundColor:'#3d9bf9',

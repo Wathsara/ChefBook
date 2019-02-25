@@ -105,7 +105,7 @@ class notification extends React.Component {
 
         var that = this;
         var userId = f.auth().currentUser.uid;
-        database.ref('users').child(userId).child('userChats').child(this.state.friendId).once('value').then(function (snapshot) {
+        database.ref('users').child(userId).child('userChats').child(this.state.friendId).on('value' , (function (snapshot) {
             const exist = (snapshot.exists());
             if (exist) {
 
@@ -143,6 +143,8 @@ class notification extends React.Component {
                 });
 
             }
+        }),function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
         });
 
 
@@ -232,26 +234,32 @@ class notification extends React.Component {
                     posted:posted
 
                 }
+                that.setState({
+                    newMessageId: that.uniqueId(),
+                })
                 database.ref('/chatMessages/'+cId+'/'+that.state.newMessageId).set(newMessage);
                 database.ref('/users/'+userId+'/userChats/'+that.state.friendId+'/'+cId).update({posted: posted ,lastMessage:that.state.newMessage });
                 database.ref('/users/'+that.state.friendId+'/userChats/'+userId+'/'+cId).update({posted: posted , lastMessage:that.state.newMessage});
                 that.setState({
-                    newMessage:''
+                    newMessage:'',
                 })
             } else {
                 // alert("no HIll")
                 var chatUserf = {
                     lastMessage:that.state.newMessage,
                     posted:posted,
-                    friend:that.state.friendId
+                    friend:that.state.friendId,
+                    name:that.state.fname,
+                    avatar:that.state.favatar
                 }
 
                 var chatUser = {
                     lastMessage:that.state.newMessage,
                     posted:posted,
-                    friend:userId
+                    friend:userId,
+                    name:f.auth().currentUser.displayName,
+                    avatar:f.auth().currentUser.photoURL
                 }
-
 
                 var newMessage = {
                     sendby:userId,
@@ -266,6 +274,8 @@ class notification extends React.Component {
 
             }
         }).catch()
+        that.textInput.clear()
+
     }
 
     render() {
@@ -280,7 +290,11 @@ class notification extends React.Component {
                 </View>
                 <View style={styles.container}>
                     {this.state.loggedin == true ? (
-                    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+                    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}
+                                ref={ref => this.scrollView = ref}
+                                onContentSizeChange={(contentWidth, contentHeight)=>{
+                                    this.scrollView.scrollToEnd({animated: true});
+                                }}>
                         <View>
                             {this.renderMessages()}
                         </View>
@@ -294,27 +308,26 @@ class notification extends React.Component {
                         </View>
                     )}
                 </View>
-                <View>
                     {this.state.loggedin == true ? (
-                    <KeyboardAvoidingView style={{padding:10,marginBottom:10}} enabled={true} behavior = "padding">
-                        <View>
-                            <TextInput underlineColorAndroid = "#428AF8" style={{borderRadius:5, borderColor:'grey' , marginHorizontal:5, marginVertical:5 , padding:5 }}
-                                       placeholder={'Enter Message Here'}
-                                       editable={true}
-                                       multiline={false}
-                                       maxlength={100}
-                                       onChangeText={(text) => this.setState({newMessage:text}) }
-                            />
-                            <TouchableOpacity onPress={this.sendMessage} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5}}>
-                                <Text style={{textAlign:'center', color:'white' , fontSize:14}}>Send</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </KeyboardAvoidingView>
+                        <KeyboardAvoidingView style={{marginBottom:10}} enabled={true} behavior = "padding">
+                            <View  style={{flexDirection:'row', justifyContent:'space-between'}}>
+                                <TextInput underlineColorAndroid = "#428AF8" style={{borderRadius:5, borderColor:'grey' , marginHorizontal:5, marginVertical:5 , padding:5 , width:'80%'}}
+                                           placeholder={'Enter Message Here'}
+                                           editable={true}
+                                           multiline={false}
+                                           maxlength={100}
+                                           onChangeText={(text) => this.setState({newMessage:text}) }
+                                           ref={input => { this.textInput = input }}
+                                />
+                                <TouchableOpacity onPress={this.sendMessage} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5 , width:'10%'}}>
+                                    <Text style={{textAlign:'center', color:'white' , fontSize:14}}>Send</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </KeyboardAvoidingView>
+
                         ):(
                         <View></View>
                     )}
-                </View>
-
             </View>
         );
     }
