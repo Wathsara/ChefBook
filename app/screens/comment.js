@@ -78,9 +78,7 @@ class comment extends React.Component {
     }
 
     check = async () => {
-        this.setState({
-            commentList: []
-        });
+
         var params = this.props.navigation.state.params;
 
         if(params){
@@ -105,17 +103,9 @@ class comment extends React.Component {
     }
 
     fetchInfo = (recipeId) => {
-        this.setState({
-            commentList: []
-        });
-
 
         var that = this;
         database.ref('comments').child(recipeId).orderByChild('posted').on("value" , (function (snapshot) {
-            that.setState({
-                commentsList:[],
-
-            })
             const exsist = (snapshot.val() != null);
 
             if(exsist){
@@ -255,7 +245,6 @@ class comment extends React.Component {
             this.setState({
                 comment: ''
             });
-
             var newCommentObject = {
                author:userName,
                authorId:userId,
@@ -263,7 +252,6 @@ class comment extends React.Component {
                avatar:image,
                comment:comment
             }
-
             var notification = {
                 author:userName,
                 authorId:userId,
@@ -278,19 +266,10 @@ class comment extends React.Component {
                 database.ref('/notifications/'+owner+'/'+newNotificationId).set(notification);
             }
 
-            this.reload()
-
-
         }
     }
 
-    reload = () => {
-        this.setState({
-            commentsList:[],
 
-        })
-        this.fetchInfo(this.state.recipeId);
-    }
     render() {
         return (
 

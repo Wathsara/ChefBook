@@ -12,17 +12,30 @@ class notification extends React.Component {
         this.state = {
             refresh: false,
             loggedin: false,
-            notificationsList: [],
+            messageList: [],
             loaded: false,
+            newMessage:'',
+            newMessageId: this.uniqueId(),
+            newChatId: this.uniqueId(),
 
         }
     }
 
-    _refresh = () => {
-        return new Promise((resolve) => {
-            setTimeout(()=>{resolve()}, 2000)
-            this.componentDidMount();
-        });
+    check = () => {
+        var params = this.props.navigation.state.params;
+        if(params){
+            if(params.userId){
+                this.setState({
+                    friendId: params.userId
+                });
+
+                alert(this.state.friendId);
+                this.fetchInfo(params.userId);
+                this.loadFeed(params.userId);
+
+            }
+        }
+
     }
 
     timePlural = (s) => {
@@ -65,6 +78,13 @@ class notification extends React.Component {
         return Math.floor(seconds)+' Second'+this.timePlural(seconds)
     }
 
+    s4 = () => {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
+
+    uniqueId = () => {
+        return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4();
+    }
 
     fetchInfo = (userId) => {
 
@@ -141,26 +161,7 @@ class notification extends React.Component {
 
     }
 
-    componentDidMount = () => {
 
-        var that = this;
-        f.auth().onAuthStateChanged(function (user) {
-            if(user){
-                that.setState({
-                    loggedin: true,
-                });
-                var userId = f.auth().currentUser.uid;
-                that.fetchInfo(userId);
-            }else{
-                that.setState({
-                    loggedin: false
-                })
-
-
-            }
-        })
-
-    }
     componentDidMount = () => {
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
@@ -168,6 +169,7 @@ class notification extends React.Component {
                 that.setState({
                     loggedin: true,
                 });
+                that.check()
                 var userId = f.auth().currentUser.uid;
                 database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
                     const exist = (snapshot.val() != null);
@@ -193,6 +195,47 @@ class notification extends React.Component {
             }
         })
 
+    }
+
+    sendMessage = () => {
+        var that = this;
+        var date = Date.now();
+        var posted = Math.floor(date / 1000 )
+        var userId = f.auth().currentUser.uid;
+        database.ref('users').child('userChat').child(this.state.friendId).once('value').then(function (snapshot) {
+            const exist = (snapshot.val() != null);
+            if(exist){
+                data = snapshot.val();
+                that.setState({
+                    owner:data
+                });
+            } else {
+                var chatUserf = {
+                    lastMessage:that.state.newMessage,
+                    posted:posted,
+                    friend:that.state.friendId
+                }
+
+                var chatUser = {
+                    chatId:that.state.newChatId,
+                    lastMessage:that.state.newMessage,
+                    posted:posted,
+                    friend:userId
+                }
+
+
+                var newMessage = {
+                    sendby:userId,
+                    message:that.state.newMessage,
+                    posted:posted
+
+                }
+                database.ref('/users/'+userId+'/userChats/'+that.state.newChatId).set(chatUserf);
+                database.ref('/users/'+that.state.friendId+'/userChats/'+that.state.newChatId).set(chatUser);
+                database.ref('/chatMessages/'+that.state.newChatId+'/'+that.state.newMessageId).set(newMessage);
+
+            }
+        }).catch()
     }
 
     render() {
@@ -260,9 +303,9 @@ class notification extends React.Component {
                                        editable={true}
                                        multiline={false}
                                        maxlength={100}
-                                       onChangeText={(text) => this.setState({newComment:text}) }
+                                       onChangeText={(text) => this.setState({newMessage:text}) }
                             />
-                            <TouchableOpacity onPress={this.postComment} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5}}>
+                            <TouchableOpacity onPress={this.sendMessage} style={{alignSelf:'center' , marginHorizontal:'auto', width:90, backgroundColor:'purple' , borderRadius:5}}>
                                 <Text style={{textAlign:'center', color:'white' , fontSize:14}}>Send</Text>
                             </TouchableOpacity>
                         </View>

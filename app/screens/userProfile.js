@@ -195,7 +195,7 @@ class userProfile extends React.Component {
                                 </View>
 
                                 <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
-                                    <TouchableOpacity >
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
                                         <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Chat</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={this.logout}>

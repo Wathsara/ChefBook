@@ -129,7 +129,7 @@ class notification extends React.Component {
                         </View>
                         <View style={styles.userDetailArea}>
                             <View style={styles.userNameRow}>
-                                <TouchableOpacity style={{flexDirection:'row', justifyContent:'space-between'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
+                                <TouchableOpacity style={{flexDirection:'row', justifyContent:'space-between' , flexWrap:'wrap'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
                                     <Text style={styles.nameText}>{items.author}</Text>
                                     <Text style={{alignSelf: 'flex-end'}}>{this.timeConvertor(items.posted)}</Text>
                                 </TouchableOpacity>
