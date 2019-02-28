@@ -23,6 +23,7 @@ class userProfile extends React.Component {
     }
     check = () => {
         var params = this.props.navigation.state.params;
+        var id = f.auth().currentUser.uid;
         if(params){
             if(params.userId){
                 this.setState({
@@ -30,6 +31,17 @@ class userProfile extends React.Component {
                 });
                 this.fetchInfo(params.userId);
                 this.loadFeed(params.userId);
+                var that=this;
+                database.ref('users').child(id).child('following').child(params.userId).on('value' , (function (snapshot) {
+                    if(snapshot.val()){
+                        that.setState({
+                            following:true
+                        })
+                    }
+
+                }),function (errorObject) {
+                    console.log("The read failed: " + errorObject.code);
+                });
 
             }
         }
@@ -157,6 +169,21 @@ class userProfile extends React.Component {
 
     componentDidMount = () => {
         this.check();
+        var that = this;
+        f.auth().onAuthStateChanged(function (user) {
+            if(user){
+                that.setState({
+                    loggedin: true,
+                });
+
+            }else{
+                that.setState({
+                    loggedin: false
+                })
+
+
+            }
+        })
 
     }
 
@@ -236,7 +263,7 @@ class userProfile extends React.Component {
                                 </View>
 
                                 <View>
-                                    {this.state.userId != f.auth().currentUser.uid ? (
+                                    {this.state.userId != f.auth().currentUser.uid && this.state.loaded==true && this.state.following != true ? (
 
                                         <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
                                             <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
