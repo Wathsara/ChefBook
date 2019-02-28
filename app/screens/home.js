@@ -57,7 +57,7 @@ class home extends React.Component {
 
     }
 
-    loadFeed = async () => {
+    loadFeed = () => {
         this.setState({
             refresh:true,
             photo: []
@@ -233,6 +233,20 @@ class home extends React.Component {
         }).catch((error) => console.log(error))
     }
 
+    likeCount = (rid) => {
+        database.ref('recepies').child(rid).child('yummies').on('value' , (function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if(exsist){
+                var data = snapshot.val();
+                console.log(data)
+                return (data);
+            }
+        }), function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
+
+    }
+
     checkLike = (recipe) => {
         var that = this;
         database.ref('likes').child(recipe).child('total').on('value' , (function (snapshot) {
@@ -376,7 +390,7 @@ class home extends React.Component {
                                             <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {this.insertYummy(item.id)}}>
                                                 <Image source={{uri:'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png'}} style={{width:30 , height:30,borderRadius:15}}/>
                                                 <Image source={{uri:'https://www.svgimages.com/svg-image/s5/yummy-smiley-icon-256x256.png'}} style={{width:30 , height:30 ,  borderRadius:15}}/>
-                                                <Text>{item.yummy} Yummies</Text>
+                                                <Text>{ this.likeCount(item.id) } Yummies</Text>
                                             </TouchableOpacity>
                                         </View>
                                         <View>
@@ -390,7 +404,7 @@ class home extends React.Component {
                                         <View>
                                             <View style={{flexDirection:'row'}} >
                                                 <Image source={{uri:'https://www.svgimages.com/svg-image/s5/yummy-smiley-icon-256x256.png'}} style={{width:30 , height:30 ,  borderRadius:15}}/>
-                                                <Text>{item.yummy} Yummies</Text>
+                                                <Text>{ this.likeCount(item.id) } yummies</Text>
                                             </View>
                                         </View>
                                         <View>

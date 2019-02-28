@@ -13,7 +13,7 @@ import recipe from './app/screens/recipe.js';
 import chat from './app/screens/chat.js';
 import message from './app/screens/message.js';
 import { Icon , Badge } from 'react-native-elements';
-// import foodFind from './app/screens/foodfind.js'
+import foodFind from './app/screens/foodfind.js'
 
 
 
@@ -84,6 +84,14 @@ const TabStack = createBottomTabNavigator(
           )
       },
   },
+    lens: { screen: foodFind ,
+        navigationOptions: {
+            tabBarLabel:"Lens",
+            tabBarIcon: ({ tintColor }) => (
+                <Icon name='ios-camera'   type='ionicon'  color='#517fa4'  />
+            )
+        },
+    },
 // foodFind: { screen: foodFind}
 
   }
@@ -114,9 +122,11 @@ export default class App extends React.Component {
         this.state = {
             notiC:0
         }
-        this.notiCount();
-    }
 
+    }
+    componentWillMount = () => {
+       this.notiCount()
+    }
     notiCount = () => {
         var that = this;
         f.auth().onAuthStateChanged(function (user) {

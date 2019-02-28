@@ -4,6 +4,9 @@
     "slug": "recepies",
     "privacy": "public",
     "sdkVersion": "32.0.0",
+    "packagerOpts": {
+      "assetExts": ["pb", "txt"]
+    },
     "platforms": [
       "ios",
       "android"

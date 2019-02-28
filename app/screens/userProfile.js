@@ -14,7 +14,13 @@ class userProfile extends React.Component {
 
         }
     }
+    s4 = () => {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
 
+    uniqueId = () => {
+        return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4();
+    }
     check = () => {
         var params = this.props.navigation.state.params;
         if(params){
@@ -154,6 +160,41 @@ class userProfile extends React.Component {
 
     }
 
+    follow = () => {
+        var date = Date.now();
+        var posted = Math.floor(date / 1000 )
+
+        var fid = this.state.userId;
+        var fName = this.state.name;
+        var fPic = this.state.avatar;
+        var myId = f.auth().currentUser.uid;
+        var myName = f.auth().currentUser.displayName;
+        var myPic = f.auth().currentUser.photoURL;
+
+        var follower = {
+            name:myName,
+            avatar:myPic
+        }
+
+        var following = {
+            name:fName,
+            avatar: fPic
+        }
+
+        var notification = {
+            author:myName,
+            authorId:myId,
+            posted:posted,
+            avatar:myPic,
+            message:"Followed You",
+        }
+        database.ref('/notifications/'+fid+'/'+this.uniqueId()).set(notification);
+        database.ref('/users/'+myId+'/following/'+fid).set(following);
+        database.ref('/users/'+fid+'/follower/'+myId).set(follower);
+
+
+    }
+
 
 
     render() {
@@ -201,7 +242,7 @@ class userProfile extends React.Component {
                                             <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
                                                 <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Chat</Text>
                                             </TouchableOpacity>
-                                            <TouchableOpacity onPress={this.logout}>
+                                            <TouchableOpacity onPress={this.follow()}>
                                                 <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center' , marginLeft:5}}>Follow</Text>
                                             </TouchableOpacity>
                                         </View>
