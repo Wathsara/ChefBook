@@ -18,14 +18,15 @@ class home extends React.Component {
     }
 
     componentDidMount = () => {
-        this.loadFeed();
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
             if(user){
+
+                var userId = f.auth().currentUser.uid;
                 that.setState({
                     loggedin: true,
+                    userId:userId
                 });
-                var userId = f.auth().currentUser.uid;
                 database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
                     const exist = (snapshot.val() != null);
                     if(exist) data = snapshot.val();
@@ -44,6 +45,7 @@ class home extends React.Component {
 
                     });
                 });
+                that.loadFeed();
 
 
             }else{
@@ -60,45 +62,62 @@ class home extends React.Component {
     loadFeed = () => {
         this.setState({
             refresh:true,
-            photo: []
+            photo:[]
+
 
         });
 
         var that = this;
+
         database.ref('recepies').orderByChild('posted').once('value').then(function (snapshot) {
             const exsist = (snapshot.val() != null);
             if(exsist) {
                 data = snapshot.val();
                 // console.log(data);
-                var photo = that.state.photo;
+
                 for (var photos in data) {
                     let photoO = data[photos];
                     let tempId = photos;
+                    let photo = that.state.photo;
                     database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
-                        const exsist = (snapshot.val() != null);
-                        if (exsist){
+                        const exsisting = (snapshot.val() != null);
+                        if (exsisting){
                             data = snapshot.val();
-                            photo.push({
-                                id: tempId,
-                                url: photoO.image,
-                                fName: photoO.foodName,
-                                author: data.username,
-                                authorPhoto: data.avatar,
-                                authorName: data.name,
-                                posted: photoO.posted,
-                                authorId: photoO.author,
-                                category: photoO.category,
-                                yummy:photoO.yummies
-                            });
+
+                            database.ref('users').child(that.state.userId).child('following').child(photoO.author).once('value').then(function (snapshot) {
+
+                                const exsists = (snapshot.val() != null);
+
+                                if (exsists) {
+                                    photo.push({
+                                        id: tempId,
+                                        url: photoO.image,
+                                        fName: photoO.foodName,
+                                        author: data.username,
+                                        authorPhoto: data.avatar,
+                                        authorName: data.name,
+                                        posted: photoO.posted,
+                                        authorId: photoO.author,
+                                        category: photoO.category,
+                                        yummy: photoO.yummies
+                                    });
+
+                                }
+                                that.setState({
+                                    refresh: false,
+                                    loading: false
+                                });
+                            })
                         }
-                        that.setState({
-                            refresh: false,
-                            loading: false
-                        });
+
+
                     })
+
                 }
+
             }
         })
+
     }
 
     maekOrder = () => {
@@ -172,30 +191,30 @@ class home extends React.Component {
                     database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                         const exsist = (snapshot.val() != null);
                         if(exsist){
-                            let data = snapshot.val();
-                            photo.push({
-                                id:tempId,
-                                url: photoO.image,
-                                fName: photoO.foodName,
-                                author: data.username,
-                                authorPhoto: data.avatar,
-                                authorName: data.name,
-                                posted: photoO.posted,
-                                authorId: photoO.author,
-                                category: photoO.category,
-                                yummy:photoO.yummies
+                            data = snapshot.val();
+                            database.ref('users').child(that.state.userId).child('following').child(photoO.author).once('value').then(function (snapshot) {
+                                const exsists = (snapshot.val() != null);
+                                if (exsists) {
+                                    photo.push({
+                                        id: tempId,
+                                        url: photoO.image,
+                                        fName: photoO.foodName,
+                                        author: data.username,
+                                        authorPhoto: data.avatar,
+                                        authorName: data.name,
+                                        posted: photoO.posted,
+                                        authorId: photoO.author,
+                                        category: photoO.category,
+                                        yummy: photoO.yummies
+                                    });
 
-
-                            });
-                            console.log(photo);
-
+                                }
+                                that.setState({
+                                    refresh: false,
+                                    loading: false
+                                });
+                            })
                         }
-
-                        that.setState({
-                            refresh: false,
-                            loading: false
-                        });
-
                     })
                 }
             }
