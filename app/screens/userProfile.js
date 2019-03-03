@@ -10,7 +10,9 @@ class userProfile extends React.Component {
             loaded: false,
             active: 0,
             photo: [],
-            ploaded: false
+            ploaded: false,
+            follow:[],
+            following:[]
 
         }
     }
@@ -35,7 +37,7 @@ class userProfile extends React.Component {
                 database.ref('users').child(id).child('following').child(params.userId).on('value' , (function (snapshot) {
                     if(snapshot.val()){
                         that.setState({
-                            following:true
+                            followingState:true
                         })
                     }
 
@@ -51,6 +53,7 @@ class userProfile extends React.Component {
     fetchInfo = (userId) => {
 
         var that = this;
+
         database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
             if(exist) data = snapshot.val();
@@ -75,6 +78,53 @@ class userProfile extends React.Component {
                 loaded:true
             });
         })
+
+        database.ref('users').child(userId).child('follower').on('value' , (function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if( exsist) {
+                var data=snapshot.val();
+                console.log(data)
+                var followers = that.state.follow
+                for(var follow in data){
+                    let followObj = data[follow]
+                    followers.push({
+                        name:followObj.name,
+                        avatar:followObj.avatar,
+                        friendId:followObj
+                    });
+                }
+            }else{
+                that.setState({
+                    follow:[]
+                })
+            }
+
+        }),function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
+
+        database.ref('users').child(userId).child('following').on('value' , (function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if( exsist) {
+                var data=snapshot.val();
+                let followings = that.state.following
+                for(var following in data){
+                    let followingObj = data[following]
+                    followings.push({
+                        name:followingObj.name,
+                        avatar:followingObj.avatar,
+                        friendId:followingObj
+                    });
+                }
+            }else{
+                that.setState({
+                    following:[]
+                })
+            }
+
+        }),function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
     }
 
     loadFeed = (uid) => {
@@ -219,7 +269,7 @@ class userProfile extends React.Component {
         database.ref('/users/'+myId+'/following/'+fid).set(following);
         database.ref('/users/'+fid+'/follower/'+myId).set(follower);
         this.setState({
-            following:true
+            followingState:true
         })
 
 
@@ -235,7 +285,7 @@ class userProfile extends React.Component {
         database.ref('/users/'+myId+'/following/'+fid).remove();
         database.ref('/users/'+fid+'/follower/'+myId).remove();
         this.setState({
-            following:false
+            followingState:false
         })
 
     }
@@ -271,17 +321,17 @@ class userProfile extends React.Component {
                                         <Text>Recepies</Text>
                                     </View>
                                     <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center'}}>
-                                        <Text style={{fontSize:18, fontWeight: 'bold' }}>2563</Text>
+                                        <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.follow.length}</Text>
                                         <Text>Followers</Text>
                                     </View>
                                     <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center' }}>
-                                        <Text style={{fontSize:18, fontWeight: 'bold' }}>256</Text>
+                                        <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.following.length}</Text>
                                         <Text>Following</Text>
                                     </View>
                                 </View>
 
                                 <View>
-                                    {this.state.userId != f.auth().currentUser.uid && this.state.loaded==true && this.state.following != true ? (
+                                    {this.state.userId != f.auth().currentUser.uid && this.state.loaded==true && this.state.followingState != true ? (
 
                                         <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
                                             <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
@@ -293,7 +343,7 @@ class userProfile extends React.Component {
                                         </View>
                                         ):(
                                         <View>
-                                            {this.state.following != false ? (
+                                            {this.state.followingState != false && this.state.userId != f.auth().currentUser.uid ? (
                                                 <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
                                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
                                                         <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Chat</Text>

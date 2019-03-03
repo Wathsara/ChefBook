@@ -11,7 +11,9 @@ class profile extends React.Component {
             loggedin: false,
             active: 0,
             photo: [],
-            loaded: false
+            loaded: false,
+            follow:[],
+            following:[]
         }
 
 
@@ -47,6 +49,52 @@ class profile extends React.Component {
                             }
 
                         })
+                        database.ref('users').child(userId).child('follower').on('value' , (function (snapshot) {
+                            const exsist = (snapshot.val() != null);
+                            if( exsist) {
+                                var data=snapshot.val();
+                                console.log(data)
+                                var followers = that.state.follow
+                                for(var follow in data){
+                                    let followObj = data[follow]
+                                    followers.push({
+                                        name:followObj.name,
+                                        avatar:followObj.avatar,
+                                        friendId:followObj
+                                    });
+                                }
+                            }else{
+                                that.setState({
+                                    follow:[]
+                                })
+                            }
+
+                        }),function (errorObject) {
+                            console.log("The read failed: " + errorObject.code);
+                        });
+
+                        database.ref('users').child(userId).child('following').on('value' , (function (snapshot) {
+                            const exsist = (snapshot.val() != null);
+                            if( exsist) {
+                                var data=snapshot.val();
+                                let followings = that.state.following
+                                for(var following in data){
+                                    let followingObj = data[following]
+                                    followings.push({
+                                        name:followingObj.name,
+                                        avatar:followingObj.avatar,
+                                        friendId:followingObj
+                                    });
+                                }
+                            }else{
+                                that.setState({
+                                    following:[]
+                                })
+                            }
+
+                        }),function (errorObject) {
+                            console.log("The read failed: " + errorObject.code);
+                        });
                         that.loadFeed();
                     } else {
                         let us = f.auth().currentUser;
@@ -70,6 +118,52 @@ class profile extends React.Component {
                                 avatar: data,
                             });
                         }).catch((error) => console.log(error))
+                        database.ref('users').child(userId).child('follower').on('value' , (function (snapshot) {
+                            const exsist = (snapshot.val() != null);
+                            if( exsist) {
+                                var data=snapshot.val();
+                                console.log(data)
+                                var followers = that.state.follow
+                                for(var follow in data){
+                                    let followObj = data[follow]
+                                    followers.push({
+                                        name:followObj.name,
+                                        avatar:followObj.avatar,
+                                        friendId:followObj
+                                    });
+                                }
+                            }else{
+                                that.setState({
+                                    follow:[]
+                                })
+                            }
+
+                        }),function (errorObject) {
+                            console.log("The read failed: " + errorObject.code);
+                        });
+
+                        database.ref('users').child(userId).child('following').on('value' , (function (snapshot) {
+                            const exsist = (snapshot.val() != null);
+                            if( exsist) {
+                                var data=snapshot.val();
+                                let followings = that.state.following
+                                for(var following in data){
+                                    let followingObj = data[following]
+                                    followings.push({
+                                        name:followingObj.name,
+                                        avatar:followingObj.avatar,
+                                        friendId:followingObj
+                                    });
+                                }
+                            }else{
+                                that.setState({
+                                    following:[]
+                                })
+                            }
+
+                        }),function (errorObject) {
+                            console.log("The read failed: " + errorObject.code);
+                        });
                         that.loadFeed();
                     }
 
@@ -268,11 +362,11 @@ class profile extends React.Component {
                                     <Text>Recepies</Text>
                                 </View>
                                 <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center'}}>
-                                    <Text style={{fontSize:18, fontWeight: 'bold' }}>2563</Text>
+                                    <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.follow.length}</Text>
                                     <Text>Followers</Text>
                                 </View>
                                 <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center' }}>
-                                    <Text style={{fontSize:18, fontWeight: 'bold' }}>256</Text>
+                                    <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.following.length}</Text>
                                     <Text>Following</Text>
                                 </View>
                             </View>
