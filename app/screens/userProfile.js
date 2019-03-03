@@ -218,7 +218,25 @@ class userProfile extends React.Component {
         database.ref('/notifications/'+fid+'/'+this.uniqueId()).set(notification);
         database.ref('/users/'+myId+'/following/'+fid).set(following);
         database.ref('/users/'+fid+'/follower/'+myId).set(follower);
+        this.setState({
+            following:true
+        })
 
+
+    }
+
+    unfollow = () => {
+
+        var fid = this.state.userId;
+       var myId = f.auth().currentUser.uid;
+
+
+
+        database.ref('/users/'+myId+'/following/'+fid).remove();
+        database.ref('/users/'+fid+'/follower/'+myId).remove();
+        this.setState({
+            following:false
+        })
 
     }
 
@@ -269,12 +287,26 @@ class userProfile extends React.Component {
                                             <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
                                                 <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Chat</Text>
                                             </TouchableOpacity>
-                                            <TouchableOpacity onPress={this.follow()}>
+                                            <TouchableOpacity onPress={this.follow}>
                                                 <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center' , marginLeft:5}}>Follow</Text>
                                             </TouchableOpacity>
                                         </View>
                                         ):(
-                                            <View/>
+                                        <View>
+                                            {this.state.following != false ? (
+                                                <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
+                                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
+                                                        <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Chat</Text>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity onPress={this.unfollow}>
+                                                        <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center' , marginLeft:5}}>UnFollow</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                ):(
+                                                    <View/>
+
+                                            )}
+                                        </View>
                                         )}
                                 </View>
 
