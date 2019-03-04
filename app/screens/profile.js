@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Image , TouchableOpacity , Dimensions , ScrollView } from 'react-native';
+import { Text, View, Image , TouchableOpacity , Dimensions , ScrollView, TouchableHighlight } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 import { Icon,SocialIcon  } from 'react-native-elements';
 var {width , height} = Dimensions.get('window');
@@ -60,7 +60,7 @@ class profile extends React.Component {
                                     followers.push({
                                         name:followObj.name,
                                         avatar:followObj.avatar,
-                                        friendId:followObj
+                                        friend:followObj.friend
                                     });
                                 }
                             }else{
@@ -83,7 +83,7 @@ class profile extends React.Component {
                                     followings.push({
                                         name:followingObj.name,
                                         avatar:followingObj.avatar,
-                                        friendId:followingObj
+                                        friend:followingObj.friend
                                     });
                                 }
                             }else{
@@ -127,9 +127,9 @@ class profile extends React.Component {
                                 for(var follow in data){
                                     let followObj = data[follow]
                                     followers.push({
+                                        friend:followObj.friend,
                                         name:followObj.name,
                                         avatar:followObj.avatar,
-                                        friendId:followObj
                                     });
                                 }
                             }else{
@@ -150,9 +150,9 @@ class profile extends React.Component {
                                 for(var following in data){
                                     let followingObj = data[following]
                                     followings.push({
-                                        name:followingObj.name,
-                                        avatar:followingObj.avatar,
-                                        friendId:followingObj
+                                        friend: followingObj.friend,
+                                        name: followingObj.name,
+                                        avatar: followingObj.avatar,
                                     });
                                 }
                             }else{
@@ -350,40 +350,37 @@ class profile extends React.Component {
 
                     <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5}}>
                         <View>
-                            <Image source={{uri: this.state.avatar}} style={{width:100 , height:100 , borderRadius:50}}/>
+                            <Image source={{uri: this.state.avatar}} style={{width:50 , height:50 , borderRadius:25}}/>
                         </View>
                         <View style={{flexDirection:'column', height:45}}>
                             <View style={{justifyContent:'center' , alignItems:'center'}}>
                                 <Text style={{fontSize:18,fontWeight: 'bold' }}>{ this.state.name}</Text>
                             </View>
-                            <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5, marginVertical:25}}>
-                                <View style={{marginLeft:5 , justifyContent:'center' , alignItems:'center'}}>
-                                    <Text style={{fontSize:18,fontWeight: 'bold' }}>{ this.state.photo.length }</Text>
-                                    <Text>Recepies</Text>
-                                </View>
-                                <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center'}}>
-                                    <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.follow.length}</Text>
-                                    <Text>Followers</Text>
-                                </View>
-                                <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center' }}>
-                                    <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.following.length}</Text>
-                                    <Text>Following</Text>
-                                </View>
-                            </View>
-
                             <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
-                                <TouchableOpacity >
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('following' , { followingList : this.state.following})}>
                                     <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Edit Profile</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={this.logout}>
                                     <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center' , marginLeft:5}}>Logout</Text>
                                 </TouchableOpacity>
                             </View>
-
-
                         </View>
-
-
+                    </View>
+                    <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5, marginVertical:25}}>
+                        <TouchableOpacity style={{marginLeft:5 , justifyContent:'center' , alignItems:'center'}}>
+                            <Text style={{fontSize:18,fontWeight: 'bold' }}>{ this.state.photo.length }</Text>
+                            <Text>Recepies</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={ () => this.props.navigation.navigate('follow' , { followList : this.state.follow})} style={{marginLeft:15 , justifyContent:'center' , alignItems:'center' }}  >
+                            <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.follow.length}</Text>
+                            <Text>Followers</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('following' , { followingList : this.state.following})} >
+                            <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center' }}>
+                                <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.following.length}</Text>
+                                <Text>Following</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                     <View style={{flex:1, marginTop:20}}>
                         <View style={{flexDirection:'row', justifyContent:'space-around' , height:15 , alignItems:'center'}}>

@@ -13,7 +13,9 @@ import recipe from './app/screens/recipe.js';
 import chat from './app/screens/chat.js';
 import message from './app/screens/message.js';
 import { Icon , Badge } from 'react-native-elements';
-import foodFind from './app/screens/foodfind.js'
+import foodFind from './app/screens/foodfind.js';
+import follow from './app/screens/follow.js';
+import following from './app/screens/following.js';
 
 
 
@@ -104,7 +106,9 @@ const MainStack = createStackNavigator(
         userProfile : { screen : userProfile },
         comment : { screen : comment},
         recipe : { screen : recipe},
-        message : { screen : message}
+        message : { screen : message},
+        follow : {screen : follow},
+        following : {screen : following}
 
     },
     {

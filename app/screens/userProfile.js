@@ -250,12 +250,14 @@ class userProfile extends React.Component {
 
         var follower = {
             name:myName,
-            avatar:myPic
+            avatar:myPic,
+            friend: myId,
         }
 
         var following = {
             name:fName,
-            avatar: fPic
+            avatar: fPic,
+            friend : fid,
         }
 
         var notification = {
