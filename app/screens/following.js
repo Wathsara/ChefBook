@@ -51,8 +51,8 @@ class following extends React.Component {
     }
 
     renderFollowers = () => {
-        const filteredEmails = this.state.followingList.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
-        return filteredEmails.map((items , index) => {
+        const filtered = this.state.followingList.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
+        return filtered.map((items , index) => {
             {console.log(items.image)}
             return (
                 <View key={items.name} style={styles.cardContainer}>

@@ -6,7 +6,8 @@ import {
 import {database, f} from "../../config/config";
 import { SocialIcon } from 'react-native-elements';
 import PTRView from 'react-native-pull-to-refresh';
-
+import SearchInput, { createFilter } from 'react-native-search-filter';
+const KEYS_TO_FILTERS = ['name'];
 
 class follow extends React.Component {
     constructor(props){
@@ -17,9 +18,13 @@ class follow extends React.Component {
             loggedin: false,
             commentsList: [],
             loaded: false,
+            searchTerm: "",
 
 
         }
+    }
+    searchUpdated(term) {
+        this.setState({ searchTerm: term })
     }
     _refresh = () => {
         return new Promise((resolve) => {
@@ -44,10 +49,11 @@ class follow extends React.Component {
     }
 
     renderFollowers = () => {
-        return this.state.followList.map((items , index) => {
+        const filtered = this.state.followList.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
+        return filtered.map((items , index) => {
             {console.log(items.image)}
             return (
-                <View key={index} style={styles.cardContainer}>
+                <View key={items.name} style={styles.cardContainer}>
                     <View style={styles.cardHedear}>
                         <View style={styles.profilePicArea}>
                             <TouchableOpacity  onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.friend})}>
@@ -117,7 +123,7 @@ class follow extends React.Component {
                     <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
                         <Text style={{fontWeight:'bold', padding:10 , fontSize:14 , width:100}}>Back</Text>
                     </TouchableOpacity>
-                    <Text style = {{fontSize: 20}}>Comments</Text>
+                    <Text style = {{fontSize: 20}}>Followers</Text>
                     <Text style = {{fontSize: 18, width:100}}></Text>
                 </View>
                 <PTRView onRefresh={this._refresh} >
@@ -126,10 +132,15 @@ class follow extends React.Component {
                             <View style={{flex:1}}>
                                 {this.state.commentsList.length ==0 ? (
                                     <View style={{flex: 1 , justifyContent:'center', alignItems:'center'}}>
-                                        <Text>No comments..</Text>
+                                        <Text>No Followers..</Text>
                                     </View>
                                 ) : (
                                     <View style={styles.container}>
+                                        <SearchInput
+                                            onChangeText={(term) => { this.searchUpdated(term) }}
+                                            style={styles.searchInput}
+                                            placeholder="Search your Followers"
+                                        />
                                         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
                                             {this.renderFollowers()}
                                         </ScrollView>
@@ -278,6 +289,14 @@ const styles = StyleSheet.create({
         alignItems:'center',
         paddingBottom:10
     },
+    searchInput:{
+        padding: 8,
+        borderColor: '#CCC',
+        borderWidth: 1,
+        width:340,
+        backgroundColor:'#fff',
+        marginTop:3
+    }
 
 });
 export default follow;
