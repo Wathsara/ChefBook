@@ -4,9 +4,10 @@ import {
     ScrollView, StyleSheet , FlatList
 } from 'react-native';
 import {database, f} from "../../config/config";
+import SearchInput, { createFilter } from 'react-native-search-filter';
 import { SocialIcon } from 'react-native-elements';
 import PTRView from 'react-native-pull-to-refresh';
-
+const KEYS_TO_FILTERS = ['name'];
 class following extends React.Component {
     constructor(props){
         super(props);
@@ -22,6 +23,10 @@ class following extends React.Component {
 
         }
     }
+    searchUpdated(term) {
+        this.setState({ searchTerm: term })
+    }
+
     _refresh = () => {
         return new Promise((resolve) => {
             setTimeout(()=>{resolve()}, 2000)
@@ -46,10 +51,11 @@ class following extends React.Component {
     }
 
     renderFollowers = () => {
-        return this.state.followingList.map((items , index) => {
+        const filteredEmails = this.state.followingList.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
+        return filteredEmails.map((items , index) => {
             {console.log(items.image)}
             return (
-                <View key={index} style={styles.cardContainer}>
+                <View key={items.name} style={styles.cardContainer}>
                     <View style={styles.cardHedear}>
                         <View style={styles.profilePicArea}>
                             <TouchableOpacity  onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.friend})}>
@@ -113,6 +119,7 @@ class following extends React.Component {
     }
 
     render() {
+
         return (
 
             <View style={{flex: 1 , backgroundColor:'#e8e8e8'}}>
@@ -133,6 +140,11 @@ class following extends React.Component {
                                     </View>
                                 ) : (
                                     <View style={styles.container}>
+                                        <SearchInput
+                                            onChangeText={(term) => { this.searchUpdated(term) }}
+                                            style={styles.searchInput}
+                                            placeholder="Search your Followings"
+                                        />
                                         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
                                             { this.renderFollowers() }
                                         </ScrollView>
@@ -279,6 +291,14 @@ const styles = StyleSheet.create({
         alignItems:'center',
         paddingBottom:10
     },
+    searchInput:{
+        padding: 8,
+        borderColor: '#CCC',
+        borderWidth: 1,
+        width:340,
+        backgroundColor:'#fff',
+        marginTop:3
+    }
 
 });
 export default following;

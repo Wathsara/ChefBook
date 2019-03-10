@@ -50,6 +50,7 @@ class profile extends React.Component {
 
                         })
                         database.ref('users').child(userId).child('follower').on('value' , (function (snapshot) {
+
                             const exsist = (snapshot.val() != null);
                             if( exsist) {
                                 var data=snapshot.val();
@@ -74,6 +75,7 @@ class profile extends React.Component {
                         });
 
                         database.ref('users').child(userId).child('following').on('value' , (function (snapshot) {
+
                             const exsist = (snapshot.val() != null);
                             if( exsist) {
                                 var data=snapshot.val();
@@ -143,6 +145,7 @@ class profile extends React.Component {
                         });
 
                         database.ref('users').child(userId).child('following').on('value' , (function (snapshot) {
+
                             const exsist = (snapshot.val() != null);
                             if( exsist) {
                                 var data=snapshot.val();
