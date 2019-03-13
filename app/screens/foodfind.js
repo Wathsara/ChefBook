@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, View,Image,TouchableHighlight,ActivityIndicator,Button,Dimensions } from 'react-native';
+import { ImageBackground, TouchableOpacity, Text, View, Image, ScrollView, ActivityIndicator, Button, Dimensions } from 'react-native';
 import { TfImageRecognition, TensorFlow } from 'react-native-tensorflow';
 import { Camera, Permissions } from 'expo';
-// import { RNCamera } from 'react-native-camera';
 class foodfind extends React.Component {
 
     constructor() {
@@ -11,178 +10,58 @@ class foodfind extends React.Component {
 
         this.state = {
             result: "",
-            hasCameraPermission: null,
-            type: Camera.Constants.Type.back,
-            identifedAs: '',
             loading: false
         }
     }
 
     componentDidMount() {
-        // this.recognizeImage()
-        this.permissionCam()
-    }
-
-    takePicture = async function(){
-
-
-
-            // Pause the camera's preview
-            // this.camera.pausePreview();
-
-            // Set the activity indicator
-            // this.setState((previousState, props) => ({
-            //     loading: true
-            // }));
-
-            // Set options
-            const options = {
-                base64: true
-            };
-
-            // Get the base64 version of the image
-            let data = await this.camera.takePictureAsync();
-            // console.log(data);
-            // let data = require('../data/f.png');
-
-
-            // Get the identified image
-            this.identifyImage(data);
 
     }
 
-    identifyImage(imageData){
-
-        // Initialise Clarifai api
-        const Clarifai = require('clarifai');
-
-        const app = new Clarifai.App({
-            apiKey: '675aa832ac894ab4a834bf92c83f1611'
-        });
-        app.models.predict("bd367be194cf45149e75f01d59f77ba7", imageData).then(
-            function(response) {
-                // do something with response
-                var concepts = response.outputs[0].data.concepts[0].name;
-                alert(concepts)
-            },
-            function(err) {
-                // there was an error
-            }
-        );
-        // app.models.initModel({id: Clarifai.GENERAL_MODEL, version: "bd367be194cf45149e75f01d59f77ba7"})
-        //     .then(generalModel => {
-        //         return generalModel.predict("https://images-gmi-pmc.edge-generalmills.com/7ed1e04a-7ac6-4ca2-aa74-6c0938069062.jpg");
-        //     })
-        //     .then(response => {
-        //         var concepts = response.outputs[0].data.concepts[0].name;
-        //         alert(concepts)
-        //     });
-
-        // Identify the image
-        // app.models.predict(Clarifai.GENERAL_MODEL, {base64: imageData})
-        //     .then((response) => this.displayAnswer(response.outputs[0].data.concepts[0].name)
-        //         .catch((err) => alert(err))
-        //     );
-
-    }
-
-    displayAnswer(identifiedImage){
-
-        // Dismiss the acitivty indicator
-        alert("image is"+identifiedImage);
-        this.setState({
-            identifedAs:identifiedImage,
-        });
-        alert("image is"+identifiedImage);
-
-        // Show an alert with the answer on
-        Alert.alert(
-            this.state.identifedAs,
-            '',
-            { cancelable: false }
-        )
-
-        // Resume the preview
-        this.camera.resumePreview();
-    }
-
-    async permissionCam() {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA);
-        this.setState({ hasCameraPermission: status === 'granted' });
-    }
-
-    async recognizeImage() {
-
-        // try {
-        //     const tfImageRecognition =  new TfImageRecognition({
-        //         model,
-        //         labels
-        //     })
-        //
-        //
-        //
-        //     const results = await tfImageRecognition.recognize({
-        //         image: this.image
-        //     })
-        //
-        //     const resultText = `Name: ${results[0].name} - Confidence: ${results[0].confidence}`
-        //     this.setState({result: resultText})
-        //
-        //     await tfImageRecognition.close()
-        // } catch(err) {
-        //     console.log(err);
-        // }
-    }
 
     render() {
 
-          return (
-                <Camera ref={ref => {this.camera = ref;}} style={styles.preview}>
-                    <ActivityIndicator size="large" style={styles.loadingIndicator} color="#fff" animating={this.state.loading}/>
-                    <TouchableOpacity style={styles.captureButton} disabled={this.props.buttonDisabled} onPress={this.takePicture.bind(this)}>
-                        <Text>capture</Text>
-                    </TouchableOpacity>
-                </Camera>
+        return (
+            <View style={{ flex: 1 }}>
+                <View style={{ height: 70, paddingTop: 30, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 24, color: '#ffffff' }}>Search</Text>
+                </View>
 
-            )
+                <ScrollView>
+                    <View style={{ flexDirection: 'column' }}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe')} style={{marginVertical:1}}>
+                            <ImageBackground source={{ uri: 'https://flavorverse.com/wp-content/uploads/2017/12/Afghan-Foods.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover' }}>
+                                <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>Find Food</Text>
+                                </ImageBackground>
+                            </ImageBackground>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe')} style={{marginVertical:1}}>
+                            <ImageBackground source={{ uri: 'https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/02/24/17/chef.jpg?w968h681' }} style={{ height: 275, width: '100%', resizeMode: 'cover' }}>
+                                <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>Find Chefs</Text>
+                                </ImageBackground>
+                            </ImageBackground>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe')} style={{marginVertical:1}}>
+                            <ImageBackground source={{ uri: 'https://ak1.picdn.net/shutterstock/videos/23368831/thumb/1.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover' }}>
+                                <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>Find recipe By Image</Text>
+                                </ImageBackground>
+                            </ImageBackground>
+                        </TouchableOpacity>
+
+                    </View>
+                </ScrollView>
+            </View>
+
+        )
 
 
     }
 
 }
-const styles = StyleSheet.create({
-    captureButton: {
-        marginBottom:30,
-        width:160,
-        borderRadius:10,
-        backgroundColor: "white",
-    },
-    preview: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        height: Dimensions.get('window').height,
-        width: Dimensions.get('window').width,
-    },
-    loadingIndicator: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
-    results: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
-    image: {
-        width: 150,
-        height: 100
-    },
-});
+
 export default foodfind;
