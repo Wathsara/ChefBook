@@ -103,7 +103,7 @@ class discover extends React.Component {
                                 authorId: photoO.author,
                                 category: photoO.category,
                                 yummy: photoO.yummies,
-                                commentCount:count
+                                commentCount: count
                             });
                         }
                         that.setState({
@@ -229,7 +229,7 @@ class discover extends React.Component {
         })
     }
 
-    insertYummy = (rId , category) => {
+    insertYummy = (rId, category) => {
         var that = this;
         database.ref('recepies').child(rId).child('yummies').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
@@ -241,18 +241,20 @@ class discover extends React.Component {
                     name: f.auth().currentUser.displayName
                 }
                 database.ref('recepies').child(rId).update({ yummies: newD });
+                database.ref('/likes/' + rId + '/' + userId).set(likeD);
                 database.ref(category).child(rId).update({ yummies: newD });
 
 
             } else {
                 let userId = f.auth().currentUser.uid;
-                database.ref('recepies').child(rId).update({ yummies: 1 });
-                database.ref('/likes/' + rId).update({ yummies: newD });
+                let data = snapshot.val();
+                let newD = data + 1;
                 likeD = {
                     name: f.auth().currentUser.displayName
                 }
                 database.ref('recepies').child(rId).update({ yummies: newD });
                 database.ref('/likes/' + rId + '/' + userId).set(likeD);
+                database.ref(category).child(rId).update({ yummies: newD });
             }
 
         }).catch((error) => console.log(error))
@@ -411,7 +413,7 @@ class discover extends React.Component {
                                                         <Text style={{ fontSize: 20, color: 'white', textAlign: 'center' }}>#{item.category}</Text>
                                                         <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>
                                                             <View>
-                                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(item.id , item.category) }}>
+                                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(item.id, item.category) }}>
                                                                     <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
                                                                     <Badge value={item.yummy} status="success" />
                                                                 </TouchableOpacity>
