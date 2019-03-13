@@ -34,37 +34,21 @@ class searchChefs extends React.Component {
         });
     }
 
-    check = async () => {
-
-        var params = this.props.navigation.state.params;
-
-        if (params) {
-            if (params.followingList) {
-                this.setState({
-                    followingList: params.followingList,
-                    loaded: true
-                });
-                console.log(params.followingList)
-            }
-        }
-
-    }
-
-    renderFollowers = () => {
-        const filtered = this.state.followingList.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
+    renderChefs = () => {
+        const filtered = this.state.chefList.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
         return filtered.map((items, index) => {
             { console.log(items.image) }
             return (
                 <View key={items.name} style={styles.cardContainer}>
                     <View style={styles.cardHedear}>
                         <View style={styles.profilePicArea}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', { userId: items.friend })}>
-                                <Image style={styles.userImage} source={{ uri: items.avatar }} />
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', { userId: items.id })}>
+                                <Image style={styles.userImage} source={{ uri: items.url }} />
                             </TouchableOpacity>
                         </View>
                         <View style={styles.userDetailArea}>
                             <View style={styles.userNameRow}>
-                                <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }} onPress={() => this.props.navigation.navigate('userProfile', { userId: items.friend })}>
+                                <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }} onPress={() => this.props.navigation.navigate('userProfile', { userId: items.id })}>
                                     <Text style={styles.nameText}>{items.name}</Text>
                                 </TouchableOpacity>
                             </View>
@@ -77,9 +61,7 @@ class searchChefs extends React.Component {
 
     }
 
-    componentDidMount = () => {
-        this.check()
-
+    componentDidMount = () => {        
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
             if (user) {
@@ -116,37 +98,30 @@ class searchChefs extends React.Component {
             }
         })
 
-        // var that = this;
-        // database.ref('recepies').orderByChild('posted').once('value').then(function (snapshot) {
-        //     const exsist = (snapshot.val() != null);
-        //     if (exsist) {
-        //         data = snapshot.val();
-        //         // console.log(data);
-        //         var chefList = that.state.chefList;
-        //         for (var photos in data) {
-        //             let photoO = data[photos];
-        //             let tempId = photos;                    
-        //             chefList.push({
-        //                 id: tempId,
-        //                 url: photoO.image,
-        //                 fName: photoO.foodName,
-        //                 author: data.username,
-        //                 authorPhoto: data.avatar,
-        //                 authorName: data.name,
-        //                 posted: photoO.posted,
-        //                 authorId: photoO.author,
-        //                 category: photoO.category,
-        //                 yummy: photoO.yummies
-        //             });
+        var that = this;
+        database.ref('users').orderByChild('posted').once('value' , (function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if (exsist) {
+                data = snapshot.val();
+                // console.log(data);
+                var chefList = that.state.chefList;
+                for (var photos in data) {
+                    let photoO = data[photos];
+                    let tempId = photos;                    
+                    chefList.push({
+                        id: tempId,
+                        url: photoO.avatar,
+                        name: photoO.name                        
+                    });
 
-        //             that.setState({
-        //                 refresh: false,
-        //                 loading: false
-        //             });
-
-        //         }
-        //     }
-        // })
+                }
+                that.setState({
+                    loaded:true
+                })
+            }
+        }), function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
 
     }
 
@@ -166,9 +141,9 @@ class searchChefs extends React.Component {
                     <View style={{ flex: 1 }}>
                         {this.state.loaded == true ? (
                             <View style={{ flex: 1 }}>
-                                {this.state.followingList.length == 0 ? (
+                                {this.state.chefList.length == 0 ? (
                                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text>No Followings..</Text>
+                                        <Text>No Chefs..</Text>
                                     </View>
                                 ) : (
                                         <View style={styles.container}>
@@ -178,7 +153,7 @@ class searchChefs extends React.Component {
                                                 placeholder="Search your Followings"
                                             />
                                             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-                                                {this.renderFollowers()}
+                                                {this.renderChefs()}
                                             </ScrollView>
                                         </View>
                                     )}
@@ -186,7 +161,7 @@ class searchChefs extends React.Component {
                         ) : (
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                     <ActivityIndicator size="large" color="#0000ff" />
-                                    <Text>Loading Followings..</Text>
+                                    <Text>Loading Chefs..</Text>
                                 </View>
                             )}
 
