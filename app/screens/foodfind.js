@@ -29,7 +29,7 @@ class foodfind extends React.Component {
 
                 <ScrollView>
                     <View style={{ flexDirection: 'column' }}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe')} style={{marginVertical:1}}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('searchFood')} style={{marginVertical:1}}>
                             <ImageBackground source={{ uri: 'https://flavorverse.com/wp-content/uploads/2017/12/Afghan-Foods.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover' }}>
                                 <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                     <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>Find Food</Text>
@@ -37,7 +37,7 @@ class foodfind extends React.Component {
                             </ImageBackground>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe')} style={{marginVertical:1}}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('searchChefs')} style={{marginVertical:1}}>
                             <ImageBackground source={{ uri: 'https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/02/24/17/chef.jpg?w968h681' }} style={{ height: 275, width: '100%', resizeMode: 'cover' }}>
                                 <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                     <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>Find Chefs</Text>
