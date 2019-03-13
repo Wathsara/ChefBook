@@ -1,13 +1,14 @@
 import React from 'react';
 import {
-    TouchableOpacity, Text, View, TextInput, Image, ActivityIndicator, KeyboardAvoidingView, ToastAndroid,
+    TouchableOpacity, Text, View, ImageBackground, Image, ActivityIndicator, KeyboardAvoidingView, ToastAndroid,
     ScrollView, StyleSheet
 } from 'react-native';
-import {database, f} from "../../config/config";
+import { database, f } from "../../config/config";
 import { SocialIcon } from 'react-native-elements';
 import PTRView from 'react-native-pull-to-refresh';
+import { PacmanIndicator } from 'react-native-indicators';
 class notification extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             refresh: false,
@@ -20,49 +21,49 @@ class notification extends React.Component {
 
     _refresh = () => {
         return new Promise((resolve) => {
-            setTimeout(()=>{resolve()}, 2000)
+            setTimeout(() => { resolve() }, 2000)
             this.componentDidMount();
         });
     }
 
     timePlural = (s) => {
-        if(s==1){
+        if (s == 1) {
             return ' ago'
-        }else{
+        } else {
             return 's ago'
         }
     }
 
     timeConvertor = (timestamp) => {
         var a = new Date(timestamp * 1000);
-        var seconds = Math.floor((new Date() - a)/ 1000 );
+        var seconds = Math.floor((new Date() - a) / 1000);
 
-        var interval = Math.floor(seconds/31536000);
-        if(interval > 1){
-            return interval+' Year'+this.timePlural(interval);
+        var interval = Math.floor(seconds / 31536000);
+        if (interval > 1) {
+            return interval + ' Year' + this.timePlural(interval);
         }
 
-        var interval = Math.floor(seconds/2592000);
-        if(interval > 1){
-            return interval+' Month'+this.timePlural(interval);
+        var interval = Math.floor(seconds / 2592000);
+        if (interval > 1) {
+            return interval + ' Month' + this.timePlural(interval);
         }
 
-        var interval = Math.floor(seconds/86400);
-        if(interval > 1){
-            return interval+' Day'+this.timePlural(interval);
+        var interval = Math.floor(seconds / 86400);
+        if (interval > 1) {
+            return interval + ' Day' + this.timePlural(interval);
         }
 
-        var interval = Math.floor(seconds/3600);
-        if(interval > 1){
-            return interval+' Hour'+this.timePlural(interval);
+        var interval = Math.floor(seconds / 3600);
+        if (interval > 1) {
+            return interval + ' Hour' + this.timePlural(interval);
         }
 
-        var interval = Math.floor(seconds/60);
-        if(interval > 1){
-            return interval+' Minute'+this.timePlural(interval);
+        var interval = Math.floor(seconds / 60);
+        if (interval > 1) {
+            return interval + ' Minute' + this.timePlural(interval);
         }
 
-        return Math.floor(seconds)+' Second'+this.timePlural(seconds)
+        return Math.floor(seconds) + ' Second' + this.timePlural(seconds)
     }
 
 
@@ -73,16 +74,16 @@ class notification extends React.Component {
         });
 
         var that = this;
-        database.ref('notifications').child(userId).orderByChild('posted').on('value' , (function (snapshot) {
+        database.ref('notifications').child(userId).orderByChild('posted').on('value', (function (snapshot) {
             const exsist = (snapshot.val() != null);
             that.setState({
-                notificationsList:[],
-                loaded:true
+                notificationsList: [],
+                loaded: true
             })
-            if(exsist){
+            if (exsist) {
                 let data = snapshot.val();
                 var notificationsList = that.state.notificationsList;
-                for(var noti in data){
+                for (var noti in data) {
                     let notiOBJ = data[noti]
                     notificationsList.push({
                         image: notiOBJ.avatar,
@@ -95,47 +96,47 @@ class notification extends React.Component {
                 }
                 console.log(notificationsList);
                 that.setState({
-                    loaded:true
+                    loaded: true
                 })
-            }else{
+            } else {
                 that.setState({
-                    notificationsList:[],
-                    loaded:true
+                    notificationsList: [],
+                    loaded: true
                 })
             }
-        }),function (errorObject) {
+        }), function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
 
     }
     renderNotifications = () => {
-        this.state.notificationsList.sort((a,b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
+        this.state.notificationsList.sort((a, b) => (a.posted > b.posted) ? 1 : ((b.posted > a.posted) ? -1 : 0));
         this.state.notificationsList.reverse();
 
-        return this.state.notificationsList.map((items , index) => {
-            {console.log(items.image)}
+        return this.state.notificationsList.map((items, index) => {
+            { console.log(items.image) }
             return (
                 <View style={styles.cardContainer}>
                     <View style={styles.cardHedear}>
                         <View style={styles.profilePicArea}>
-                            <TouchableOpacity  onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
-                                <Image style={styles.userImage} source={{uri: items.image}}/>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', { userId: items.authorId })}>
+                                <Image style={styles.userImage} source={{ uri: items.image }} />
                             </TouchableOpacity>
-                            {this.props.count>0 &&
-                            <View style={styles.badgeCount}>
-                                <Text style={styles.countText}>{this.props.count}</Text>
-                            </View>
+                            {this.props.count > 0 &&
+                                <View style={styles.badgeCount}>
+                                    <Text style={styles.countText}>{this.props.count}</Text>
+                                </View>
                             }
                         </View>
                         <View style={styles.userDetailArea}>
                             <View style={styles.userNameRow}>
-                                <TouchableOpacity style={{flexDirection:'row', justifyContent:'space-between' , flexWrap:'wrap'}} onPress={() => this.props.navigation.navigate('userProfile' , { userId : items.authorId})}>
+                                <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }} onPress={() => this.props.navigation.navigate('userProfile', { userId: items.authorId })}>
                                     <Text style={styles.nameText}>{items.author}</Text>
-                                    <Text style={{alignSelf: 'flex-end'}}>{this.timeConvertor(items.posted)}</Text>
+                                    <Text style={{ alignSelf: 'flex-end' }}>{this.timeConvertor(items.posted)}</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.meaasageRow}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('comment' , { recipeId : items.recipeId})}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('comment', { recipeId: items.recipeId })}>
                                     <Text style={styles.meaasageText}>{items.notification}</Text>
                                 </TouchableOpacity>
                             </View>
@@ -153,13 +154,13 @@ class notification extends React.Component {
 
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
-            if(user){
+            if (user) {
                 that.setState({
                     loggedin: true,
                 });
                 var userId = f.auth().currentUser.uid;
                 that.fetchInfo(userId);
-            }else{
+            } else {
                 that.setState({
                     loggedin: false
                 })
@@ -173,181 +174,182 @@ class notification extends React.Component {
     render() {
         return (
 
-            <PTRView onRefresh={this._refresh} style={{flex: 1, backgroundColor:'#e8e8e8'}} >
-
-            <View style={{flex: 1, backgroundColor:'#e8e8e8'}} >
-                <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#FB8C00', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style = {{fontSize: 24, color:'#ffffff'}}>Notifications</Text>
+            <View style={{ flex: 1, backgroundColor: '#e8e8e8' }} >
+                <View style={{ height: 70, paddingTop: 30, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 24, color: '#ffffff' }}>Notifications</Text>
                 </View>
-                <View style={{flex:1}}>
+                <View style={{ flex: 1 }}>
                     {this.state.loaded == true ? (
-                        <View style={{flex:1}}>
+                        <View style={{ flex: 1 }}>
                             {this.state.notificationsList.length == 0 ? (
-                                <View style={{flex: 1 , justifyContent:'center', alignItems:'center'}}>
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                     <Text>No Notifications..</Text>
                                 </View>
                             ) : (
-                                <View style={styles.container}>
-                                    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-                                        {this.renderNotifications()}
-                                    </ScrollView>
-                                </View>
-                            )}
+                                    <View style={styles.container}>
+                                        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+                                            {this.renderNotifications()}
+                                        </ScrollView>
+                                    </View>
+                                )}
 
                         </View>
-                    ):(
-                        <View style={{flex: 1, justifyContent:'center' , alignItems:'center'}}>
-                            <ActivityIndicator size="large" color="#0000ff"/>
-                            <Text>Loading Notifications..</Text>
-                        </View>
-                    )}
+                    ) : (
+                            <View style={{ flex: 1, backgroundColor: '#ffffff', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                <ImageBackground source={{ uri: 'https://flavorverse.com/wp-content/uploads/2017/12/Afghan-Foods.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                                    <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                        <PacmanIndicator size={70} color="white" />
+                                    </ImageBackground>
+                                </ImageBackground>
+                            </View>
+                        )}
 
                 </View>
 
 
                 {this.state.loggedin == true ? (
-                    <KeyboardAvoidingView style={{padding:15,marginBottom:10}} enabled={true} behavior = "padding">
+                    <KeyboardAvoidingView style={{ padding: 15, marginBottom: 10 }} enabled={true} behavior="padding">
 
                     </KeyboardAvoidingView>
                 ) : (
-                    <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
-                        <TouchableOpacity>
-                            <SocialIcon style={{width:200}} title='Sign In With Facebook'  button  type='facebook' />
-                        </TouchableOpacity>
-                    </View>
-                )}
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <TouchableOpacity>
+                                <SocialIcon style={{ width: 200 }} title='Sign In With Facebook' button type='facebook' />
+                            </TouchableOpacity>
+                        </View>
+                    )}
             </View>
-            </PTRView>
+
         );
     }
 }
 const styles = StyleSheet.create({
     cardContainer: {
-        flex:1,
-        width:'90%',
-        backgroundColor:'#fff',
-        borderRadius:5,
-        borderColor:'#FB8C00',
-        borderWidth:1,
+        flex: 1,
+        width: '90%',
+        backgroundColor: '#fff',
+        borderRadius: 5,
+        borderColor: '#FB8C00',
+        borderWidth: 1,
         // height:200,
-        alignItems:'center',
-        justifyContent:'flex-start',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
         // marginBottom:20,
-        marginTop:10
+        marginTop: 10
     },
-    cardHedear:{
-        marginLeft:10,
-        marginTop:5,
-        marginRight:10,
+    cardHedear: {
+        marginLeft: 10,
+        marginTop: 5,
+        marginRight: 10,
         // marginBottom:10,
         // width:deviceWidth,
-        height:80,
-        flexDirection:'row'
+        height: 80,
+        flexDirection: 'row'
     },
-    profilePicArea:{
-        flex:0.25,
+    profilePicArea: {
+        flex: 0.25,
         // width:deviceWidth * 0.2,
         // backgroundColor:'red',
-        alignItems:'center',
-        justifyContent:'center'
+        alignItems: 'center',
+        justifyContent: 'center'
     },
-    userDetailArea:{
-        flex:0.75,
-        paddingLeft:8,
+    userDetailArea: {
+        flex: 0.75,
+        paddingLeft: 8,
         // width:deviceWidth * 0.8,
-        flexDirection:'column',
+        flexDirection: 'column',
         // backgroundColor:'green'
     },
-    userNameRow:{
-        flex:0.4,
+    userNameRow: {
+        flex: 0.4,
 
         // width:deviceWidth * 0.8,
         // backgroundColor:'yellow',
-        paddingTop:10
+        paddingTop: 10
     },
-    meaasageRow:{
-        flex:0.6,
-        marginTop:5
+    meaasageRow: {
+        flex: 0.6,
+        marginTop: 5
         // width:deviceWidth * 0.8,
         // backgroundColor:'blue'
     },
-    userImage:{
-        height:60,
-        width:60,
-        borderRadius:30
+    userImage: {
+        height: 60,
+        width: 60,
+        borderRadius: 30
     },
-    badgeCount:{
-        backgroundColor:'#3d9bf9',
-        height:20,
-        width:20,
-        borderRadius:10,
-        alignItems:'center',
+    badgeCount: {
+        backgroundColor: '#3d9bf9',
+        height: 20,
+        width: 20,
+        borderRadius: 10,
+        alignItems: 'center',
         justifyContent: 'center',
-        position:'absolute',
-        bottom:10,
-        right:10
+        position: 'absolute',
+        bottom: 10,
+        right: 10
     },
-    imageThumbnails:{
-        height:70,
-        width:70,
-        borderRadius:35,
+    imageThumbnails: {
+        height: 70,
+        width: 70,
+        borderRadius: 35,
     },
-    detailRow:{
-        width:'100%',
-        paddingLeft:10,
-        paddingRight:10,
-        paddingBottom:5,
-        marginTop:10
+    detailRow: {
+        width: '100%',
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 5,
+        marginTop: 10
     },
-    thumbnailRow:{
-        flex:1,
-        width:'100%',
+    thumbnailRow: {
+        flex: 1,
+        width: '100%',
         // backgroundColor:'red',
-        flexDirection:'row',
-        justifyContent:'space-evenly',
-        paddingTop:30,
-        paddingLeft:10,
-        paddingRight:10,
-        paddingBottom:30
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        paddingTop: 30,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 30
     },
 
     //Font styles
 
-    nameText:{
-        fontSize:14,
-        color:'#4e5861',
-        fontWeight:'bold'
+    nameText: {
+        fontSize: 14,
+        color: '#4e5861',
+        fontWeight: 'bold'
     },
-    meaasageText:{
-        fontSize:16,
-        color:'#95a3ad'
+    meaasageText: {
+        fontSize: 16,
+        color: '#95a3ad'
     },
-    paraText:{
-        fontSize:16,
-        color:'#555f68'
+    paraText: {
+        fontSize: 16,
+        color: '#555f68'
     },
-    countText:{
-        color:'#fff',
-        fontSize:12,
-        fontWeight:'bold'
+    countText: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: 'bold'
     },
     container: {
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: '#e8e8e8',
-        width:'100%',
+        width: '100%',
 
     },
-    scrollView:{
-        width:'100%',
-        backgroundColor:'#e8e8e8',
+    scrollView: {
+        width: '100%',
+        backgroundColor: '#e8e8e8',
 
 
     },
-    scrollViewContent:{
-        alignItems:'center',
-        paddingBottom:10
+    scrollViewContent: {
+        alignItems: 'center',
+        paddingBottom: 10
     },
 
 });

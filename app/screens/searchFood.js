@@ -10,6 +10,7 @@ import { Badge } from 'react-native-elements'
 import PTRView from 'react-native-pull-to-refresh';
 const KEYS_TO_FILTERS = ['foodName'];
 var { width, height } = Dimensions.get('window');
+import { PacmanIndicator } from 'react-native-indicators';
 class searchFood extends React.Component {
     constructor(props) {
         super(props);
@@ -49,7 +50,7 @@ class searchFood extends React.Component {
                                 <Text style={{ fontSize: 14, color: 'white', textAlign: 'center' }}>{items.foodName}</Text>
                                 <View style={{ flexDirection: 'row' }}>
                                     <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 20, height: 20, borderRadius: 10 }} />
-                                    <Badge value={items.yummy} status="success" />                                    
+                                    <Badge value={items.yummy} status="success" />
                                 </View>
                             </ImageBackground>
                         </ImageBackground>
@@ -139,38 +140,41 @@ class searchFood extends React.Component {
                     <Text style={{ fontSize: 20 }}>Search Foods</Text>
                     <Text style={{ fontSize: 18, width: 100 }}></Text>
                 </View>
-                <PTRView onRefresh={this._refresh} >
-                    <View style={{ flex: 1 }}>
-                        {this.state.loaded == true ? (
-                            <View style={{ flex: 1 }}>
-                                {this.state.foodList.length == 0 ? (
-                                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text>No Foods..</Text>
-                                    </View>
-                                ) : (
-                                        <View style={styles.container}>
-                                            <SearchInput
-                                                onChangeText={(term) => { this.searchUpdated(term) }}
-                                                style={styles.searchInput}
-                                                placeholder="Search your Food"
-                                            />
-                                            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-                                                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                                                    {this.renderFoods()}
-                                                </View>
-                                            </ScrollView>
-                                        </View>
-                                    )}
-                            </View>
-                        ) : (
-                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <ActivityIndicator size="large" color="#0000ff" />
-                                    <Text>Loading Foods..</Text>
-                                </View>
-                            )}
 
-                    </View>
-                </PTRView>
+                <View style={{ flex: 1 }}>
+                    {this.state.loaded == true ? (
+                        <View style={{ flex: 1 }}>
+                            {this.state.foodList.length == 0 ? (
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>No Foods..</Text>
+                                </View>
+                            ) : (
+                                    <View style={styles.container}>
+                                        <SearchInput
+                                            onChangeText={(term) => { this.searchUpdated(term) }}
+                                            style={styles.searchInput}
+                                            placeholder="Search your Food"
+                                        />
+                                        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+                                            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                                                {this.renderFoods()}
+                                            </View>
+                                        </ScrollView>
+                                    </View>
+                                )}
+                        </View>
+                    ) : (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <ImageBackground source={{ uri: 'https://flavorverse.com/wp-content/uploads/2017/12/Afghan-Foods.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                                    <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                        <PacmanIndicator size={70} color="white" />                                        
+                                    </ImageBackground>
+                                </ImageBackground>
+                            </View>
+                        )}
+
+                </View>
+
             </View>
 
         );

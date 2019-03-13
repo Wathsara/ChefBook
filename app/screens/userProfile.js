@@ -1,18 +1,19 @@
 import React from 'react';
-import {Text, View, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import { f, auth, database , storage} from "../../config/config";
+import { Text, View, Image, TouchableOpacity, ScrollView, Dimensions,ImageBackground } from 'react-native';
+import { f, auth, database, storage } from "../../config/config";
 import { Icon } from 'react-native-elements';
-var {width , height} = Dimensions.get('window');
+var { width, height } = Dimensions.get('window');
+import { PacmanIndicator } from 'react-native-indicators';
 class userProfile extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             loaded: false,
             active: 0,
             photo: [],
             ploaded: false,
-            follow:[],
-            following:[]
+            follow: [],
+            following: []
 
         }
     }
@@ -26,22 +27,22 @@ class userProfile extends React.Component {
     check = () => {
         var params = this.props.navigation.state.params;
         var id = f.auth().currentUser.uid;
-        if(params){
-            if(params.userId){
+        if (params) {
+            if (params.userId) {
                 this.setState({
                     userId: params.userId
                 });
                 this.fetchInfo(params.userId);
                 this.loadFeed(params.userId);
-                var that=this;
-                database.ref('users').child(id).child('following').child(params.userId).on('value' , (function (snapshot) {
-                    if(snapshot.val()){
+                var that = this;
+                database.ref('users').child(id).child('following').child(params.userId).on('value', (function (snapshot) {
+                    if (snapshot.val()) {
                         that.setState({
-                            followingState:true
+                            followingState: true
                         })
                     }
 
-                }),function (errorObject) {
+                }), function (errorObject) {
                     console.log("The read failed: " + errorObject.code);
                 });
 
@@ -56,73 +57,73 @@ class userProfile extends React.Component {
 
         database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
-            if(exist) data = snapshot.val();
+            if (exist) data = snapshot.val();
             that.setState({
-                name:data
+                name: data
             });
         })
 
         database.ref('users').child(userId).child('userName').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
-            if(exist) data = snapshot.val();
+            if (exist) data = snapshot.val();
             that.setState({
-                userName:data
+                userName: data
             });
         })
 
         database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
-            if(exist) data = snapshot.val();
+            if (exist) data = snapshot.val();
             that.setState({
-                avatar:data,
-                loaded:true
+                avatar: data,
+                loaded: true
             });
         })
 
-        database.ref('users').child(userId).child('follower').on('value' , (function (snapshot) {
+        database.ref('users').child(userId).child('follower').on('value', (function (snapshot) {
             const exsist = (snapshot.val() != null);
-            if( exsist) {
-                var data=snapshot.val();
+            if (exsist) {
+                var data = snapshot.val();
                 console.log(data)
                 var followers = that.state.follow
-                for(var follow in data){
+                for (var follow in data) {
                     let followObj = data[follow]
                     followers.push({
-                        name:followObj.name,
-                        avatar:followObj.avatar,
-                        friendId:followObj
+                        name: followObj.name,
+                        avatar: followObj.avatar,
+                        friendId: followObj
                     });
                 }
-            }else{
+            } else {
                 that.setState({
-                    follow:[]
+                    follow: []
                 })
             }
 
-        }),function (errorObject) {
+        }), function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
 
-        database.ref('users').child(userId).child('following').on('value' , (function (snapshot) {
+        database.ref('users').child(userId).child('following').on('value', (function (snapshot) {
             const exsist = (snapshot.val() != null);
-            if( exsist) {
-                var data=snapshot.val();
+            if (exsist) {
+                var data = snapshot.val();
                 let followings = that.state.following
-                for(var following in data){
+                for (var following in data) {
                     let followingObj = data[following]
                     followings.push({
-                        name:followingObj.name,
-                        avatar:followingObj.avatar,
-                        friendId:followingObj
+                        name: followingObj.name,
+                        avatar: followingObj.avatar,
+                        friendId: followingObj
                     });
                 }
-            }else{
+            } else {
                 that.setState({
-                    following:[]
+                    following: []
                 })
             }
 
-        }),function (errorObject) {
+        }), function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
     }
@@ -132,14 +133,14 @@ class userProfile extends React.Component {
 
         this.setState({
             photo: [],
-            active:0
+            active: 0
 
         });
 
         var that = this;
         database.ref('users').child(uid).child('recepies').once('value').then(function (snapshot) {
             const exsist = (snapshot.val() != null);
-            if( exsist) {
+            if (exsist) {
                 data = snapshot.val();
                 var photo = that.state.photo;
                 for (var photos in data) {
@@ -165,21 +166,21 @@ class userProfile extends React.Component {
 
     photoClick = (active) => {
         this.setState({
-            active:active
+            active: active
         })
 
     }
 
     postClick = (active) => {
         this.setState({
-            active:active
+            active: active
         })
 
     }
 
     saveClick = (active) => {
         this.setState({
-            active:active
+            active: active
         })
 
 
@@ -187,20 +188,20 @@ class userProfile extends React.Component {
     renderSection = () => {
 
 
-        if(this.state.active == 0){
+        if (this.state.active == 0) {
 
-            return this.state.photo.map((image , index) => {
+            return this.state.photo.map((image, index) => {
                 return (
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe' , { id : image.id})}>
-                        <View key={index} style={[{width:(width)/3} , {height:(width)/3}]}>
-                            <Image source={{uri:image.url}} style={{width:undefined , height:undefined , flex:1}}/>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe', { id: image.id })}>
+                        <View key={index} style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
+                            <Image source={{ uri: image.url }} style={{ width: undefined, height: undefined, flex: 1 }} />
                         </View>
                     </TouchableOpacity>
                 )
             });
         }
 
-        if(this.state.active == 1){
+        if (this.state.active == 1) {
             return (
                 <View>
                     <Text>Post Section</Text>
@@ -208,7 +209,7 @@ class userProfile extends React.Component {
             )
         }
 
-        if(this.state.active == 2){
+        if (this.state.active == 2) {
             return (
                 <View>
                     <Text>Saved Section</Text>
@@ -221,12 +222,12 @@ class userProfile extends React.Component {
         this.check();
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
-            if(user){
+            if (user) {
                 that.setState({
                     loggedin: true,
                 });
 
-            }else{
+            } else {
                 that.setState({
                     loggedin: false
                 })
@@ -239,7 +240,7 @@ class userProfile extends React.Component {
 
     follow = () => {
         var date = Date.now();
-        var posted = Math.floor(date / 1000 )
+        var posted = Math.floor(date / 1000)
 
         var fid = this.state.userId;
         var fName = this.state.name;
@@ -249,29 +250,29 @@ class userProfile extends React.Component {
         var myPic = f.auth().currentUser.photoURL;
 
         var follower = {
-            name:myName,
-            avatar:myPic,
+            name: myName,
+            avatar: myPic,
             friend: myId,
         }
 
         var following = {
-            name:fName,
+            name: fName,
             avatar: fPic,
-            friend : fid,
+            friend: fid,
         }
 
         var notification = {
-            author:myName,
-            authorId:myId,
-            posted:posted,
-            avatar:myPic,
-            message:"Followed You",
+            author: myName,
+            authorId: myId,
+            posted: posted,
+            avatar: myPic,
+            message: "Followed You",
         }
-        database.ref('/notifications/'+fid+'/'+this.uniqueId()).set(notification);
-        database.ref('/users/'+myId+'/following/'+fid).set(following);
-        database.ref('/users/'+fid+'/follower/'+myId).set(follower);
+        database.ref('/notifications/' + fid + '/' + this.uniqueId()).set(notification);
+        database.ref('/users/' + myId + '/following/' + fid).set(following);
+        database.ref('/users/' + fid + '/follower/' + myId).set(follower);
         this.setState({
-            followingState:true
+            followingState: true
         })
 
 
@@ -280,14 +281,14 @@ class userProfile extends React.Component {
     unfollow = () => {
 
         var fid = this.state.userId;
-       var myId = f.auth().currentUser.uid;
+        var myId = f.auth().currentUser.uid;
 
 
 
-        database.ref('/users/'+myId+'/following/'+fid).remove();
-        database.ref('/users/'+fid+'/follower/'+myId).remove();
+        database.ref('/users/' + myId + '/following/' + fid).remove();
+        database.ref('/users/' + fid + '/follower/' + myId).remove();
         this.setState({
-            followingState:false
+            followingState: false
         })
 
     }
@@ -296,81 +297,81 @@ class userProfile extends React.Component {
 
     render() {
         return (
-            <View style={{flex:1}}>
+            <View style={{ flex: 1 }}>
 
-                { this.state.loaded == true ? (
+                {this.state.loaded == true ? (
 
-                    <View style={{flex:1}}>
-                        <View style={{flexDirection:'row', height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'space-between', alignItems: 'center' }}>
-                            <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
-                                <Text style={{fontWeight:'bold', padding:10 , fontSize:14 , width:100}}>Back</Text>
+                    <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: 'row', height: 70, paddingTop: 30, backgroundColor: '#ffffff', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'space-between', alignItems: 'center' }}>
+                            <TouchableOpacity style={{ textAlign: 'left' }} onPress={() => this.props.navigation.goBack()}>
+                                <Text style={{ fontWeight: 'bold', padding: 10, fontSize: 14, width: 100 }}>Back</Text>
                             </TouchableOpacity>
-                            <Text style = {{fontSize: 14, flexWrap:'wrap'}}>{this.state.userName}</Text>
-                            <Text style = {{fontSize: 18, width:100}}></Text>
+                            <Text style={{ fontSize: 14, flexWrap: 'wrap' }}>{this.state.userName}</Text>
+                            <Text style={{ fontSize: 18, width: 100 }}></Text>
                         </View>
 
-                        <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5}}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', padding: 5 }}>
                             <View>
-                                <Image source={{uri: this.state.avatar}} style={{width:100 , height:100 , borderRadius:50}}/>
+                                <Image source={{ uri: this.state.avatar }} style={{ width: 100, height: 100, borderRadius: 50 }} />
                             </View>
-                            <View style={{flexDirection:'column', height:45}}>
-                                <View style={{justifyContent:'center' , alignItems:'center'}}>
-                                    <Text style={{fontSize:18,fontWeight: 'bold' }}>{this.state.name}</Text>
+                            <View style={{ flexDirection: 'column', height: 45 }}>
+                                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{this.state.name}</Text>
                                 </View>
-                                <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5, marginVertical:25}}>
-                                    <View style={{marginLeft:5 , justifyContent:'center' , alignItems:'center'}}>
-                                        <Text style={{fontSize:18,fontWeight: 'bold' }}>{this.state.photo.length}</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', padding: 5, marginVertical: 25 }}>
+                                    <View style={{ marginLeft: 5, justifyContent: 'center', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{this.state.photo.length}</Text>
                                         <Text>Recepies</Text>
                                     </View>
-                                    <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center'}}>
-                                        <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.follow.length}</Text>
+                                    <View style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{this.state.follow.length}</Text>
                                         <Text>Followers</Text>
                                     </View>
-                                    <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center' }}>
-                                        <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.following.length}</Text>
+                                    <View style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{this.state.following.length}</Text>
                                         <Text>Following</Text>
                                     </View>
                                 </View>
 
                                 <View>
-                                    {this.state.userId != f.auth().currentUser.uid && this.state.loaded==true && this.state.followingState != true ? (
+                                    {this.state.userId != f.auth().currentUser.uid && this.state.loaded == true && this.state.followingState != true ? (
 
-                                        <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
-                                            <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
-                                                <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Chat</Text>
+                                        <View style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+                                            <TouchableOpacity onPress={() => this.props.navigation.navigate('message', { userId: this.state.userId })}>
+                                                <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: 'blue', textAlign: 'center' }}>Chat</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity onPress={this.follow}>
-                                                <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center' , marginLeft:5}}>Follow</Text>
+                                                <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: 'blue', textAlign: 'center', marginLeft: 5 }}>Follow</Text>
                                             </TouchableOpacity>
                                         </View>
-                                        ):(
-                                        <View>
-                                            {this.state.followingState != false && this.state.userId != f.auth().currentUser.uid ? (
-                                                <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
-                                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('message' , { userId : this.state.userId})}>
-                                                        <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Chat</Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity onPress={this.unfollow}>
-                                                        <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center' , marginLeft:5}}>UnFollow</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                                ):(
-                                                    <View/>
+                                    ) : (
+                                            <View>
+                                                {this.state.followingState != false && this.state.userId != f.auth().currentUser.uid ? (
+                                                    <View style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+                                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('message', { userId: this.state.userId })}>
+                                                            <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: 'blue', textAlign: 'center' }}>Chat</Text>
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity onPress={this.unfollow}>
+                                                            <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: 'blue', textAlign: 'center', marginLeft: 5 }}>UnFollow</Text>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                ) : (
+                                                        <View />
 
-                                            )}
-                                        </View>
+                                                    )}
+                                            </View>
                                         )}
                                 </View>
 
                             </View>
 
                         </View>
-                        <View style={{flex:1, marginTop:20}}>
-                            <View style={{flexDirection:'row', justifyContent:'space-around' , height:15 , alignItems:'center'}}>
-                                <TouchableOpacity onPress={() => this.photoClick(0) }  >
-                                    <Icon name='ios-images' type='ionicon'  color='#517fa4'  />
+                        <View style={{ flex: 1, marginTop: 20 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-around', height: 15, alignItems: 'center' }}>
+                                <TouchableOpacity onPress={() => this.photoClick(0)}  >
+                                    <Icon name='ios-images' type='ionicon' color='#517fa4' />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.saveClick(2) } active={ this.state.active == 2 }>
+                                <TouchableOpacity onPress={() => this.saveClick(2)} active={this.state.active == 2}>
                                     <Icon
                                         name='save'
                                         type='font-awesome'
@@ -380,19 +381,19 @@ class userProfile extends React.Component {
 
                             </View>
 
-                            <View style={{flex:1}}>
-                                <ScrollView style={{flex:1, marginTop:10}}>
+                            <View style={{ flex: 1 }}>
+                                <ScrollView style={{ flex: 1, marginTop: 10 }}>
                                     {this.state.ploaded == true ? (
-                                        <View style={{flexDirection:'row'}}>
+                                        <View style={{ flexDirection: 'row' }}>
                                             {this.renderSection()}
 
                                         </View>
                                     ) : (
-                                        <View style={{flexDirection:'row'}}>
+                                            <View style={{ flexDirection: 'row' }}>
 
 
-                                        </View>
-                                    )}
+                                            </View>
+                                        )}
 
                                 </ScrollView>
                             </View>
@@ -402,13 +403,15 @@ class userProfile extends React.Component {
                     </View>
 
                 ) : (
-                    <View style={{flex:1 , justifyContent:'center', alignItems: 'center'}}>
+                        <View style={{ flex: 1, backgroundColor: '#ffffff', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                            <ImageBackground source={{ uri: 'https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/02/24/17/chef.jpg?w968h681' }} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                                <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                    <PacmanIndicator size={70} color="white" />
+                                </ImageBackground>
+                            </ImageBackground>
+                        </View>
 
-                        <Text>LOADING...</Text>
-
-                    </View>
-
-                )}
+                    )}
 
             </View>
         );

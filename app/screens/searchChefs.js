@@ -1,12 +1,13 @@
 import React from 'react';
 import {
-    TouchableOpacity, Text, View, TextInput, Image, ActivityIndicator, KeyboardAvoidingView, ToastAndroid,
+    TouchableOpacity, Text, View, ImageBackground, Image, ActivityIndicator, KeyboardAvoidingView, ToastAndroid,
     ScrollView, StyleSheet, FlatList
 } from 'react-native';
 import { database, f } from "../../config/config";
 import SearchInput, { createFilter } from 'react-native-search-filter';
 import { SocialIcon } from 'react-native-elements';
 import PTRView from 'react-native-pull-to-refresh';
+import { PacmanIndicator } from 'react-native-indicators';
 const KEYS_TO_FILTERS = ['name'];
 class searchChefs extends React.Component {
     constructor(props) {
@@ -61,7 +62,7 @@ class searchChefs extends React.Component {
 
     }
 
-    componentDidMount = () => {        
+    componentDidMount = () => {
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
             if (user) {
@@ -99,7 +100,7 @@ class searchChefs extends React.Component {
         })
 
         var that = this;
-        database.ref('users').orderByChild('posted').once('value' , (function (snapshot) {
+        database.ref('users').orderByChild('posted').once('value', (function (snapshot) {
             const exsist = (snapshot.val() != null);
             if (exsist) {
                 data = snapshot.val();
@@ -107,16 +108,16 @@ class searchChefs extends React.Component {
                 var chefList = that.state.chefList;
                 for (var photos in data) {
                     let photoO = data[photos];
-                    let tempId = photos;                    
+                    let tempId = photos;
                     chefList.push({
                         id: tempId,
                         url: photoO.avatar,
-                        name: photoO.name                        
+                        name: photoO.name
                     });
 
                 }
                 that.setState({
-                    loaded:true
+                    loaded: true
                 })
             }
         }), function (errorObject) {
@@ -137,36 +138,38 @@ class searchChefs extends React.Component {
                     <Text style={{ fontSize: 20 }}>Search Chefs</Text>
                     <Text style={{ fontSize: 18, width: 100 }}></Text>
                 </View>
-                <PTRView onRefresh={this._refresh} >
-                    <View style={{ flex: 1 }}>
-                        {this.state.loaded == true ? (
-                            <View style={{ flex: 1 }}>
-                                {this.state.chefList.length == 0 ? (
-                                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text>No Chefs..</Text>
-                                    </View>
-                                ) : (
-                                        <View style={styles.container}>
-                                            <SearchInput
-                                                onChangeText={(term) => { this.searchUpdated(term) }}
-                                                style={styles.searchInput}
-                                                placeholder="Search your Followings"
-                                            />
-                                            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-                                                {this.renderChefs()}
-                                            </ScrollView>
-                                        </View>
-                                    )}
-                            </View>
-                        ) : (
+                <View style={{ flex: 1 }}>
+                    {this.state.loaded == true ? (
+                        <View style={{ flex: 1 }}>
+                            {this.state.chefList.length == 0 ? (
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <ActivityIndicator size="large" color="#0000ff" />
-                                    <Text>Loading Chefs..</Text>
+                                    <Text>No Chefs..</Text>
                                 </View>
-                            )}
+                            ) : (
+                                    <View style={styles.container}>
+                                        <SearchInput
+                                            onChangeText={(term) => { this.searchUpdated(term) }}
+                                            style={styles.searchInput}
+                                            placeholder="Search your Followings"
+                                        />
+                                        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+                                            {this.renderChefs()}
+                                        </ScrollView>
+                                    </View>
+                                )}
+                        </View>
+                    ) : (
+                            <View style={{ flex: 1, backgroundColor: '#ffffff', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                <ImageBackground source={{ uri: 'https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/02/24/17/chef.jpg?w968h681' }} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                                    <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                        <PacmanIndicator size={70} color="white" />
+                                    </ImageBackground>
+                                </ImageBackground>
+                            </View>
+                        )}
 
-                    </View>
-                </PTRView>
+                </View>
+
             </View>
 
         );
