@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, View, FlatList, Image, ImageBackground, ActivityIndicator, ScrollView } from 'react-native';
 import { f, auth, database, storage } from "../../config/config";
 import { Icon } from 'react-native-elements';
+import { Badge } from 'react-native-elements'
 import { PacmanIndicator } from 'react-native-indicators';
 class home extends React.Component {
     constructor(props) {
@@ -80,16 +81,26 @@ class home extends React.Component {
                     let photoO = data[photos];
                     let tempId = photos;
                     let photo = that.state.photo;
+                    let count = 0;
+                    database.ref('comments').child(tempId).orderByChild('posted').once("value").then(function (snapshot) {
+                        const exsist = (snapshot.val() != null);
+                        if(exsist){
+                            data = snapshot.val();                                            
+                            for(var comments in data){
+                                count = count + 1;
+                            }                                            
+                        }else{
+                            count = 0;
+                        }
+            
+                    })
                     database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                         const exsisting = (snapshot.val() != null);
                         if (exsisting) {
                             data = snapshot.val();
-
                             database.ref('users').child(that.state.userId).child('following').child(photoO.author).once('value').then(function (snapshot) {
-
                                 const exsists = (snapshot.val() != null);
-
-                                if (exsists) {
+                                if (exsists) {   
                                     photo.push({
                                         id: tempId,
                                         url: photoO.image,
@@ -100,7 +111,8 @@ class home extends React.Component {
                                         posted: photoO.posted,
                                         authorId: photoO.author,
                                         category: photoO.category,
-                                        yummy: photoO.yummies
+                                        yummy: photoO.yummies,
+                                        commentCount: count
                                     });
 
                                 }
@@ -189,6 +201,18 @@ class home extends React.Component {
                 for (var photos in data) {
                     let photoO = data[photos];
                     let tempId = photos;
+                    let count = 0;
+                    database.ref('comments').child(tempId).orderByChild('posted').once("value").then(function (snapshot) {
+                        const exsist = (snapshot.val() != null);
+                        if (exsist) {
+                            data = snapshot.val();
+                            for (var comments in data) {
+                                count = count + 1;
+                            }
+                        } else {
+                            count = 0;
+                        }
+                    })
                     database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                         const exsist = (snapshot.val() != null);
                         if (exsist) {
@@ -206,7 +230,8 @@ class home extends React.Component {
                                         posted: photoO.posted,
                                         authorId: photoO.author,
                                         category: photoO.category,
-                                        yummy: photoO.yummies
+                                        yummy: photoO.yummies,
+                                        commentCount:count
                                     });
 
                                 }
@@ -225,7 +250,7 @@ class home extends React.Component {
         })
     }
 
-    insertYummy = (rId) => {
+    insertYummy = (rId , category ) => {
         var that = this;
         database.ref('recepies').child(rId).child('yummies').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
@@ -237,7 +262,7 @@ class home extends React.Component {
                     name: f.auth().currentUser.displayName
                 }
                 database.ref('recepies').child(rId).update({ yummies: newD });
-
+                database.ref(category).child(rId).update({ yummies: newD });
 
             } else {
                 let userId = f.auth().currentUser.uid;
@@ -289,85 +314,85 @@ class home extends React.Component {
                     <Text style={{ fontSize: 24, color: '#ffffff' }}>Home</Text>
                 </View>
                 {this.state.loading == false ? (
-                <View>
-                    <ScrollView horizontal={true} style={{ marginVertical: 3 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <View>
-                                <TouchableOpacity onPress={() => this.filterCategory('breakfast')}>
-                                    <ImageBackground source={{ uri: 'https://olo-images-live.imgix.net/9c/9cf9aba367a4491d89f5ddcc227a9879.jpg?auto=format%2Ccompress&q=60&cs=tinysrgb&w=500&h=333&fit=fill&fm=png32&bg=transparent&s=39190b5a3d1b6faeb656e6d97d68ff95' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                        <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Breakfast</Text>
+                    <View>
+                        <ScrollView horizontal={true} style={{ marginVertical: 3 }}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <View>
+                                    <TouchableOpacity onPress={() => this.filterCategory('breakfast')}>
+                                        <ImageBackground source={{ uri: 'https://olo-images-live.imgix.net/9c/9cf9aba367a4491d89f5ddcc227a9879.jpg?auto=format%2Ccompress&q=60&cs=tinysrgb&w=500&h=333&fit=fill&fm=png32&bg=transparent&s=39190b5a3d1b6faeb656e6d97d68ff95' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Breakfast</Text>
+                                            </ImageBackground>
                                         </ImageBackground>
-                                    </ImageBackground>
-                                </TouchableOpacity>
+                                    </TouchableOpacity>
 
-                            </View>
-                            <View>
-                                <TouchableOpacity onPress={() => this.filterCategory('lunch')}>
-                                    <ImageBackground source={{ uri: 'https://www.ecoliteracy.org/sites/default/files/styles/hero_image_small/public/media/rethinking-school-lunch-guide.jpg?itok=JFKW4vOU&timestamp=1490386525' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                        <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Lunch</Text>
+                                </View>
+                                <View>
+                                    <TouchableOpacity onPress={() => this.filterCategory('lunch')}>
+                                        <ImageBackground source={{ uri: 'https://www.ecoliteracy.org/sites/default/files/styles/hero_image_small/public/media/rethinking-school-lunch-guide.jpg?itok=JFKW4vOU&timestamp=1490386525' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Lunch</Text>
+                                            </ImageBackground>
                                         </ImageBackground>
-                                    </ImageBackground>
-                                </TouchableOpacity>
+                                    </TouchableOpacity>
 
-                            </View>
-                            <View>
-                                <TouchableOpacity onPress={() => this.filterCategory('dinner')}>
-                                    <ImageBackground source={{ uri: 'https://img.taste.com.au/SN4APRsT/w720-h480-cfill-q80/taste/2017/05/steak-diane-dinner-bowl-126170-2.jpg' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                        <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Dinner</Text>
+                                </View>
+                                <View>
+                                    <TouchableOpacity onPress={() => this.filterCategory('dinner')}>
+                                        <ImageBackground source={{ uri: 'https://img.taste.com.au/SN4APRsT/w720-h480-cfill-q80/taste/2017/05/steak-diane-dinner-bowl-126170-2.jpg' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Dinner</Text>
+                                            </ImageBackground>
                                         </ImageBackground>
-                                    </ImageBackground>
-                                </TouchableOpacity>
+                                    </TouchableOpacity>
 
-                            </View>
-                            <View>
-                                <TouchableOpacity onPress={() => this.filterCategory('cake')}>
-                                    <ImageBackground source={{ uri: 'https://www.bbcgoodfood.com/sites/default/files/styles/recipe/public/recipe/recipe-image/2018/02/easter-nest-cake.jpg?itok=-ZAZCCss' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                        <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Cake</Text>
+                                </View>
+                                <View>
+                                    <TouchableOpacity onPress={() => this.filterCategory('cake')}>
+                                        <ImageBackground source={{ uri: 'https://www.bbcgoodfood.com/sites/default/files/styles/recipe/public/recipe/recipe-image/2018/02/easter-nest-cake.jpg?itok=-ZAZCCss' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Cake</Text>
+                                            </ImageBackground>
                                         </ImageBackground>
-                                    </ImageBackground>
-                                </TouchableOpacity>
+                                    </TouchableOpacity>
 
-                            </View>
-                            <View>
-                                <TouchableOpacity onPress={() => this.filterCategory('beverages')}>
-                                    <ImageBackground source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIfBY5naNC0jEWXkfqM3NprUhKX5xAjdfNnbHFnXzLgofan8hE' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                        <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Beverages</Text>
+                                </View>
+                                <View>
+                                    <TouchableOpacity onPress={() => this.filterCategory('beverages')}>
+                                        <ImageBackground source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIfBY5naNC0jEWXkfqM3NprUhKX5xAjdfNnbHFnXzLgofan8hE' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Beverages</Text>
+                                            </ImageBackground>
                                         </ImageBackground>
-                                    </ImageBackground>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-                                <TouchableOpacity onPress={() => this.filterCategory('sweets')}>
-                                    <ImageBackground source={{ uri: 'https://www.hindustantimes.com/rf/image_size_640x362/HT/p2/2015/11/10/Pictures/_8311bdee-878c-11e5-9788-42b4b9d38c49.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                        <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Sweets</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <TouchableOpacity onPress={() => this.filterCategory('sweets')}>
+                                        <ImageBackground source={{ uri: 'https://www.hindustantimes.com/rf/image_size_640x362/HT/p2/2015/11/10/Pictures/_8311bdee-878c-11e5-9788-42b4b9d38c49.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Sweets</Text>
+                                            </ImageBackground>
                                         </ImageBackground>
-                                    </ImageBackground>
-                                </TouchableOpacity>
+                                    </TouchableOpacity>
 
-                            </View>
-                            <View>
-                                <TouchableOpacity onPress={() => this.filterCategory('other')}>
-                                    <ImageBackground source={{ uri: 'https://www.cdc.gov/features/salmonella-food/salmonella-food_456px.jpg' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                        <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Other</Text>
+                                </View>
+                                <View>
+                                    <TouchableOpacity onPress={() => this.filterCategory('other')}>
+                                        <ImageBackground source={{ uri: 'https://www.cdc.gov/features/salmonella-food/salmonella-food_456px.jpg' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Other</Text>
+                                            </ImageBackground>
                                         </ImageBackground>
-                                    </ImageBackground>
-                                </TouchableOpacity>
+                                    </TouchableOpacity>
 
+                                </View>
                             </View>
-                        </View>
 
-                    </ScrollView>
-                </View>
-                ):(
+                        </ScrollView>
+                    </View>
+                ) : (
                         <View></View>
-                )}
+                    )}
 
                 {this.state.loading == true ? (
                     <View style={{ flex: 1, backgroundColor: '#ffffff', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
@@ -403,19 +428,33 @@ class home extends React.Component {
                                                     <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                                         <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>{item.fName}</Text>
                                                         <Text style={{ fontSize: 20, color: 'white', textAlign: 'center' }}>#{item.category}</Text>
+                                                        <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>
+                                                            <View>
+                                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(item.id , item.category) }}>
+                                                                    <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+                                                                    <Badge value={item.yummy} status="success" />
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                            <View>
+                                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.props.navigation.navigate('comment', { recipeId: item.id })}>
+                                                                    <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIMy4CpbsQdYw9t818-JCQVUmePpNb--71pIP7VUurgVXlRN54' }} style={{ width: 30, height: 30,borderRadius: 15, marginLeft: 12 }} />
+                                                                    <Badge value={item.commentCount} status="success" />
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                        </View>
                                                     </ImageBackground>
                                                 </ImageBackground>
                                             </TouchableOpacity>
                                         </View>
                                         <View>
-                                            <View >
+                                            {/* <View >
                                                 {this.state.loggedin == true ? (
                                                     <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'space-between' }}>
                                                         <View>
                                                             <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(item.id) }}>
                                                                 <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
                                                                 <Image source={{ uri: 'https://www.svgimages.com/svg-image/s5/yummy-smiley-icon-256x256.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
-                                                                <Text>{this.likeCount(item.id)} Yummies</Text>
+                                                                <Badge value={item.yummy} status="success" />
                                                             </TouchableOpacity>
                                                         </View>
                                                         <View>
@@ -440,7 +479,7 @@ class home extends React.Component {
                                                         </View>
                                                     )}
 
-                                            </View>
+                                            </View> */}
                                         </View>
                                     </View>
                                 )}

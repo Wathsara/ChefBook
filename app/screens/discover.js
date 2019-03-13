@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, View, FlatList, Image, ImageBackground, ActivityIndicator, ScrollView } from 'react-native';
 import { f, auth, database, storage } from "../../config/config";
 import { Icon } from 'react-native-elements';
+import { Badge } from 'react-native-elements'
 import { PacmanIndicator } from 'react-native-indicators';
 class discover extends React.Component {
     constructor(props) {
@@ -75,6 +76,18 @@ class discover extends React.Component {
                 for (var photos in data) {
                     let photoO = data[photos];
                     let tempId = photos;
+                    let count = 0;
+                    database.ref('comments').child(tempId).orderByChild('posted').once("value").then(function (snapshot) {
+                        const exsist = (snapshot.val() != null);
+                        if (exsist) {
+                            data = snapshot.val();
+                            for (var comments in data) {
+                                count = count + 1;
+                            }
+                        } else {
+                            count = 0;
+                        }
+                    })
                     database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                         const exsist = (snapshot.val() != null);
                         if (exsist) {
@@ -89,7 +102,8 @@ class discover extends React.Component {
                                 posted: photoO.posted,
                                 authorId: photoO.author,
                                 category: photoO.category,
-                                yummy: photoO.yummies
+                                yummy: photoO.yummies,
+                                commentCount:count
                             });
                         }
                         that.setState({
@@ -170,6 +184,18 @@ class discover extends React.Component {
                 for (var photos in data) {
                     let photoO = data[photos];
                     let tempId = photos;
+                    let count = 0;
+                    database.ref('comments').child(tempId).orderByChild('posted').once("value").then(function (snapshot) {
+                        const exsist = (snapshot.val() != null);
+                        if (exsist) {
+                            data = snapshot.val();
+                            for (var comments in data) {
+                                count = count + 1;
+                            }
+                        } else {
+                            count = 0;
+                        }
+                    })
                     database.ref('users').child(photoO.author).once('value').then(function (snapshot) {
                         const exsist = (snapshot.val() != null);
                         if (exsist) {
@@ -184,14 +210,11 @@ class discover extends React.Component {
                                 posted: photoO.posted,
                                 authorId: photoO.author,
                                 category: photoO.category,
-                                yummy: photoO.yummies
-
-
+                                yummy: photoO.yummies,
+                                commentCount: count
                             });
                             console.log(photo);
-
                         }
-
                         that.setState({
                             refresh: false,
                             loading: false
@@ -206,7 +229,7 @@ class discover extends React.Component {
         })
     }
 
-    insertYummy = (rId) => {
+    insertYummy = (rId , category) => {
         var that = this;
         database.ref('recepies').child(rId).child('yummies').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
@@ -218,6 +241,7 @@ class discover extends React.Component {
                     name: f.auth().currentUser.displayName
                 }
                 database.ref('recepies').child(rId).update({ yummies: newD });
+                database.ref(category).child(rId).update({ yummies: newD });
 
 
             } else {
@@ -385,13 +409,27 @@ class discover extends React.Component {
                                                     <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                                         <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>{item.fName}</Text>
                                                         <Text style={{ fontSize: 20, color: 'white', textAlign: 'center' }}>#{item.category}</Text>
+                                                        <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>
+                                                            <View>
+                                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(item.id , item.category) }}>
+                                                                    <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+                                                                    <Badge value={item.yummy} status="success" />
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                            <View>
+                                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.props.navigation.navigate('comment', { recipeId: item.id })}>
+                                                                    <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIMy4CpbsQdYw9t818-JCQVUmePpNb--71pIP7VUurgVXlRN54' }} style={{ width: 30, height: 30, borderRadius: 15, marginLeft: 12 }} />
+                                                                    <Badge value={item.commentCount} status="success" />
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                        </View>
                                                     </ImageBackground>
                                                 </ImageBackground>
                                             </TouchableOpacity>
                                         </View>
                                         <View>
                                             <View >
-                                                {this.state.loggedin == true ? (
+                                                {/* {this.state.loggedin == true ? (
                                                     <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'space-between' }}>
                                                         <View>
                                                             <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(item.id) }}>
@@ -420,7 +458,7 @@ class discover extends React.Component {
                                                                 </TouchableOpacity>
                                                             </View>
                                                         </View>
-                                                    )}
+                                                    )} */}
 
                                             </View>
                                         </View>
