@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text, View, ImageBackground, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { Text, View, ImageBackground, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { f, auth, database, storage } from "../../config/config";
 import { Card } from 'react-native-elements'
 import { PacmanIndicator } from 'react-native-indicators';
-
+import { Badge } from 'react-native-elements'
 
 class userProfile extends React.Component {
     constructor(props) {
@@ -19,14 +19,38 @@ class userProfile extends React.Component {
         if (params) {
             if (params.id) {
                 this.setState({
-                    id: params.id
+                    id: params.id,
+                    category: params.category
                 });
-                console.log(params.id);
                 this.fetchInfo(params.id);
+                var that = this;
+                f.auth().onAuthStateChanged(function (user) {
+                    if (user) {
 
+                        var userId = f.auth().currentUser.uid;
+                        that.setState({
+                            loggedin: true,
+                            userId: userId
+                        });
+                        database.ref('likes').child(params.id).child(f.auth().currentUser.uid).on('value', (function (snapshot) {
+                            const exsist = (snapshot.val() != null);
+                            if (exsist) {
+                                that.setState({
+                                    liked: true
+                                })
+                            } else {
+                                that.setState({
+                                    liked: false
+                                })
+                            }
+                        }), function (errorObject) {
+                            console.log("The read failed: " + errorObject.code);
+                        });
+
+                    }
+                })
             }
         }
-
     }
 
     fetchInfo = (id) => {
@@ -63,12 +87,70 @@ class userProfile extends React.Component {
                 loaded: true
             });
         })
+        database.ref('recepies').child(id).child('yummies').on('value', (function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if (exsist) {
+                data = snapshot.val()
+                that.setState({
+                    likes: data
+                })
+            }
+        }), function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
     }
     componentDidMount = () => {
         this.check();
     }
+    insertYummy = (rId, category) => {
+        var that = this;
+        database.ref('recepies').child(rId).child('yummies').once('value').then(function (snapshot) {
+            const exist = (snapshot.val() != null);
+            if (exist) {
+                let data = snapshot.val();
+                let newD = data + 1;
+                let userId = f.auth().currentUser.uid;
+                likeD = {
+                    name: f.auth().currentUser.displayName
+                }
+                database.ref('recepies').child(rId).update({ yummies: newD });
+                database.ref(category).child(rId).update({ yummies: newD });
+                database.ref('/likes/' + rId + '/' + userId).set(likeD);
 
+            } else {
+                let userId = f.auth().currentUser.uid;
+                database.ref('recepies').child(rId).update({ yummies: 1 });
+                database.ref('/likes/' + rId).update({ yummies: newD });
+                likeD = {
+                    name: f.auth().currentUser.displayName
+                }
+                database.ref('recepies').child(rId).update({ yummies: newD });
+                database.ref('/likes/' + rId + '/' + userId).set(likeD);
+            }
 
+        }).catch((error) => console.log(error))
+    }
+    deleteYummy = (rId, category) => {
+        var that = this;
+        database.ref('recepies').child(rId).child('yummies').once('value').then(function (snapshot) {
+            const exist = (snapshot.val() != null);
+            if (exist) {
+                let data = snapshot.val();
+                let newD = data - 1;
+                let userId = f.auth().currentUser.uid;
+                likeD = {
+                    name: f.auth().currentUser.displayName
+                }
+                database.ref('recepies').child(rId).update({ yummies: newD });
+                database.ref(category).child(rId).update({ yummies: newD });
+                database.ref('/likes/' + rId + '/' + userId).remove();
+            }
+        }).catch((error) => console.log(error))
+    }
+
+    likeCount = () => {
+
+    }
 
     render() {
         return (
@@ -88,6 +170,31 @@ class userProfile extends React.Component {
                         </View>
 
                         <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
+                            <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>
+                            {this.state.loggedin == true ? (
+                                <View>
+                                    {this.state.liked == true ? (
+                                        <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.deleteYummy(this.state.id, this.state.category) }}>
+                                            <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+                                            <Badge value={this.state.likes} status="success" />
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(this.state.id, this.state.category) }}>
+                                            <Image source={{ uri: 'https://www.inventicons.com//uploads/iconset/87/wm/512/Delicious-Emoticon-87.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+                                            <Badge value={this.state.likes} status="success" />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            ):(
+                                <View></View>
+                            )}
+
+                                <View>
+                                    <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.props.navigation.navigate('comment', { recipeId: this.state.id })}>
+                                        <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIMy4CpbsQdYw9t818-JCQVUmePpNb--71pIP7VUurgVXlRN54' }} style={{ width: 30, height: 30, borderRadius: 15, marginLeft: 12 }} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                             <Card
                                 title={this.state.foodName}
                                 image={{ uri: this.state.image }}>

@@ -423,17 +423,17 @@ class home extends React.Component {
                                             <Text>{this.timeConvertor(item.posted)}</Text>
                                         </View>
                                         <View>
-                                            <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe', { id: item.id })}>
+                                            <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe', { id: item.id , category:item.category})}>
                                                 <ImageBackground source={{ uri: item.url }} style={{ height: 275, width: '100%', resizeMode: 'cover' }}>
                                                     <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                                         <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>{item.fName}</Text>
                                                         <Text style={{ fontSize: 20, color: 'white', textAlign: 'center' }}>#{item.category}</Text>
                                                         <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>
                                                             <View>
-                                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(item.id , item.category) }}>
+                                                                <View style={{ flexDirection: 'row' }} >
                                                                     <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
                                                                     <Badge value={item.yummy} status="success" />
-                                                                </TouchableOpacity>
+                                                                </View>
                                                             </View>
                                                             <View>
                                                                 <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.props.navigation.navigate('comment', { recipeId: item.id })}>
