@@ -31,7 +31,6 @@ class profile extends React.Component {
                 let us = f.auth().currentUser;
                 let userId = f.auth().currentUser.uid;
                 that.registerForPushNotificationsAsync(userId)
-
                 database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
                     const exist = (snapshot.val() != null);
                     if (exist) {

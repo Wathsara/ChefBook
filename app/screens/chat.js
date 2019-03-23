@@ -239,14 +239,13 @@ const styles = StyleSheet.create({
 
     },
     userNameRow:{
-        flex:0.4,
-        flexDirection:'row',
+        flex:0.4,        
         paddingTop:2,
-        justifyContent:'space-between'
+        justifyContent:'space-between',
+        
     },
     meaasageRow:{
         flex:0.6,
-
         // width:deviceWidth * 0.8,
         // backgroundColor:'blue'
     },
@@ -295,7 +294,8 @@ const styles = StyleSheet.create({
     nameText:{
         fontSize:14,
         color:'#4e5861',
-        fontWeight:'bold'
+        fontWeight:'bold',
+        flexWrap:'wrap'
     },
     meaasageText:{
         fontSize:16,
