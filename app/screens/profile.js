@@ -13,11 +13,9 @@ class profile extends React.Component {
             photo: [],
             loaded: false,
             follow:[],
-            following:[]
+            following:[],
+            saved:[]
         }
-
-
-
     }
     componentDidMount = () => {
         var that = this;
@@ -222,6 +220,32 @@ class profile extends React.Component {
          }), function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
+
+        database.ref('users').child(uid).child('saved').on('value' , (function (snapshot) {
+            that.setState({
+                saved: []
+            });
+            const exsist = (snapshot.val() != null);
+            if(exsist) {
+                data = snapshot.val();
+                var saved = that.state.saved;
+                for (var saves in data) {
+                    let saveO = data[saves];
+                    let tempId = saves;
+                    saved.push({
+                        id: tempId,
+                        url: saveO.image,                        
+                    });
+                    console.log(saved);
+                }
+                that.setState({
+                    loaded: true
+                })
+            }
+
+         }), function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
     }
 
     photoClick = (active) => {
@@ -272,11 +296,15 @@ class profile extends React.Component {
         }
 
         if(this.state.active == 2){
-            return (
-                <View>
-                    <Text>Saved Section</Text>
-                </View>
-            )
+            return this.state.saved.map((save , index) => {
+                return (
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe' , { id : save.id})}>
+                        <View key={index} style={[{width:(width)/3} , {height:(width)/3}]}>
+                            <Image source={{uri:save.url}} style={{width:undefined , height:undefined , flex:1 , marginHorizontal:1 , marginVertical:2}}/>
+                        </View>
+                    </TouchableOpacity>
+                )
+            });
         }
         this.setState({
             photo: []

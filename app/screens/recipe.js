@@ -185,7 +185,7 @@ class userProfile extends React.Component {
                     name: f.auth().currentUser.displayName
                 }
                 saved={
-                    save:true
+                    image:that.state.image
                 }                
                 database.ref('recepies').child(rId).update({ saved: newD });
                 database.ref(category).child(rId).update({ saved: newD });
@@ -200,7 +200,7 @@ class userProfile extends React.Component {
                     name: f.auth().currentUser.displayName
                 }
                 saved={
-                    save:true
+                    image:that.state.image
                 } 
                 database.ref('recepies').child(rId).update({ saved: newD });
                 database.ref('/saves/' + rId + '/' + userId).set(likeD);
