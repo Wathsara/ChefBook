@@ -47,6 +47,21 @@ class userProfile extends React.Component {
                             console.log("The read failed: " + errorObject.code);
                         });
 
+                        database.ref('saves').child(params.id).child(f.auth().currentUser.uid).on('value', (function (snapshot) {
+                            const exsist = (snapshot.val() != null);
+                            if (exsist) {
+                                that.setState({
+                                    saved: true
+                                })
+                            } else {
+                                that.setState({
+                                    saved: false
+                                })
+                            }
+                        }), function (errorObject) {
+                            console.log("The read failed: " + errorObject.code);
+                        });
+
                     }
                 })
             }
@@ -98,6 +113,33 @@ class userProfile extends React.Component {
         }), function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
+        database.ref('recepies').child(id).child('saved').on('value', (function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if (exsist) {
+                data = snapshot.val()
+                that.setState({
+                    saveCount: data
+                })
+            }
+        }), function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
+        let count = 0;
+        database.ref('comments').child(id).orderByChild('posted').once("value").then(function (snapshot) {
+            const exsist = (snapshot.val() != null);
+            if (exsist) {
+                data = snapshot.val();
+                for (var comments in data) {
+                    count = count + 1;
+                }
+            } else {
+                count = 0;
+            }
+            that.setState({
+                comments:count
+            })
+
+        })
     }
     componentDidMount = () => {
         this.check();
@@ -130,6 +172,44 @@ class userProfile extends React.Component {
 
         }).catch((error) => console.log(error))
     }
+
+    insertSave = (rId, category) => {
+        var that = this;
+        database.ref('recepies').child(rId).child('saved').once('value').then(function (snapshot) {
+            const exist = (snapshot.val() != null);
+            if (exist) {
+                let data = snapshot.val();
+                let newD = data + 1;
+                let userId = f.auth().currentUser.uid;
+                likeD = {
+                    name: f.auth().currentUser.displayName
+                }
+                saved={
+                    save:true
+                }                
+                database.ref('recepies').child(rId).update({ saved: newD });
+                database.ref(category).child(rId).update({ saved: newD });
+                database.ref('/saves/' + rId + '/' + userId).set(likeD);
+                database.ref('/users/' + userId + '/saved/' + rId ).set(saved);
+
+            } else {
+                let userId = f.auth().currentUser.uid;
+                database.ref('recepies').child(rId).update({ saved: 1 });
+                database.ref('/saves/' + rId).update({ saved: newD });
+                likeD = {
+                    name: f.auth().currentUser.displayName
+                }
+                saved={
+                    save:true
+                } 
+                database.ref('recepies').child(rId).update({ saved: newD });
+                database.ref('/saves/' + rId + '/' + userId).set(likeD);
+                database.ref('/users/' + userId + '/saved/' + rId ).set(saved);
+            }
+
+        }).catch((error) => console.log(error))
+    }
+
     deleteYummy = (rId, category) => {
         var that = this;
         database.ref('recepies').child(rId).child('yummies').once('value').then(function (snapshot) {
@@ -144,6 +224,21 @@ class userProfile extends React.Component {
                 database.ref('recepies').child(rId).update({ yummies: newD });
                 database.ref(category).child(rId).update({ yummies: newD });
                 database.ref('/likes/' + rId + '/' + userId).remove();
+            }
+        }).catch((error) => console.log(error))
+    }
+    deleteSave = (rId, category) => {
+        var that = this;
+        database.ref('recepies').child(rId).child('saved').once('value').then(function (snapshot) {
+            const exist = (snapshot.val() != null);
+            if (exist) {
+                let data = snapshot.val();
+                let newD = data - 1;
+                let userId = f.auth().currentUser.uid;                
+                database.ref('recepies').child(rId).update({ saved: newD });
+                database.ref(category).child(rId).update({ saved: newD });
+                database.ref('/saves/' + rId + '/' + userId).remove();
+                database.ref('/users/' + userId + '/saved/' + rId).remove()
             }
         }).catch((error) => console.log(error))
     }
@@ -171,29 +266,48 @@ class userProfile extends React.Component {
 
                         <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
                             <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>
-                            {this.state.loggedin == true ? (
-                                <View>
-                                    {this.state.liked == true ? (
-                                        <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.deleteYummy(this.state.id, this.state.category) }}>
-                                            <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
-                                            <Badge value={this.state.likes} status="success" />
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(this.state.id, this.state.category) }}>
-                                            <Image source={{ uri: 'https://www.inventicons.com//uploads/iconset/87/wm/512/Delicious-Emoticon-87.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
-                                            <Badge value={this.state.likes} status="success" />
-                                        </TouchableOpacity>
+                                {this.state.loggedin == true ? (
+                                    <View>
+                                        {this.state.liked == true ? (
+                                            <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.deleteYummy(this.state.id, this.state.category) }}>
+                                                <Image source={{ uri: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/face-savouring-delicious-food.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+                                                <Badge value={this.state.likes} status="success" />
+                                            </TouchableOpacity>
+                                        ) : (
+                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertYummy(this.state.id, this.state.category) }}>
+                                                    <Image source={{ uri: 'https://www.inventicons.com//uploads/iconset/87/wm/512/Delicious-Emoticon-87.png' }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+                                                    <Badge value={this.state.likes} status="success" />
+                                                </TouchableOpacity>
+                                            )}
+                                    </View>
+                                ) : (
+                                        <View></View>
                                     )}
-                                </View>
-                            ):(
-                                <View></View>
-                            )}
 
                                 <View>
                                     <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.props.navigation.navigate('comment', { recipeId: this.state.id })}>
                                         <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIMy4CpbsQdYw9t818-JCQVUmePpNb--71pIP7VUurgVXlRN54' }} style={{ width: 30, height: 30, borderRadius: 15, marginLeft: 12 }} />
+                                        <Badge value={this.state.comments} status="success" />
                                     </TouchableOpacity>
                                 </View>
+                                {this.state.loggedin == true ? (
+                                    <View>
+                                        {this.state.saved == true ? (
+                                            <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.deleteSave(this.state.id, this.state.category) }}>
+                                                <Image source={{ uri: 'https://cdn.iconscout.com/icon/premium/png-256-thumb/save-41-157698.png' }} style={{ width: 30, height: 30, borderRadius: 15 ,marginLeft: 12 }} />
+                                                <Badge value={this.state.saveCount} status="success" />
+                                            </TouchableOpacity>
+                                        ) : (
+                                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertSave(this.state.id, this.state.category) }}>
+                                                    <Image source={{ uri: 'https://cdn2.iconfinder.com/data/icons/apple-classic/100/Apple_classic_10Icon_5px_grid-04-512.png' }} style={{ width: 30, height: 30, borderRadius: 15 ,marginLeft: 12 }} />
+                                                    <Badge value={this.state.saveCount} status="success" />
+                                                </TouchableOpacity>
+                                            )}
+                                    </View>
+                                ) : (
+                                        <View></View>
+                                    )}
+
                             </View>
                             <Card
                                 title={this.state.foodName}

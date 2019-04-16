@@ -313,7 +313,7 @@ class comment extends React.Component {
                         <TextInput underlineColorAndroid="#428AF8" style={{ borderRadius: 5, borderColor: 'grey', marginHorizontal: 10, marginVertical: 10, padding: 5 }}
                             placeholder={'Enter Comment Here'}
                             editable={true}
-                            multiline={true}
+                            multiline={false}
                             maxlength={750}
                             onChangeText={(text) => this.setState({ newComment: text })}
                             ref={input => { this.textInput = input }}
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderColor: '#FB8C00',
         borderWidth: 1,
-        // height:200,
+        height:'auto',
         alignItems: 'center',
         justifyContent: 'flex-start',
         // marginBottom:20,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
         // marginBottom:10,
         // width:deviceWidth,
-        height: 80,
+        height: 'auto',
         flexDirection: 'row'
     },
     profilePicArea: {
@@ -428,12 +428,12 @@ const styles = StyleSheet.create({
 
     nameText: {
         fontSize: 14,
-        color: '#4e5861',
+        color: '#95a3ad',
         fontWeight: 'bold'
     },
     meaasageText: {
         fontSize: 16,
-        color: '#95a3ad'
+        color: '#000000'
     },
     paraText: {
         fontSize: 16,
