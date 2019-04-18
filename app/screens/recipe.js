@@ -102,6 +102,14 @@ class userProfile extends React.Component {
                 loaded: true
             });
         })
+        database.ref('recepies').child(id).child('category').once('value').then(function (snapshot) {
+            const exist = (snapshot.val() != null);
+            if (exist) data = snapshot.val();
+            that.setState({
+                category: data,                
+            });
+        })
+
         database.ref('recepies').child(id).child('yummies').on('value', (function (snapshot) {
             const exsist = (snapshot.val() != null);
             if (exsist) {
@@ -162,6 +170,7 @@ class userProfile extends React.Component {
             } else {
                 let userId = f.auth().currentUser.uid;
                 database.ref('recepies').child(rId).update({ yummies: 1 });
+                database.ref(category).child(rId).update({ yummies: 1 });
                 database.ref('/likes/' + rId).update({ yummies: newD });
                 likeD = {
                     name: f.auth().currentUser.displayName
@@ -195,14 +204,14 @@ class userProfile extends React.Component {
             } else {
                 let userId = f.auth().currentUser.uid;
                 database.ref('recepies').child(rId).update({ saved: 1 });
+                database.ref(category).child(rId).update({ saved: 1 });
                 database.ref('/saves/' + rId).update({ saved: newD });
                 likeD = {
                     name: f.auth().currentUser.displayName
                 }
                 saved={
                     image:that.state.image
-                } 
-                database.ref('recepies').child(rId).update({ saved: newD });
+                }                
                 database.ref('/saves/' + rId + '/' + userId).set(likeD);
                 database.ref('/users/' + userId + '/saved/' + rId ).set(saved);
             }

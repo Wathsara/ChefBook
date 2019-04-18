@@ -17,7 +17,9 @@ class newR extends React.Component {
             discription :'',
             foodName:'',
             ingrediants: '',
-            progress:0
+            progress:0,
+            category:'breakfast'
+
 
         }
 
@@ -155,9 +157,9 @@ class newR extends React.Component {
         };
 
         database.ref('/recepies/'+imageid).set(recepiesObj);
-        database.ref('users/'+userID+'/recepies/'+imageid).set(recepiesObj);
-        database.ref('users/'+userID+'/'+category+'/'+imageid).set(recepiesObj);
-        database.ref(category+'/'+imageid).set(recepiesObj);
+        database.ref('/users/'+userID+'/recepies/'+imageid).set(recepiesObj);
+        database.ref('/users/'+userID+'/'+category+'/'+imageid).set(recepiesObj);
+        database.ref('/'+category+'/'+imageid).set(recepiesObj);
 
 
         alert('SuccessFully Published!!');
@@ -229,7 +231,7 @@ class newR extends React.Component {
                                     />
                                     <Picker
                                         mode='dropdown'
-                                        selectedValue={this.state.category}
+                                        selectedValue={'breakfast'}
                                         style={{height: 50, width: '100%' , padding:15, marginHorizontal:10 }}
                                         onValueChange={(itemValue, itemIndex) =>
                                             this.setState({category: itemValue})
@@ -239,7 +241,7 @@ class newR extends React.Component {
                                         <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Lunch" value="lunch" />
                                         <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Cake" value="cake" />
                                         <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Beverages" value="beverages" />
-                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Sweet" value="other" />
+                                        <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Sweet" value="sweet" />
                                         <Picker.Item style={{padding:10, borderBottomWidth:1, marginVertical:2 }} label="Other" value="other" />
 
                                     </Picker>
