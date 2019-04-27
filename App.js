@@ -18,7 +18,7 @@ import follow from './app/screens/follow.js';
 import following from './app/screens/following.js';
 import searchFood from './app/screens/searchFood.js';
 import searchChefs from './app/screens/searchChefs.js';
-
+import Ionicons from "react-native-vector-icons/FontAwesome";
 
 console.disableYellowBox = true;
 const homeIcon = <Icon name='camera-retro' type='font-awesome' color='#517fa4' />
@@ -29,10 +29,8 @@ const TabStack = createBottomTabNavigator(
             screen: home,
             navigationOptions: {
                 tabBarLabel: "Home",
-
                 tabBarIcon: ({ tintColor }) => (
-                    <Icon name='ios-home' type='ionicon' color='#517fa4' />
-
+                    <Ionicons name="home" size={25} color={tintColor} />
                 )
             },
         },
@@ -41,16 +39,7 @@ const TabStack = createBottomTabNavigator(
             navigationOptions: {
                 tabBarLabel: "Discover",
                 tabBarIcon: ({ tintColor }) => (
-                    <Icon name='ios-paper-plane' type='ionicon' color='#517fa4' />
-                )
-            },
-        },
-        New: {
-            screen: newR,
-            navigationOptions: {
-                tabBarLabel: "New",
-                tabBarIcon: ({ tintColor }) => (
-                    <Icon name='ios-add' type='ionicon' color='#517fa4' />
+                    <Ionicons name="paper-plane" size={25} color={tintColor} />
                 )
             },
         },
@@ -59,10 +48,20 @@ const TabStack = createBottomTabNavigator(
             navigationOptions: {
                 tabBarLabel: "Profile",
                 tabBarIcon: ({ tintColor }) => (
-                    <Icon name='ios-person' type='ionicon' color='#517fa4' />
+                    <Ionicons name="user" size={25} color={tintColor} />
                 )
             },
         },
+        New: {
+            screen: newR,
+            navigationOptions: {
+                tabBarLabel: "New",
+                tabBarIcon: ({ tintColor }) => (
+                    <Ionicons name="plus" size={25} color={tintColor} />
+                )
+            },
+        },
+        
 
         notification: {
             screen: notification,
@@ -73,11 +72,11 @@ const TabStack = createBottomTabNavigator(
                         {1 != 0 ? (
                             <View>
                                 <Badge status="error" />
-                                <Icon name='ios-notifications' type='ionicon' color='#517fa4' />
+                                <Ionicons name="bell" size={25} color={tintColor} />
                             </View>
                         ) : (
                                 <View>
-                                    <Icon name='ios-notifications' type='ionicon' color='#517fa4' />
+                                    <Ionicons name="bell" size={25} color={tintColor} />
                                 </View>
                             )}
                     </View>
@@ -90,7 +89,7 @@ const TabStack = createBottomTabNavigator(
             navigationOptions: {
                 tabBarLabel: "Chat",
                 tabBarIcon: ({ tintColor }) => (
-                    <Icon name='ios-chatboxes' type='ionicon' color='#517fa4' />
+                    <Ionicons name="comments" size={25} color={tintColor} />
                 )
             },
         },
@@ -99,13 +98,23 @@ const TabStack = createBottomTabNavigator(
             navigationOptions: {
                 tabBarLabel: "Search",
                 tabBarIcon: ({ tintColor }) => (
-                    <Icon name='ios-search' type='ionicon' color='#517fa4' />
+                    <Ionicons name="search" size={25} color={tintColor} />
                 )
             },
         },
         // foodFind: { screen: foodFind}
 
-    }
+    },
+    {
+        tabBarOptions: {
+            activeTintColor: "#FF847C",
+            inactiveTintColor: "white",
+            style: {
+                backgroundColor: '#2A363B',
+            }
+        },
+    } 
+    
 
 
 )
@@ -118,8 +127,8 @@ const MainStack = createStackNavigator(
         message: { screen: message },
         follow: { screen: follow },
         following: { screen: following },
-        searchFood: {screen: searchFood},
-        searchChefs: {screen: searchChefs}
+        searchFood: { screen: searchFood },
+        searchChefs: { screen: searchChefs }
 
     },
     {
@@ -178,7 +187,7 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#000',
         alignItems: 'center',
         justifyContent: 'center',
     },
