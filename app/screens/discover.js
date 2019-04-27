@@ -292,8 +292,12 @@ class discover extends React.Component {
             <View style={{ flex: 1 }}>
                 {this.maekOrder()}
 
-                <View style={{ height: 70, paddingTop: 30, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 24, color: '#ffffff' }}>Discover</Text>
+                <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                    <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                        <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 24, color: '#ffffff',paddingTop:30 }}>Discover</Text>
+                        </ImageBackground>
+                    </ImageBackground>
                 </View>
                 {this.state.loading == false ? (
                     <View>
@@ -302,7 +306,7 @@ class discover extends React.Component {
                                 <View>
                                     <TouchableOpacity onPress={() => this.filterCategory('breakfast')}>
                                         <ImageBackground source={{ uri: 'https://olo-images-live.imgix.net/9c/9cf9aba367a4491d89f5ddcc227a9879.jpg?auto=format%2Ccompress&q=60&cs=tinysrgb&w=500&h=333&fit=fill&fm=png32&bg=transparent&s=39190b5a3d1b6faeb656e6d97d68ff95' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={require('../data/black.jpg')} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Breakfast</Text>
                                             </ImageBackground>
                                         </ImageBackground>
@@ -312,7 +316,7 @@ class discover extends React.Component {
                                 <View>
                                     <TouchableOpacity onPress={() => this.filterCategory('lunch')}>
                                         <ImageBackground source={{ uri: 'https://www.ecoliteracy.org/sites/default/files/styles/hero_image_small/public/media/rethinking-school-lunch-guide.jpg?itok=JFKW4vOU&timestamp=1490386525' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={require('../data/black.jpg')} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Lunch</Text>
                                             </ImageBackground>
                                         </ImageBackground>
@@ -322,7 +326,7 @@ class discover extends React.Component {
                                 <View>
                                     <TouchableOpacity onPress={() => this.filterCategory('dinner')}>
                                         <ImageBackground source={{ uri: 'https://img.taste.com.au/SN4APRsT/w720-h480-cfill-q80/taste/2017/05/steak-diane-dinner-bowl-126170-2.jpg' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={require('../data/black.jpg')} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Dinner</Text>
                                             </ImageBackground>
                                         </ImageBackground>
@@ -332,7 +336,7 @@ class discover extends React.Component {
                                 <View>
                                     <TouchableOpacity onPress={() => this.filterCategory('cake')}>
                                         <ImageBackground source={{ uri: 'https://www.bbcgoodfood.com/sites/default/files/styles/recipe/public/recipe/recipe-image/2018/02/easter-nest-cake.jpg?itok=-ZAZCCss' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={require('../data/black.jpg')} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Cake</Text>
                                             </ImageBackground>
                                         </ImageBackground>
@@ -342,7 +346,7 @@ class discover extends React.Component {
                                 <View>
                                     <TouchableOpacity onPress={() => this.filterCategory('beverages')}>
                                         <ImageBackground source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIfBY5naNC0jEWXkfqM3NprUhKX5xAjdfNnbHFnXzLgofan8hE' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={require('../data/black.jpg')} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Beverages</Text>
                                             </ImageBackground>
                                         </ImageBackground>
@@ -351,7 +355,7 @@ class discover extends React.Component {
                                 <View>
                                     <TouchableOpacity onPress={() => this.filterCategory('sweets')}>
                                         <ImageBackground source={{ uri: 'https://www.hindustantimes.com/rf/image_size_640x362/HT/p2/2015/11/10/Pictures/_8311bdee-878c-11e5-9788-42b4b9d38c49.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={require('../data/black.jpg')} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Sweets</Text>
                                             </ImageBackground>
                                         </ImageBackground>
@@ -361,7 +365,7 @@ class discover extends React.Component {
                                 <View>
                                     <TouchableOpacity onPress={() => this.filterCategory('other')}>
                                         <ImageBackground source={{ uri: 'https://www.cdc.gov/features/salmonella-food/salmonella-food_456px.jpg' }} style={{ height: 50, marginHorizontal: 2, width: 75, resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
+                                            <ImageBackground source={require('../data/black.jpg')} style={{ height: 50, width: 75, resizeMode: 'cover', justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 12, color: 'white', textAlign: 'center', fontWeight: 'bold' }}>Other</Text>
                                             </ImageBackground>
                                         </ImageBackground>
@@ -380,7 +384,7 @@ class discover extends React.Component {
                 {this.state.loading == true ? (
                     <View style={{ flex: 1, backgroundColor: '#ffffff', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
                         <ImageBackground source={{ uri: 'https://flavorverse.com/wp-content/uploads/2017/12/Afghan-Foods.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
-                            <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                            <ImageBackground source={require('../data/black.jpg') } style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                 <PacmanIndicator size={70} color="white" />
                             </ImageBackground>
                         </ImageBackground>
@@ -408,7 +412,7 @@ class discover extends React.Component {
                                         <View>
                                             <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe', { id: item.id })}>
                                                 <ImageBackground source={{ uri: item.url }} style={{ height: 275, width: '100%', resizeMode: 'cover' }}>
-                                                    <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                                    <ImageBackground source={require('../data/black.jpg')} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                                         <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>{item.fName}</Text>
                                                         <Text style={{ fontSize: 20, color: 'white', textAlign: 'center' }}>#{item.category}</Text>
                                                         <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>

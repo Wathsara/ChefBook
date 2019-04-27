@@ -106,7 +106,7 @@ class userProfile extends React.Component {
             const exist = (snapshot.val() != null);
             if (exist) data = snapshot.val();
             that.setState({
-                category: data,                
+                category: data,
             });
         })
 
@@ -144,7 +144,7 @@ class userProfile extends React.Component {
                 count = 0;
             }
             that.setState({
-                comments:count
+                comments: count
             })
 
         })
@@ -193,13 +193,13 @@ class userProfile extends React.Component {
                 likeD = {
                     name: f.auth().currentUser.displayName
                 }
-                saved={
-                    image:that.state.image
-                }                
+                saved = {
+                    image: that.state.image
+                }
                 database.ref('recepies').child(rId).update({ saved: newD });
                 database.ref(category).child(rId).update({ saved: newD });
                 database.ref('/saves/' + rId + '/' + userId).set(likeD);
-                database.ref('/users/' + userId + '/saved/' + rId ).set(saved);
+                database.ref('/users/' + userId + '/saved/' + rId).set(saved);
 
             } else {
                 let userId = f.auth().currentUser.uid;
@@ -209,11 +209,11 @@ class userProfile extends React.Component {
                 likeD = {
                     name: f.auth().currentUser.displayName
                 }
-                saved={
-                    image:that.state.image
-                }                
+                saved = {
+                    image: that.state.image
+                }
                 database.ref('/saves/' + rId + '/' + userId).set(likeD);
-                database.ref('/users/' + userId + '/saved/' + rId ).set(saved);
+                database.ref('/users/' + userId + '/saved/' + rId).set(saved);
             }
 
         }).catch((error) => console.log(error))
@@ -243,7 +243,7 @@ class userProfile extends React.Component {
             if (exist) {
                 let data = snapshot.val();
                 let newD = data - 1;
-                let userId = f.auth().currentUser.uid;                
+                let userId = f.auth().currentUser.uid;
                 database.ref('recepies').child(rId).update({ saved: newD });
                 database.ref(category).child(rId).update({ saved: newD });
                 database.ref('/saves/' + rId + '/' + userId).remove();
@@ -265,13 +265,20 @@ class userProfile extends React.Component {
 
                     <View style={{ flex: 1, backgroundColor: '#e8e8e8' }}>
 
-                        <View style={{ flexDirection: 'row', height: 70, paddingTop: 30, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'space-between', alignItems: 'center' }}>
-                            <TouchableOpacity style={{ textAlign: 'left' }} onPress={() => this.props.navigation.goBack()}>
-                                <Text style={{ fontWeight: 'bold', padding: 10, fontSize: 14, width: 100 }}>Back</Text>
-                            </TouchableOpacity>
-                            <Text style={{ fontSize: 20 }}>Recipe</Text>
-                            <Text style={{ fontSize: 18, width: 100 }}></Text>
+                        <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                            <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                                <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                    <View flexDirection='row' style={{ paddingTop: 30 }}>
+                                        <TouchableOpacity style={{ alignSelf:'flex-start' }} onPress={() => this.props.navigation.goBack()}>
+                                            <Text style={{ color: 'white', fontSize: 14, width: 150 ,textAlign:'left'}}>Back</Text>
+                                        </TouchableOpacity>
+                                        <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold' }}>Recipe</Text>
+                                        <Text style={{ fontSize: 18, width: 150 }}></Text>
+                                    </View>
+                                </ImageBackground>
+                            </ImageBackground>
                         </View>
+
 
                         <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
                             <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>
@@ -303,12 +310,12 @@ class userProfile extends React.Component {
                                     <View>
                                         {this.state.saved == true ? (
                                             <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.deleteSave(this.state.id, this.state.category) }}>
-                                                <Image source={{ uri: 'https://cdn.iconscout.com/icon/premium/png-256-thumb/save-41-157698.png' }} style={{ width: 30, height: 30, borderRadius: 15 ,marginLeft: 12 }} />
+                                                <Image source={{ uri: 'https://cdn.iconscout.com/icon/premium/png-256-thumb/save-41-157698.png' }} style={{ width: 30, height: 30, borderRadius: 15, marginLeft: 12 }} />
                                                 <Badge value={this.state.saveCount} status="success" />
                                             </TouchableOpacity>
                                         ) : (
                                                 <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { this.insertSave(this.state.id, this.state.category) }}>
-                                                    <Image source={{ uri: 'https://cdn2.iconfinder.com/data/icons/apple-classic/100/Apple_classic_10Icon_5px_grid-04-512.png' }} style={{ width: 30, height: 30, borderRadius: 15 ,marginLeft: 12 }} />
+                                                    <Image source={{ uri: 'https://cdn2.iconfinder.com/data/icons/apple-classic/100/Apple_classic_10Icon_5px_grid-04-512.png' }} style={{ width: 30, height: 30, borderRadius: 15, marginLeft: 12 }} />
                                                     <Badge value={this.state.saveCount} status="success" />
                                                 </TouchableOpacity>
                                             )}

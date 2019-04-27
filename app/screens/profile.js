@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Image , TouchableOpacity , Dimensions , ScrollView, TouchableHighlight } from 'react-native';
+import { Text, View, Image , TouchableOpacity , Dimensions , ScrollView, ImageBackground } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 import { Icon,SocialIcon  } from 'react-native-elements';
 var {width , height} = Dimensions.get('window');
@@ -372,9 +372,13 @@ class profile extends React.Component {
 
       return (
         <View style={{flex:1}}>
-            <View style={{height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'center', alignItems: 'center' }}>
-               <Text style = {{fontSize: 18}}>Profile</Text>
-            </View>
+             <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                    <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                        <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 24, color: '#ffffff',paddingTop:30 }}>Profile</Text>
+                        </ImageBackground>
+                    </ImageBackground>
+                </View>
             { this.state.loggedin == true ? (
                 <View style={{flex:1}}>
 

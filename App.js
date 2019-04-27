@@ -20,7 +20,7 @@ import searchFood from './app/screens/searchFood.js';
 import searchChefs from './app/screens/searchChefs.js';
 
 
-
+console.disableYellowBox = true;
 const homeIcon = <Icon name='camera-retro' type='font-awesome' color='#517fa4' />
 
 const TabStack = createBottomTabNavigator(

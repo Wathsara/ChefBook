@@ -142,13 +142,19 @@ class following extends React.Component {
         return (
 
             <View style={{ flex: 1, backgroundColor: '#e8e8e8' }}>
-                <View style={{ flexDirection: 'row', height: 70, paddingTop: 30, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TouchableOpacity style={{ textAlign: 'left' }} onPress={() => this.props.navigation.goBack()}>
-                        <Text style={{ fontWeight: 'bold', padding: 10, fontSize: 14, width: 100 }}>Back</Text>
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 20 }}>Following</Text>
-                    <Text style={{ fontSize: 18, width: 100 }}></Text>
-                </View>
+               <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                            <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                                <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                    <View flexDirection='row' style={{ paddingTop: 30 }}>
+                                        <TouchableOpacity style={{ alignSelf:'flex-start' }} onPress={() => this.props.navigation.goBack()}>
+                                            <Text style={{ color: 'white', fontSize: 14, width: 150 ,textAlign:'left'}}>Back</Text>
+                                        </TouchableOpacity>
+                                        <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold' }}>Followings</Text>
+                                        <Text style={{ fontSize: 18, width: 150 }}></Text>
+                                    </View>
+                                </ImageBackground>
+                            </ImageBackground>
+                        </View>
                 <PTRView onRefresh={this._refresh} >
                     <View style={{ flex: 1 }}>
                         {this.state.loaded == true ? (

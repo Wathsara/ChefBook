@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    TouchableOpacity, Text, View, TextInput, Image, ActivityIndicator, KeyboardAvoidingView, ToastAndroid,
+    TouchableOpacity, Text, View, TextInput, ImageBackground, ActivityIndicator, KeyboardAvoidingView, ToastAndroid,
     ScrollView, StyleSheet
 } from 'react-native';
 import { database, f } from "../../config/config";
@@ -279,13 +279,20 @@ class notification extends React.Component {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: 'row', height: 70, paddingTop: 30, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TouchableOpacity style={{ textAlign: 'left' }} onPress={() => this.props.navigation.goBack()}>
-                        <Text style={{ fontWeight: 'bold', padding: 10, fontSize: 14, width: 100 }}>Back</Text>
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 14 }}>{this.state.fname}</Text>
-                    <Text style={{ fontSize: 18, width: 100 }}></Text>
+                <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                    <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                        <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                            <View flexDirection='row' style={{paddingTop:30}}>
+                                <TouchableOpacity style={{ textAlign: 'left' }} onPress={() => this.props.navigation.goBack()}>
+                                    <Text style={{ color: 'white', fontSize: 14, width: 100 }}>Back</Text>
+                                </TouchableOpacity>
+                                <Text style={{ color: 'white', fontSize: 14,fontWeight: 'bold' }}>{this.state.fname}</Text>
+                                <Text style={{ fontSize: 18, width: 100 }}></Text>
+                            </View>
+                        </ImageBackground>
+                    </ImageBackground>
                 </View>
+
                 <View style={styles.container}>
                     {this.state.loggedin == true ? (
                         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}

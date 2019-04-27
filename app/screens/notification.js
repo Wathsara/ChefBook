@@ -175,8 +175,12 @@ class notification extends React.Component {
         return (
 
             <View style={{ flex: 1, backgroundColor: '#e8e8e8' }} >
-                <View style={{ height: 70, paddingTop: 30, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 24, color: '#ffffff' }}>Notifications</Text>
+                <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                    <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                        <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 24, color: '#ffffff',paddingTop:30 }}>Notifications</Text>
+                        </ImageBackground>
+                    </ImageBackground>
                 </View>
                 <View style={{ flex: 1 }}>
                     {this.state.loaded == true ? (
@@ -197,7 +201,7 @@ class notification extends React.Component {
                     ) : (
                             <View style={{ flex: 1, backgroundColor: '#ffffff', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
                                 <ImageBackground source={{ uri: 'https://flavorverse.com/wp-content/uploads/2017/12/Afghan-Foods.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
-                                    <ImageBackground source={{ uri: 'https://starksfitness.co.uk/starks-2018/wp-content/uploads/2019/01/Black-Background-DX58.jpg' }} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                    <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                         <PacmanIndicator size={70} color="white" />
                                     </ImageBackground>
                                 </ImageBackground>

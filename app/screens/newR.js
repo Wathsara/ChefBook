@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Text, View, Image, TouchableOpacity, TextInput, ActivityIndicator, ScrollView, KeyboardAvoidingView, Picker,
-    ToastAndroid
+    ToastAndroid,ImageBackground
 } from 'react-native';
 import { f, auth, database , storage} from "../../config/config";
 import { Permissions , ImagePicker } from 'expo';
@@ -19,8 +19,6 @@ class newR extends React.Component {
             ingrediants: '',
             progress:0,
             category:'breakfast'
-
-
         }
 
     }
@@ -203,12 +201,12 @@ class newR extends React.Component {
     render() {
         return (
             <KeyboardAvoidingView  style={{flex:1}} enabled={true} behavior = "padding">
-                <View style={{flexDirection:'row', height: 70 , paddingTop: 30 , backgroundColor: '#ffffff', borderColor: '#7CFC00' , borderBottomWidth: 1.5 , justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TouchableOpacity style={{textAlign:'left'}} onPress={() => this.props.navigation.goBack()}>
-                        <Text style={{fontWeight:'bold', padding:10 , fontSize:12 , width:100}}>Go Back</Text>
-                    </TouchableOpacity>
-                    <Text style = {{fontSize: 20}}>New Recipe</Text>
-                    <Text style = {{fontSize: 18, width:100}}></Text>
+                 <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                    <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                        <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 24, color: '#ffffff',paddingTop:30 }}>New Recipe</Text>
+                        </ImageBackground>
+                    </ImageBackground>
                 </View>
                 { this.state.loggedin == true && this.state.uploading == false ? (
                     <View style={{flex:1 }}>
