@@ -1,7 +1,8 @@
 import React from 'react';
-import { Text, View, Image, TouchableOpacity, ScrollView, Dimensions,ImageBackground } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground } from 'react-native';
 import { f, auth, database, storage } from "../../config/config";
 import { Icon } from 'react-native-elements';
+import Ionicons from "react-native-vector-icons/FontAwesome";
 var { width, height } = Dimensions.get('window');
 import { PacmanIndicator } from 'react-native-indicators';
 class userProfile extends React.Component {
@@ -302,7 +303,7 @@ class userProfile extends React.Component {
                 {this.state.loaded == true ? (
 
                     <View style={{ flex: 1 }}>
-                    <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
                             <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
                                 <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                     <View flexDirection='row' style={{ paddingTop: 30 }}>
@@ -315,7 +316,7 @@ class userProfile extends React.Component {
                                 </ImageBackground>
                             </ImageBackground>
                         </View>
-                        
+
                         <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', padding: 5 }}>
                             <View>
                                 <Image source={{ uri: this.state.avatar }} style={{ width: 100, height: 100, borderRadius: 50 }} />
@@ -375,14 +376,19 @@ class userProfile extends React.Component {
                         <View style={{ flex: 1, marginTop: 20 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-around', height: 15, alignItems: 'center' }}>
                                 <TouchableOpacity onPress={() => this.photoClick(0)}  >
-                                    <Icon name='ios-images' type='ionicon' color='#517fa4' />
+                                    {this.state.active == 0 ? (
+                                        <Ionicons name="image" size={25} color='#FF847C' />
+                                    ) : (
+                                            <Ionicons name="image" size={25} color='#000' />
+                                        )}
+
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.saveClick(2)} active={this.state.active == 2}>
-                                    <Icon
-                                        name='save'
-                                        type='font-awesome'
-                                        color='#517fa4'
-                                    />
+                                    {this.state.active == 2 ? (
+                                        <Ionicons name="save" size={25} color='#FF847C' />
+                                    ) : (
+                                            <Ionicons name="save" size={25} color='#000' />
+                                        )}
                                 </TouchableOpacity>
 
                             </View>
