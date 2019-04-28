@@ -1,30 +1,38 @@
 import React from 'react';
-import { Text, View, Image , TouchableOpacity , Dimensions , ScrollView, ImageBackground } from 'react-native';
-import { f, auth, database , storage} from "../../config/config";
-import { Icon,SocialIcon  } from 'react-native-elements';
-var {width , height} = Dimensions.get('window');
+import { Text, View, Image, TouchableOpacity, Dimensions, ScrollView, ImageBackground, TextInput } from 'react-native';
+import { f, auth, database, storage } from "../../config/config";
+import { SocialIcon } from 'react-native-elements';
+var { width, height } = Dimensions.get('window');
+import { Card, Button } from 'react-native-elements'
 import { Permissions, Notifications } from 'expo';
+import Ionicons from "react-native-vector-icons/FontAwesome";
+import Icon from 'react-native-vector-icons/AntDesign';
+import Modal from "react-native-modal";
+import { PacmanIndicator } from 'react-native-indicators';
 class profile extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             loggedin: false,
             active: 0,
             photo: [],
             loaded: false,
-            follow:[],
-            following:[],
-            saved:[]
+            follow: [],
+            following: [],
+            saved: [],
+            modal: false,
+            subject: '',
+            question: ''
         }
     }
     componentDidMount = () => {
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
-            if(user){
+            if (user) {
 
                 that.setState({
                     loggedin: true,
-                    active:0
+                    active: 0
                 });
                 let us = f.auth().currentUser;
                 let userId = f.auth().currentUser.uid;
@@ -32,13 +40,13 @@ class profile extends React.Component {
                 database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
                     const exist = (snapshot.val() != null);
                     if (exist) {
-                        var data= snapshot.val();
+                        var data = snapshot.val();
                         that.setState({
                             name: data
                         })
                         database.ref('users').child(userId).child('avatar').once('value').then(function (snapshot) {
                             const exist = (snapshot.val() != null);
-                            if (exist){
+                            if (exist) {
                                 var data = snapshot.val();
                                 that.setState({
                                     avatar: data,
@@ -46,52 +54,52 @@ class profile extends React.Component {
                             }
 
                         })
-                        database.ref('users').child(userId).child('follower').on('value' , (function (snapshot) {
+                        database.ref('users').child(userId).child('follower').on('value', (function (snapshot) {
 
                             const exsist = (snapshot.val() != null);
-                            if( exsist) {
-                                var data=snapshot.val();
+                            if (exsist) {
+                                var data = snapshot.val();
                                 console.log(data)
                                 var followers = that.state.follow
-                                for(var follow in data){
+                                for (var follow in data) {
                                     let followObj = data[follow]
                                     followers.push({
-                                        name:followObj.name,
-                                        avatar:followObj.avatar,
-                                        friend:followObj.friend
+                                        name: followObj.name,
+                                        avatar: followObj.avatar,
+                                        friend: followObj.friend
                                     });
                                 }
-                            }else{
+                            } else {
                                 that.setState({
-                                    follow:[]
+                                    follow: []
                                 })
                             }
 
-                        }),function (errorObject) {
+                        }), function (errorObject) {
                             console.log("The read failed: " + errorObject.code);
                         });
 
-                        database.ref('users').child(userId).child('following').on('value' , (function (snapshot) {
+                        database.ref('users').child(userId).child('following').on('value', (function (snapshot) {
 
                             const exsist = (snapshot.val() != null);
-                            if( exsist) {
-                                var data=snapshot.val();
+                            if (exsist) {
+                                var data = snapshot.val();
                                 let followings = that.state.following
-                                for(var following in data){
+                                for (var following in data) {
                                     let followingObj = data[following]
                                     followings.push({
-                                        name:followingObj.name,
-                                        avatar:followingObj.avatar,
-                                        friend:followingObj.friend
+                                        name: followingObj.name,
+                                        avatar: followingObj.avatar,
+                                        friend: followingObj.friend
                                     });
                                 }
-                            }else{
+                            } else {
                                 that.setState({
-                                    following:[]
+                                    following: []
                                 })
                             }
 
-                        }),function (errorObject) {
+                        }), function (errorObject) {
                             console.log("The read failed: " + errorObject.code);
                         });
                         that.loadFeed();
@@ -102,7 +110,7 @@ class profile extends React.Component {
                             email: us.email,
                             avatar: us.photoURL
                         }
-                        database.ref('users/' +userId).set(newUser).catch((error) => console.log(error));
+                        database.ref('users/' + userId).set(newUser).catch((error) => console.log(error));
                         database.ref('users').child(userId).child('name').once('value').then(function (snapshot) {
                             const exist = (snapshot.val() != null);
                             if (exist) data = snapshot.val();
@@ -117,37 +125,37 @@ class profile extends React.Component {
                                 avatar: data,
                             });
                         }).catch((error) => console.log(error))
-                        database.ref('users').child(userId).child('follower').on('value' , (function (snapshot) {
+                        database.ref('users').child(userId).child('follower').on('value', (function (snapshot) {
                             const exsist = (snapshot.val() != null);
-                            if( exsist) {
-                                var data=snapshot.val();
+                            if (exsist) {
+                                var data = snapshot.val();
                                 console.log(data)
                                 var followers = that.state.follow
-                                for(var follow in data){
+                                for (var follow in data) {
                                     let followObj = data[follow]
                                     followers.push({
-                                        friend:followObj.friend,
-                                        name:followObj.name,
-                                        avatar:followObj.avatar,
+                                        friend: followObj.friend,
+                                        name: followObj.name,
+                                        avatar: followObj.avatar,
                                     });
                                 }
-                            }else{
+                            } else {
                                 that.setState({
-                                    follow:[]
+                                    follow: []
                                 })
                             }
 
-                        }),function (errorObject) {
+                        }), function (errorObject) {
                             console.log("The read failed: " + errorObject.code);
                         });
 
-                        database.ref('users').child(userId).child('following').on('value' , (function (snapshot) {
+                        database.ref('users').child(userId).child('following').on('value', (function (snapshot) {
 
                             const exsist = (snapshot.val() != null);
-                            if( exsist) {
-                                var data=snapshot.val();
+                            if (exsist) {
+                                var data = snapshot.val();
                                 let followings = that.state.following
-                                for(var following in data){
+                                for (var following in data) {
                                     let followingObj = data[following]
                                     followings.push({
                                         friend: followingObj.friend,
@@ -155,13 +163,13 @@ class profile extends React.Component {
                                         avatar: followingObj.avatar,
                                     });
                                 }
-                            }else{
+                            } else {
                                 that.setState({
-                                    following:[]
+                                    following: []
                                 })
                             }
 
-                        }),function (errorObject) {
+                        }), function (errorObject) {
                             console.log("The read failed: " + errorObject.code);
                         });
                         that.loadFeed();
@@ -169,14 +177,15 @@ class profile extends React.Component {
 
                 })
 
-            }else{
+            } else {
                 that.setState({
                     loggedin: false,
-                    photo:[]
+                    photo: []
                 })
 
 
             }
+            
         })
 
     }
@@ -186,17 +195,17 @@ class profile extends React.Component {
         var uid = f.auth().currentUser.uid;
         this.setState({
             photo: [],
-            active:0
+            active: 0
 
         });
 
         var that = this;
-        database.ref('users').child(uid).child('recepies').on('value' , (function (snapshot) {
+        database.ref('users').child(uid).child('recepies').on('value', (function (snapshot) {
             that.setState({
                 photo: []
             });
             const exsist = (snapshot.val() != null);
-            if(exsist) {
+            if (exsist) {
                 data = snapshot.val();
                 var photo = that.state.photo;
                 for (var photos in data) {
@@ -211,22 +220,19 @@ class profile extends React.Component {
 
                     console.log(photo);
                 }
-                that.setState({
-
-                    loaded: true
-                })
+                
             }
 
-         }), function (errorObject) {
+        }), function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
 
-        database.ref('users').child(uid).child('saved').on('value' , (function (snapshot) {
+        database.ref('users').child(uid).child('saved').on('value', (function (snapshot) {
             that.setState({
                 saved: []
             });
             const exsist = (snapshot.val() != null);
-            if(exsist) {
+            if (exsist) {
                 data = snapshot.val();
                 var saved = that.state.saved;
                 for (var saves in data) {
@@ -234,7 +240,7 @@ class profile extends React.Component {
                     let tempId = saves;
                     saved.push({
                         id: tempId,
-                        url: saveO.image,                        
+                        url: saveO.image,
                     });
                     console.log(saved);
                 }
@@ -243,28 +249,28 @@ class profile extends React.Component {
                 })
             }
 
-         }), function (errorObject) {
+        }), function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
     }
 
     photoClick = (active) => {
         this.setState({
-            active:active
+            active: active
         })
 
     }
 
     postClick = (active) => {
         this.setState({
-            active:active
+            active: active
         })
 
     }
 
     saveClick = (active) => {
         this.setState({
-            active:active
+            active: active
         })
 
 
@@ -274,20 +280,20 @@ class profile extends React.Component {
     renderSection = () => {
 
 
-        if(this.state.active == 0 && this.state.loggedin == true){
+        if (this.state.active == 0 && this.state.loggedin == true) {
 
-            return this.state.photo.map((image , index) => {
+            return this.state.photo.map((image, index) => {
                 return (
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe' , { id : image.id})}>
-                        <View key={index} style={[{width:(width)/3} , {height:(width)/3}]}>
-                            <Image source={{uri:image.url}} style={{width:undefined , height:undefined , flex:1 , marginHorizontal:1 , marginVertical:2}}/>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe', { id: image.id })}>
+                        <View key={index} style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
+                            <Image source={{ uri: image.url }} style={{ width: undefined, height: undefined, flex: 1, marginHorizontal: 1, marginVertical: 2 }} />
                         </View>
                     </TouchableOpacity>
                 )
             });
         }
 
-        if(this.state.active == 1){
+        if (this.state.active == 1) {
             return (
                 <View>
                     <Text>Post Section</Text>
@@ -295,12 +301,12 @@ class profile extends React.Component {
             )
         }
 
-        if(this.state.active == 2){
-            return this.state.saved.map((save , index) => {
+        if (this.state.active == 2) {
+            return this.state.saved.map((save, index) => {
                 return (
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe' , { id : save.id})}>
-                        <View key={index} style={[{width:(width)/3} , {height:(width)/3}]}>
-                            <Image source={{uri:save.url}} style={{width:undefined , height:undefined , flex:1 , marginHorizontal:1 , marginVertical:2}}/>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe', { id: save.id })}>
+                        <View key={index} style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
+                            <Image source={{ uri: save.url }} style={{ width: undefined, height: undefined, flex: 1, marginHorizontal: 1, marginVertical: 2 }} />
                         </View>
                     </TouchableOpacity>
                 )
@@ -315,7 +321,7 @@ class profile extends React.Component {
     logout = () => {
         this.setState({
             loggedin: false,
-            active:0,
+            active: 0,
             photo: [],
         });
         f.auth().signOut();
@@ -325,24 +331,24 @@ class profile extends React.Component {
 
 
     loginWithFacebook = async () => {
-        const { type , token } = await Expo.Facebook.logInWithReadPermissionsAsync(
-            '558501394651388' ,
-            { permissions : ['email' , 'public_profile']}
+        const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
+            '558501394651388',
+            { permissions: ['email', 'public_profile'] }
         )
-        if(type == 'success'){
-            const credentials = f.auth.FacebookAuthProvider.credential(token) ;
+        if (type == 'success') {
+            const credentials = f.auth.FacebookAuthProvider.credential(token);
             f.auth().signInWithCredential(credentials).catch((error) => {
                 console.log(error)
             });
             this.setState({
-               photo: [],
+                photo: [],
             });
 
         }
 
     }
 
-    registerForPushNotificationsAsync = async(userId) => {
+    registerForPushNotificationsAsync = async (userId) => {
         const { status: existingStatus } = await Permissions.getAsync(
             Permissions.NOTIFICATIONS
         );
@@ -350,7 +356,7 @@ class profile extends React.Component {
         if (existingStatus !== 'granted') {
             // Android remote notification permissions are granted during the app
             // install, so this will only ask on iOS
-            const { status } =  await Permissions.askAsync(Permissions.NOTIFICATIONS);
+            const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
             finalStatus = status;
         }
 
@@ -361,111 +367,177 @@ class profile extends React.Component {
 
         // Get the token that uniquely identifies this device
         let token = await Notifications.getExpoPushTokenAsync();
-        console.log("token = " + token )
+        console.log("token = " + token)
 
     }
 
+    help = () => {
+        this.setState({
+            modal: true,
+            question:'',
+            subject:''
+        })
+    }
 
-
+    submitQuestion = () => {
+        this.setState({
+            modal:false
+        })
+        alert(this.state.subject+" \n"+this.state.question);
+    }
 
     render() {
 
-      return (
-        <View style={{flex:1}}>
-             <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+        return (
+            <View style={{ flex: 1 }}>
+                <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
                     <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
                         <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ fontSize: 24, color: '#ffffff',paddingTop:30 }}>Profile</Text>
+                            <Text style={{ fontSize: 24, color: '#ffffff', paddingTop: 30 }}>Profile</Text>
                         </ImageBackground>
                     </ImageBackground>
                 </View>
-            { this.state.loggedin == true ? (
-                <View style={{flex:1}}>
+                {this.state.loggedin == true ? (
 
-                    <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5}}>
-                        <View>
-                            <Image source={{uri: this.state.avatar}} style={{width:50 , height:50 , borderRadius:25}}/>
-                        </View>
-                        <View style={{flexDirection:'column', height:45}}>
-                            <View style={{justifyContent:'center' , alignItems:'center'}}>
-                                <Text style={{fontSize:18,fontWeight: 'bold' }}>{ this.state.name}</Text>
+                    <View style={{ flex: 1 }}>
+                        {this.state.loaded == false ? (
+                            <View style={{ flex: 1, backgroundColor: '#ffffff', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
+                                <ImageBackground source={{ uri: 'https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/02/24/17/chef.jpg?w968h681' }} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                                    <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                                        <PacmanIndicator size={70} color="white" />
+                                    </ImageBackground>
+                                </ImageBackground>
                             </View>
-                            <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center', flexDirection:'row'}}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('following' , { followingList : this.state.following})}>
-                                    <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center'}}>Edit Profile</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={this.logout}>
-                                    <Text style={{fontSize: 18, width:100 , borderWidth:1.5 ,borderRadius:25 , borderColor:'blue', textAlign:'center' , marginLeft:5}}>Logout</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{flexDirection:'row' , justifyContent:'space-evenly' , padding:5, marginVertical:25}}>
-                        <TouchableOpacity style={{marginLeft:5 , justifyContent:'center' , alignItems:'center'}}>
-                            <Text style={{fontSize:18,fontWeight: 'bold' }}>{ this.state.photo.length }</Text>
-                            <Text>Recepies</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={ () => this.props.navigation.navigate('follow' , { followList : this.state.follow})} style={{marginLeft:15 , justifyContent:'center' , alignItems:'center' }}  >
-                            <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.follow.length}</Text>
-                            <Text>Followers</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('following' , { followingList : this.state.following})} >
-                            <View style={{marginLeft:15 , justifyContent:'center' , alignItems:'center' }}>
-                                <Text style={{fontSize:18, fontWeight: 'bold' }}>{this.state.following.length}</Text>
-                                <Text>Following</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{flex:1, marginTop:20}}>
-                        <View style={{flexDirection:'row', justifyContent:'space-around' , height:15 , alignItems:'center'}}>
-                            <TouchableOpacity onPress={() => this.photoClick(0) }  >
-                                <Icon name='ios-images'   type='ionicon'  color='#517fa4'  />
-
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.saveClick(2) } active={ this.state.active == 2 }>
-                                <Icon
-                                    name='save'
-                                    type='font-awesome'
-                                    color='#517fa4'
-                                />
-                            </TouchableOpacity>
-
-                        </View>
-
-                        <View style={{flex:1}}>
-                            <ScrollView style={{flex:1, marginTop:10}}>
-                                {this.state.loaded == true && this.state.loggedin== true ? (
-                                    <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-                                        {this.renderSection()}
-
+                        ) : (
+                                <View style={{ flex: 1 }}>
+                                    <Modal
+                                        isVisible={this.state.modal}
+                                        deviceWidth={"100%"}
+                                        deviceHeight={"100%"}
+                                        onBackdropPress={() => this.setState({ modal: false })}
+                                        style={{ justifyContent: 'center', alignItems: 'center' }}
+                                    >
+                                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ height: 'auto', width: 300, backgroundColor: '#2A363B', paddingBottom: 10 }}>
+                                                <Card
+                                                    title="Ask For Help">
+                                                    <TextInput selectionColor='#428AF8' underlineColorAndroid="#428AF8" style={{ borderRadius: 5, borderColor: 'grey', marginHorizontal: 10, marginVertical: 10, padding: 5 }}
+                                                        placeholder={'Subject'}
+                                                        editable={true}
+                                                        multiline={true}
+                                                        maxlength={200}
+                                                        onChangeText={(text) => this.setState({ subject: text })}
+                                                        style={{ padding: 10 }}
+                                                    />
+                                                    <TextInput selectionColor='#428AF8' underlineColorAndroid="#428AF8" style={{ borderRadius: 5, borderColor: 'grey', marginHorizontal: 10, marginVertical: 10, padding: 5 }}
+                                                        placeholder={'Ask Your Question'}
+                                                        editable={true}
+                                                        multiline={true}
+                                                        maxlength={400}
+                                                        onChangeText={(text) => this.setState({ question: text })}
+                                                        style={{ padding: 10 }}
+                                                    />
+                                                    <Button
+                                                        title="Submit"
+                                                        type="outline"
+                                                        onPress={()=>this.submitQuestion()}
+                                                    />
+                                                </Card>
+                                            </View>
+                                        </View>
+                                    </Modal>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', padding: 5 }}>
+                                        <View>
+                                            <Image source={{ uri: this.state.avatar }} style={{ width: 50, height: 50, borderRadius: 25 }} />
+                                        </View>
+                                        <View style={{ flexDirection: 'column', height: 45 }}>
+                                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{this.state.name}</Text>
+                                            </View>
+                                            <View style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ alignItems: "center", justifyContent: 'center', width: 100, borderWidth: 1.5, borderRadius: 12, borderColor: '#FF847C', marginLeft: 5 }} onPress={() => this.help()}>
+                                                    <Ionicons name="question-circle" size={14} color='#000' />
+                                                    <Text style={{ fontSize: 18, textAlign: 'center' }}>Help</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity onPress={this.logout} style={{ alignItems: "center", justifyContent: 'center', width: 100, borderWidth: 1.5, borderRadius: 12, borderColor: '#FF847C', marginLeft: 5 }} >
+                                                    <Icon name="logout" size={14} color='#000' />
+                                                    <Text style={{ fontSize: 18, textAlign: 'center' }}>Logout</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
                                     </View>
-                                ) : (
-                                    <View style={{flexDirection:'row'}}>
-
-
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', padding: 5, marginVertical: 25 }}>
+                                        <TouchableOpacity style={{ marginLeft: 5, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{this.state.photo.length}</Text>
+                                            <Text>Recepies</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('follow', { followList: this.state.follow })} style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center' }}  >
+                                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{this.state.follow.length}</Text>
+                                            <Text>Followers</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('following', { followingList: this.state.following })} >
+                                            <View style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{this.state.following.length}</Text>
+                                                <Text>Following</Text>
+                                            </View>
+                                        </TouchableOpacity>
                                     </View>
-                                )}
+                                    <View style={{ flex: 1, marginTop: 20 }}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', height: 15, alignItems: 'center' }}>
+                                            <TouchableOpacity onPress={() => this.photoClick(0)}  >
+                                                {this.state.active == 0 ? (
+                                                    <Ionicons name="image" size={25} color='#FF847C' />
+                                                ) : (
+                                                        <Ionicons name="image" size={25} color='#000' />
+                                                    )}
 
-                            </ScrollView>
-                        </View>
+
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => this.saveClick(2)} active={this.state.active == 2}>
+                                                {this.state.active == 2 ? (
+                                                    <Ionicons name="save" size={25} color='#FF847C' />
+                                                ) : (
+                                                        <Ionicons name="save" size={25} color='#000' />
+                                                    )}
+
+                                            </TouchableOpacity>
+
+                                        </View>
+
+                                        <View style={{ flex: 1 }}>
+                                            <ScrollView style={{ flex: 1, marginTop: 10 }}>
+                                                {this.state.loaded == true && this.state.loggedin == true ? (
+                                                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                                                        {this.renderSection()}
+
+                                                    </View>
+                                                ) : (
+                                                        <View style={{ flexDirection: 'row' }}>
+
+
+                                                        </View>
+                                                    )}
+
+                                            </ScrollView>
+                                        </View>
+                                    </View>
+                                </View>
+                            )}
+
                     </View>
 
+                ) : (                        
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <TouchableOpacity onPress={this.loginWithFacebook}>
+                                <SocialIcon style={{ width: 200 }} title='Sign In With Facebook' button type='facebook' />
+                            </TouchableOpacity>
 
+                        </View>
 
-                </View>
+                    )}
 
-            ) : (
-                <View style={{flex:1, justifyContent:'center' , alignItems:'center'}}>
-                    <TouchableOpacity onPress={this.loginWithFacebook}>
-                        <SocialIcon style={{width:200}} title='Sign In With Facebook'  button  type='facebook' />
-                    </TouchableOpacity>
-
-                </View>
-
-            )}
-
-        </View>
-      );
+            </View>
+        );
     }
-  }
- export default profile;
+}
+export default profile;
