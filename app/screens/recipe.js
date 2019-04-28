@@ -1,15 +1,18 @@
 import React from 'react';
-import { Text, View, ImageBackground, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
+import { Text, View, ImageBackground, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
 import { f, auth, database, storage } from "../../config/config";
-import { Card } from 'react-native-elements'
+import { Card, Button } from 'react-native-elements'
 import { PacmanIndicator } from 'react-native-indicators';
-import { Badge } from 'react-native-elements'
-
+import { Badge } from 'react-native-elements';
+import Modal from "react-native-modal";
 class userProfile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loaded: false
+            loaded: false,
+            modal: false,
+            description: '',
+            subject: ''
 
         }
     }
@@ -252,8 +255,16 @@ class userProfile extends React.Component {
         }).catch((error) => console.log(error))
     }
 
-    likeCount = () => {
+    report = () => {
+        this.setState({
+            modal: true,
+            description: '',
+            subject: ''
+        })
+    }
 
+    submitReport = () => {
+        
     }
 
     render() {
@@ -264,22 +275,58 @@ class userProfile extends React.Component {
 
 
                     <View style={{ flex: 1, backgroundColor: '#e8e8e8' }}>
-
                         <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
                             <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
                                 <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                     <View flexDirection='row' style={{ paddingTop: 30 }}>
-                                        <TouchableOpacity style={{ alignSelf:'flex-start' }} onPress={() => this.props.navigation.goBack()}>
-                                            <Text style={{ color: 'white', fontSize: 14, width: 150 ,textAlign:'left'}}>Back</Text>
+                                        <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={() => this.props.navigation.goBack()}>
+                                            <Text style={{ color: 'white', fontSize: 14, width: 150, textAlign: 'left' }}>Back</Text>
                                         </TouchableOpacity>
-                                        <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold' }}>Recipe</Text>
-                                        <Text style={{ fontSize: 18, width: 150 }}></Text>
+                                        <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Recipe</Text>
+                                        <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={() => this.report()}>
+                                            <Text style={{ color: 'yellow', fontSize: 14, width: 150, textAlign: 'right' }}>Report</Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </ImageBackground>
                             </ImageBackground>
                         </View>
 
-
+                        <Modal
+                            isVisible={this.state.modal}
+                            deviceWidth={"100%"}
+                            deviceHeight={"100%"}
+                            onBackdropPress={() => this.setState({ modal: false })}
+                            style={{ justifyContent: 'center', alignItems: 'center' }}
+                        >
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ height: 'auto', width: 300, backgroundColor: '#2A363B', paddingBottom: 10 }}>
+                                    <Card
+                                        title="Report the Recipe">
+                                        <TextInput selectionColor='#428AF8' underlineColorAndroid="#428AF8" style={{ borderRadius: 5, borderColor: 'grey', marginHorizontal: 10, marginVertical: 10, padding: 5 }}
+                                            placeholder={'Subject'}
+                                            editable={true}
+                                            multiline={true}
+                                            maxlength={200}
+                                            onChangeText={(text) => this.setState({ subject: text })}
+                                            style={{ padding: 10 }}
+                                        />
+                                        <TextInput selectionColor='#428AF8' underlineColorAndroid="#428AF8" style={{ borderRadius: 5, borderColor: 'grey', marginHorizontal: 10, marginVertical: 10, padding: 5 }}
+                                            placeholder={'Description'}
+                                            editable={true}
+                                            multiline={true}
+                                            maxlength={400}
+                                            onChangeText={(text) => this.setState({ description: text })}
+                                            style={{ padding: 10 }}
+                                        />
+                                        <Button
+                                            title="Submit for Review"
+                                            type="outline"
+                                            onPress={() => this.submitReport()}
+                                        />
+                                    </Card>
+                                </View>
+                            </View>
+                        </Modal>
                         <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
                             <View style={{ flexDirection: 'row', width: '100%', padding: 10, justifyContent: 'center' }}>
                                 {this.state.loggedin == true ? (
