@@ -6,6 +6,7 @@ import {
 import { database, f } from "../../config/config";
 import { SocialIcon } from 'react-native-elements';
 import PTRView from 'react-native-pull-to-refresh';
+import Ionicons from "react-native-vector-icons/FontAwesome";
 class notification extends React.Component {
     constructor(props) {
         super(props);
@@ -216,63 +217,65 @@ class notification extends React.Component {
     }
 
     sendMessage = () => {
-        var that = this;
-        var date = Date.now();
-        var posted = Math.floor(date / 1000)
-        var userId = f.auth().currentUser.uid;
-        database.ref('users').child(userId).child('userChats').child(this.state.friendId).once('value').then(function (snapshot) {
-            const exist = (snapshot.exists());
-            if (exist) {
-                data = snapshot.val();
-                let cId = (Object.keys(data)[0]);
-                var newMessage = {
-                    sendby: userId,
-                    message: that.state.newMessage,
-                    status: 0,
-                    posted: posted
+        if (this.state.newMessage != '') {
+            var that = this;
+            var date = Date.now();
+            var posted = Math.floor(date / 1000)
+            var userId = f.auth().currentUser.uid;
+            database.ref('users').child(userId).child('userChats').child(this.state.friendId).once('value').then(function (snapshot) {
+                const exist = (snapshot.exists());
+                if (exist) {
+                    data = snapshot.val();
+                    let cId = (Object.keys(data)[0]);
+                    var newMessage = {
+                        sendby: userId,
+                        message: that.state.newMessage,
+                        status: 0,
+                        posted: posted
+
+                    }
+                    that.setState({
+                        newMessageId: that.uniqueId(),
+                    })
+                    database.ref('/chatMessages/' + cId + '/' + that.state.newMessageId).set(newMessage);
+                    database.ref('/users/' + userId + '/userChats/' + that.state.friendId + '/' + cId).update({ posted: posted, lastMessage: that.state.newMessage });
+                    database.ref('/users/' + that.state.friendId + '/userChats/' + userId + '/' + cId).update({ posted: posted, lastMessage: that.state.newMessage });
+                    that.setState({
+                        newMessage: '',
+                    })
+                } else {
+                    // alert("no HIll")
+                    var chatUserf = {
+                        lastMessage: that.state.newMessage,
+                        posted: posted,
+                        friend: that.state.friendId,
+                        name: that.state.fname,
+                        avatar: that.state.favatar
+                    }
+
+                    var chatUser = {
+                        lastMessage: that.state.newMessage,
+                        posted: posted,
+                        friend: userId,
+                        name: f.auth().currentUser.displayName,
+                        avatar: f.auth().currentUser.photoURL
+                    }
+
+                    var newMessage = {
+                        sendby: userId,
+                        message: that.state.newMessage,
+                        status: 0,
+                        posted: posted
+
+                    }
+                    database.ref('/users/' + userId + '/userChats/' + that.state.friendId + '/' + that.state.newChatId).set(chatUserf);
+                    database.ref('/users/' + that.state.friendId + '/userChats/' + userId + '/' + that.state.newChatId).set(chatUser);
+                    database.ref('/chatMessages/' + that.state.newChatId + '/' + that.state.newMessageId).set(newMessage);
 
                 }
-                that.setState({
-                    newMessageId: that.uniqueId(),
-                })
-                database.ref('/chatMessages/' + cId + '/' + that.state.newMessageId).set(newMessage);
-                database.ref('/users/' + userId + '/userChats/' + that.state.friendId + '/' + cId).update({ posted: posted, lastMessage: that.state.newMessage });
-                database.ref('/users/' + that.state.friendId + '/userChats/' + userId + '/' + cId).update({ posted: posted, lastMessage: that.state.newMessage });
-                that.setState({
-                    newMessage: '',
-                })
-            } else {
-                // alert("no HIll")
-                var chatUserf = {
-                    lastMessage: that.state.newMessage,
-                    posted: posted,
-                    friend: that.state.friendId,
-                    name: that.state.fname,
-                    avatar: that.state.favatar
-                }
-
-                var chatUser = {
-                    lastMessage: that.state.newMessage,
-                    posted: posted,
-                    friend: userId,
-                    name: f.auth().currentUser.displayName,
-                    avatar: f.auth().currentUser.photoURL
-                }
-
-                var newMessage = {
-                    sendby: userId,
-                    message: that.state.newMessage,
-                    status: 0,
-                    posted: posted
-
-                }
-                database.ref('/users/' + userId + '/userChats/' + that.state.friendId + '/' + that.state.newChatId).set(chatUserf);
-                database.ref('/users/' + that.state.friendId + '/userChats/' + userId + '/' + that.state.newChatId).set(chatUser);
-                database.ref('/chatMessages/' + that.state.newChatId + '/' + that.state.newMessageId).set(newMessage);
-
-            }
-        }).catch()
-        that.textInput.clear()
+            }).catch()
+            that.textInput.clear()
+        }
 
     }
 
@@ -282,12 +285,12 @@ class notification extends React.Component {
                 <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
                     <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
                         <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                            <View flexDirection='row' style={{paddingTop:30}}>
-                                <TouchableOpacity style={{ textAlign: 'left' }} onPress={() => this.props.navigation.goBack()}>
-                                    <Text style={{ color: 'white', fontSize: 14, width: 100 }}>Back</Text>
+                            <View flexDirection='row' style={{ paddingTop: 30 }}>
+                                <TouchableOpacity style={{ justifyContent: 'flex-start',alignItems:'flex-start' }} onPress={() => this.props.navigation.goBack()}>
+                                    <Text style={{textAlign:'left' ,color: 'white', fontSize: 14, width:120 }}>Back</Text>
                                 </TouchableOpacity>
-                                <Text style={{ color: 'white', fontSize: 14,fontWeight: 'bold' }}>{this.state.fname}</Text>
-                                <Text style={{ fontSize: 18, width: 100 }}></Text>
+                                <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>{this.state.fname}</Text>
+                                <Text style={{ fontSize: 18, width:120 }}></Text>
                             </View>
                         </ImageBackground>
                     </ImageBackground>
@@ -295,16 +298,20 @@ class notification extends React.Component {
 
                 <View style={styles.container}>
                     {this.state.loggedin == true ? (
-                        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}
-                            ref={ref => this.scrollView = ref}
-                            onContentSizeChange={(contentWidth, contentHeight) => {
-                                this.scrollView.scrollToEnd({ animated: true });
-                            }}>
-                            <View>
-                                {this.renderMessages()}
-                            </View>
+                        <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                            <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7 }}>
 
-                        </ScrollView>
+                                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}
+                                    ref={ref => this.scrollView = ref}
+                                    onContentSizeChange={(contentWidth, contentHeight) => {
+                                        this.scrollView.scrollToEnd({ animated: true });
+                                    }}>
+                                    <View style={{ paddingHorizontal: 3, backgroundColor: 'transparent' }} >
+                                        {this.renderMessages()}
+                                    </View>
+                                </ScrollView>
+                            </ImageBackground>
+                        </ImageBackground>
                     ) : (
                             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 <TouchableOpacity>
@@ -314,7 +321,7 @@ class notification extends React.Component {
                         )}
                 </View>
                 {this.state.loggedin == true ? (
-                    <KeyboardAvoidingView style={{ marginBottom: 10 }} enabled={true} behavior="padding">
+                    <KeyboardAvoidingView style={{ marginBottom: 2 }} enabled={true} behavior="padding">
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <TextInput underlineColorAndroid="#428AF8" style={{ borderRadius: 5, borderColor: 'grey', marginHorizontal: 5, marginVertical: 5, padding: 5, width: '80%' }}
                                 placeholder={'Enter Message Here'}
@@ -324,8 +331,8 @@ class notification extends React.Component {
                                 onChangeText={(text) => this.setState({ newMessage: text })}
                                 ref={input => { this.textInput = input }}
                             />
-                            <TouchableOpacity onPress={this.sendMessage} style={{ alignSelf: 'center', marginHorizontal: 'auto', width: 90, backgroundColor: 'purple', borderRadius: 5, width: '10%' }}>
-                                <Text style={{ textAlign: 'center', color: 'white', fontSize: 14 }}>Send</Text>
+                            <TouchableOpacity onPress={this.sendMessage} style={{ alignSelf: 'center', marginHorizontal: 'auto', width: 90, borderRadius: 5, width: '10%' }}>
+                                <Ionicons name="paper-plane" size={25} color={'#000'} />
                             </TouchableOpacity>
                         </View>
                     </KeyboardAvoidingView>
@@ -339,9 +346,10 @@ class notification extends React.Component {
 }
 const styles = StyleSheet.create({
     cardContainerReciever: {
-        width: '70%',
+        width: 'auto',
+        maxWidth: '60%',
         backgroundColor: '#fff',
-        borderRadius: 5,
+        borderRadius: 15,
         borderColor: '#FB8C00',
         borderWidth: 1,
         height: 'auto',
@@ -351,9 +359,10 @@ const styles = StyleSheet.create({
         marginLeft: 3,
     },
     cardContainerSender: {
-        width: '70%',
+        width: 'auto',
+        maxWidth: '70%',
         backgroundColor: '#fff',
-        borderRadius: 5,
+        borderRadius: 15,
         borderColor: '#FB8C00',
         borderWidth: 1,
         height: 'auto',
@@ -387,7 +396,7 @@ const styles = StyleSheet.create({
         flex: 0.2,
         // width:deviceWidth * 0.8,
         // backgroundColor:'yellow',
-        paddingTop: 10
+        paddingTop: 3
     },
     meaasageRow: {
         flex: 0.6,
@@ -463,7 +472,8 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         width: '100%',
-        backgroundColor: '#e8e8e8',
+        flex: 1,
+        backgroundColor: 'transparent',
     },
     scrollViewContent: {
         paddingBottom: 10
