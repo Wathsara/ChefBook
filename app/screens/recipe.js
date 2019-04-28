@@ -89,6 +89,14 @@ class userProfile extends React.Component {
             });
         })
 
+        database.ref('recepies').child(id).child('author').once('value').then(function (snapshot) {
+            const exist = (snapshot.val() != null);
+            if (exist) data = snapshot.val();
+            that.setState({
+                author: data
+            });
+        })
+
         database.ref('recepies').child(id).child('ingrediants').once('value').then(function (snapshot) {
             const exist = (snapshot.val() != null);
             if (exist) data = snapshot.val();
@@ -264,9 +272,20 @@ class userProfile extends React.Component {
     }
 
     submitReport = () => {
-        
+        this.setState({
+            modal: false,
+            
+        })
+        alert(this.state.description+"\n"+this.state.subject+"\n"+this.state.author);
     }
 
+    s4 = () => {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
+
+    uniqueId = () => {
+        return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4();
+    }
     render() {
         return (
             <View style={{ flex: 1 }}>
