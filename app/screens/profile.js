@@ -185,7 +185,7 @@ class profile extends React.Component {
 
 
             }
-            
+
         })
 
     }
@@ -220,7 +220,7 @@ class profile extends React.Component {
 
                     console.log(photo);
                 }
-                
+
             }
 
         }), function (errorObject) {
@@ -374,16 +374,49 @@ class profile extends React.Component {
     help = () => {
         this.setState({
             modal: true,
-            question:'',
-            subject:''
+            question: '',
+            subject: ''
         })
     }
 
     submitQuestion = () => {
-        this.setState({
-            modal:false
-        })
-        alert(this.state.subject+" \n"+this.state.question);
+        if (this.state.subject != '' && this.state.question != '') {
+            this.setState({
+                modal: false
+            })
+            if (this.state.subject != '' && this.state.question != '')
+
+                var questionId = this.uniqueId();
+            var userID = f.auth().currentUser.uid;
+            var subject = this.state.subject;
+            var question = this.state.question;
+            var status = 0;
+            var email = f.auth().currentUser.email;
+            var name = f.auth().currentUser.displayName;
+            var date = Date.now();
+            var posted = Math.floor(date / 1000)
+            const questionOBJ = {
+                userId: userID,
+                subject: subject,
+                question: question,
+                status: status,
+                email: email,
+                name: name,
+                posted:posted
+            }
+            var uq = {
+                status: status
+            }
+
+            database.ref('/users/' + userID + '/questions/' + questionId).set(uq);
+            database.ref('/questions/' + questionId).set(questionOBJ);
+            alert("Thank You!\nOur Team Will Get Back To You As soon As Possible");
+            this.setState({
+                question: '',
+                subject: ''
+            })
+        }
+
     }
 
     s4 = () => {
@@ -449,7 +482,7 @@ class profile extends React.Component {
                                                     <Button
                                                         title="Submit"
                                                         type="outline"
-                                                        onPress={()=>this.submitQuestion()}
+                                                        onPress={() => this.submitQuestion()}
                                                     />
                                                 </Card>
                                             </View>
@@ -535,7 +568,7 @@ class profile extends React.Component {
 
                     </View>
 
-                ) : (                        
+                ) : (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <TouchableOpacity onPress={this.loginWithFacebook}>
                                 <SocialIcon style={{ width: 200 }} title='Sign In With Facebook' button type='facebook' />
