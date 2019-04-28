@@ -109,11 +109,14 @@ class searchChefs extends React.Component {
                 for (var photos in data) {
                     let photoO = data[photos];
                     let tempId = photos;
-                    chefList.push({
-                        id: tempId,
-                        url: photoO.avatar,
-                        name: photoO.name
-                    });
+                    if(tempId != f.auth().currentUser.uid){
+                        chefList.push({
+                            id: tempId,
+                            url: photoO.avatar,
+                            name: photoO.name
+                        });
+
+                    }                   
 
                 }
                 that.setState({

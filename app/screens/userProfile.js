@@ -14,7 +14,8 @@ class userProfile extends React.Component {
             photo: [],
             ploaded: false,
             follow: [],
-            following: []
+            following: [],
+            saved:[]
 
         }
     }
@@ -163,6 +164,32 @@ class userProfile extends React.Component {
             }
 
         }).catch(error => console.log(error));
+
+        database.ref('users').child(uid).child('saved').on('value', (function (snapshot) {
+            that.setState({
+                saved: []
+            });
+            const exsist = (snapshot.val() != null);
+            if (exsist) {
+                data = snapshot.val();
+                var saved = that.state.saved;
+                for (var saves in data) {
+                    let saveO = data[saves];
+                    let tempId = saves;
+                    saved.push({
+                        id: tempId,
+                        url: saveO.image,
+                    });
+                    console.log(saved);
+                }
+                that.setState({
+                    loaded: true
+                })
+            }
+
+        }), function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+        });
     }
 
     photoClick = (active) => {
@@ -211,11 +238,15 @@ class userProfile extends React.Component {
         }
 
         if (this.state.active == 2) {
-            return (
-                <View>
-                    <Text>Saved Section</Text>
-                </View>
-            )
+            return this.state.saved.map((save, index) => {
+                return (
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe', { id: save.id })}>
+                        <View key={index} style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
+                            <Image source={{ uri: save.url }} style={{ width: undefined, height: undefined, flex: 1, marginHorizontal: 1, marginVertical: 2 }} />
+                        </View>
+                    </TouchableOpacity>
+                )
+            });
         }
     }
 
@@ -345,10 +376,10 @@ class userProfile extends React.Component {
 
                                         <View style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
                                             <TouchableOpacity onPress={() => this.props.navigation.navigate('message', { userId: this.state.userId })}>
-                                                <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: 'blue', textAlign: 'center' }}>Chat</Text>
+                                                <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: '#FF847C', textAlign: 'center' }}>Chat</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity onPress={this.follow}>
-                                                <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: 'blue', textAlign: 'center', marginLeft: 5 }}>Follow</Text>
+                                                <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: '#FF847C', textAlign: 'center', marginLeft: 5 }}>Follow</Text>
                                             </TouchableOpacity>
                                         </View>
                                     ) : (
@@ -356,10 +387,10 @@ class userProfile extends React.Component {
                                                 {this.state.followingState != false && this.state.userId != f.auth().currentUser.uid ? (
                                                     <View style={{ marginLeft: 15, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
                                                         <TouchableOpacity onPress={() => this.props.navigation.navigate('message', { userId: this.state.userId })}>
-                                                            <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: 'blue', textAlign: 'center' }}>Chat</Text>
+                                                            <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: '#FF847C', textAlign: 'center' }}>Chat</Text>
                                                         </TouchableOpacity>
                                                         <TouchableOpacity onPress={this.unfollow}>
-                                                            <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: 'blue', textAlign: 'center', marginLeft: 5 }}>UnFollow</Text>
+                                                            <Text style={{ fontSize: 18, width: 100, borderWidth: 1.5, borderRadius: 25, borderColor: '#FF847C', textAlign: 'center', marginLeft: 5 }}>UnFollow</Text>
                                                         </TouchableOpacity>
                                                     </View>
                                                 ) : (
