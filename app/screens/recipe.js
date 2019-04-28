@@ -274,9 +274,37 @@ class userProfile extends React.Component {
     submitReport = () => {
         this.setState({
             modal: false,
-            
+
         })
-        alert(this.state.description+"\n"+this.state.subject+"\n"+this.state.author);
+        var reportId = this.uniqueId();
+        var userID = f.auth().currentUser.uid;
+        var author = this.state.author;
+        var subject = this.state.subject;
+        var description = this.state.description;
+        var recipeId = this.state.id;
+        var date = Date.now();
+        var posted = Math.floor(date / 1000)
+
+        var reportOBJ = {
+            complainer: userID,
+            complainee: author,
+            subject: subject,
+            description: description,
+            recipeId: recipeId,
+            status:0,
+            posted: posted
+        }
+
+        var complainOBJ = {
+            status: 0
+        }
+        database.ref('/complains/'+reportId).set(reportOBJ);
+        database.ref('/reports/' + recipeId+'/'+reportId).set(complainOBJ);
+        alert("Thank You!\nOur Team Will Have A Look At This");
+        this.setState({
+            description: '',
+            subject: ''
+        })
     }
 
     s4 = () => {

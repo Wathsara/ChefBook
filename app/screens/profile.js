@@ -384,9 +384,9 @@ class profile extends React.Component {
             this.setState({
                 modal: false
             })
-            if (this.state.subject != '' && this.state.question != '')
 
-                var questionId = this.uniqueId();
+
+            var questionId = this.uniqueId();
             var userID = f.auth().currentUser.uid;
             var subject = this.state.subject;
             var question = this.state.question;
@@ -402,7 +402,7 @@ class profile extends React.Component {
                 status: status,
                 email: email,
                 name: name,
-                posted:posted
+                posted: posted
             }
             var uq = {
                 status: status
