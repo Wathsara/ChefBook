@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     TouchableOpacity, Text, View, TextInput, Image, ActivityIndicator, KeyboardAvoidingView, ToastAndroid,
-    ScrollView, StyleSheet , ImageBackground
+    ScrollView, StyleSheet, ImageBackground
 } from 'react-native';
 import { database, f } from "../../config/config";
 import { SocialIcon } from 'react-native-elements';
@@ -15,6 +15,7 @@ class comment extends React.Component {
             refresh: false,
             loggedin: false,
             commentsList: [],
+            comments: [],
             loaded: false,
             newComment: '',
             newCommentId: this.uniqueId(),
@@ -102,6 +103,24 @@ class comment extends React.Component {
 
     }
 
+    loginWithFacebook = async () => {
+        const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
+            '558501394651388',
+            { permissions: ['email', 'public_profile'] }
+        )
+        if (type == 'success') {
+            const credentials = f.auth.FacebookAuthProvider.credential(token);
+            f.auth().signInWithCredential(credentials).catch((error) => {
+                console.log(error)
+            });
+            this.setState({
+                photo: [],
+            });
+
+        }
+
+    }
+
     fetchInfo = (recipeId) => {
 
         var that = this;
@@ -111,7 +130,7 @@ class comment extends React.Component {
             if (exsist) {
                 data = snapshot.val();
 
-                var commentsList = that.state.commentsList;
+                var commentsList = that.state.comments;
                 for (var comments in data) {
                     let commentOBJ = data[comments]
                     commentsList.push({
@@ -125,6 +144,8 @@ class comment extends React.Component {
                 }
                 console.log(commentsList);
                 that.setState({
+                    commentsList:commentsList,
+                    comments:[],
                     loaded: true
                 })
             } else {
@@ -144,34 +165,37 @@ class comment extends React.Component {
         this.state.commentsList.reverse();
         return this.state.commentsList.map((items, index) => {
             { console.log(items.image) }
-            return (
-                <View style={styles.cardContainer}>
-                    <View style={styles.cardHedear}>
-                        <View style={styles.profilePicArea}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', { userId: items.authorId })}>
-                                <Image style={styles.userImage} source={{ uri: items.image }} />
-                            </TouchableOpacity>
-                            {this.props.count > 0 &&
-                                <View style={styles.badgeCount}>
-                                    <Text style={styles.countText}>{this.props.count}</Text>
-                                </View>
-                            }
-                        </View>
-                        <View style={styles.userDetailArea}>
-                            <View style={styles.userNameRow}>
-                                <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }} onPress={() => this.props.navigation.navigate('userProfile', { userId: items.authorId })}>
-                                    <Text style={styles.nameText}>{items.author}</Text>
-                                    <Text style={{ alignSelf: 'flex-end' }}>{this.timeConvertor(items.posted)}</Text>
+            if (this.state.loggedin == true) {
+                return (
+                    <View style={styles.cardContainer}>
+                        <View style={styles.cardHedear}>
+                            <View style={styles.profilePicArea}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', { userId: items.authorId })}>
+                                    <Image style={styles.userImage} source={{ uri: items.image }} />
                                 </TouchableOpacity>
+                                {this.props.count > 0 &&
+                                    <View style={styles.badgeCount}>
+                                        <Text style={styles.countText}>{this.props.count}</Text>
+                                    </View>
+                                }
                             </View>
-                            <View style={styles.meaasageRow}>
-                                <Text style={styles.meaasageText}>{items.comment}</Text>
+                            <View style={styles.userDetailArea}>
+                                <View style={styles.userNameRow}>
+                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }} onPress={() => this.props.navigation.navigate('userProfile', { userId: items.authorId })}>
+                                        <Text style={styles.nameText}>{items.author}</Text>
+                                        <Text style={{ alignSelf: 'flex-end' }}>{this.timeConvertor(items.posted)}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.meaasageRow}>
+                                    <Text style={styles.meaasageText}>{items.comment}</Text>
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
 
-            )
+                )
+            }
+
         });
 
 
@@ -275,18 +299,18 @@ class comment extends React.Component {
 
             <View style={{ flex: 1 }}>
                 <View style={{ height: 70, backgroundColor: '#FB8C00', borderColor: '#7CFC00', borderBottomWidth: 1.5, justifyContent: 'center', alignItems: 'center' }}>
-                            <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
-                                <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                    <View flexDirection='row' style={{ paddingTop: 30 }}>
-                                        <TouchableOpacity style={{ alignSelf:'flex-start' }} onPress={() => this.props.navigation.goBack()}>
-                                            <Text style={{ color: 'white', fontSize: 14, width: 140 ,textAlign:'left'}}>Back</Text>
-                                        </TouchableOpacity>
-                                        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>Comments</Text>
-                                        <Text style={{ fontSize: 18, width: 140 }}></Text>
-                                    </View>
-                                </ImageBackground>
-                            </ImageBackground>
-                        </View>
+                    <ImageBackground source={require('../data/heading.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover' }}>
+                        <ImageBackground source={require('../data/black.jpg')} style={{ height: '100%', width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+                            <View flexDirection='row' style={{ paddingTop: 30 }}>
+                                <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={() => this.props.navigation.goBack()}>
+                                    <Text style={{ color: 'white', fontSize: 14, width: 140, textAlign: 'left' }}>Back</Text>
+                                </TouchableOpacity>
+                                <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>Comments</Text>
+                                <Text style={{ fontSize: 18, width: 140 }}></Text>
+                            </View>
+                        </ImageBackground>
+                    </ImageBackground>
+                </View>
                 <PTRView onRefresh={this._refresh} >
                     <View style={{ flex: 1 }}>
                         {this.state.loaded == true ? (
@@ -330,7 +354,7 @@ class comment extends React.Component {
                     </KeyboardAvoidingView>
                 ) : (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={this.loginWithFacebook}>
                                 <SocialIcon style={{ width: 200 }} title='Sign In With Facebook' button type='facebook' />
                             </TouchableOpacity>
                         </View>
@@ -348,7 +372,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderColor: '#FB8C00',
         borderWidth: 1,
-        height:'auto',
+        height: 'auto',
         alignItems: 'center',
         justifyContent: 'flex-start',
         // marginBottom:20,

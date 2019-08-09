@@ -4,7 +4,8 @@ import { Text, View, TouchableOpacity, FlatList, ImageBackground } from 'react-n
 import { Camera, Permissions, ImageManipulator } from 'expo';
 import { storage, f } from "../../config/config";
 import { PulseIndicator } from 'react-native-indicators';
-
+import { Button } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
 const Clarifai = require('clarifai');
 
 const clarifai = new Clarifai.App({
@@ -52,7 +53,7 @@ export default class SearchByImage extends React.Component {
 
         let predictions = await clarifai.models.predict({
             id: 'Food',
-            version: '683e5976d16f4811951f5b70f1fdc524'
+            version: 'a8dc061b84bd4658b5ddecc350aacaa3'
         },
             image
         );
@@ -70,6 +71,7 @@ export default class SearchByImage extends React.Component {
         })
     };
 
+    
     render() {
         const { hasCameraPermission, predictions } = this.state;
         if (hasCameraPermission === null) {
@@ -143,27 +145,42 @@ export default class SearchByImage extends React.Component {
                                 justifyContent: 'center'
                             }}>
                                 {this.state.predictions[0].value < 0.9 ? (
-                                    <Text style={{ marginTop: '50%', alignSelf: 'center', justifyContent: 'center', fontSize: 25, color: '#fff' }}>Sorry We cant Recognize</Text>
+                                    <Text style={{ position: 'absolute', marginTop: '50%', alignSelf: 'center', justifyContent: 'center', fontSize: 25, color: '#fff' }}>Sorry We cant Recognize</Text>
                                 ) : (
-                                        <Text style={{ marginTop: '50%', alignSelf: 'center', justifyContent: 'center', fontSize: 25, color: '#fff' }}>{this.state.predictions[0].name}</Text>
+                                        <View style={{ position: 'absolute', marginTop: '50%',}}>
+
+                                            <Text style={{  alignSelf: 'center', justifyContent: 'center', fontSize: 30, color: '#fff' }}>{this.state.predictions[0].name}</Text>
+                                            <Button                                               
+                                                icon={
+                                                    <Icon
+                                                        name="search"
+                                                        size={20}
+                                                        color="white"
+                                                    />
+                                                }
+                                                title=" Search for Recipies"
+                                                onPress={() => this.props.navigation.navigate('searchFood', { name: this.state.predictions[0].name })}
+                                            />
+                                        </View>
 
                                     )}
                                 <TouchableOpacity
-                                        style={{
-                                            flex: 0.1,
-                                            alignItems: 'center',
-                                            backgroundColor: 'blue',
-                                            height: 'auto',
-                                            width:"100%",
-                                            justifyContent:'center',
-                                            alignItems:'center'
-                                        }}
-                                        onPress={() => this.setState({ step: 0 })}
-                                    >
-                                        <Text style={{ fontSize: 20, color: 'white', padding: 15 }}>
-                                            Go Back
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: 0,
+                                        alignItems: 'center',
+                                        backgroundColor: 'blue',
+                                        height: 'auto',
+                                        width: "100%",
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}
+                                    onPress={() => this.setState({ step: 0 })}
+                                >
+                                    <Text style={{ fontSize: 20, color: 'white', padding: 15 }}>
+                                        Go Back
                                 </Text>
-                                    </TouchableOpacity>
+                                </TouchableOpacity>
                             </View>
                         </ImageBackground>
                     </ImageBackground>

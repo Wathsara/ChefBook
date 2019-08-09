@@ -40,8 +40,7 @@ class searchFood extends React.Component {
 
     renderFoods = () => {
         const filtered = this.state.foodList.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
-        return filtered.map((items, index) => {
-            { console.log(items.yummy) }
+        return filtered.map((items, index) => {           
             return (
                 <TouchableOpacity key={items.foodName} onPress={() => this.props.navigation.navigate('recipe', { id: items.id })}>
                     <View key={index} style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
@@ -62,6 +61,13 @@ class searchFood extends React.Component {
     }
 
     componentDidMount = () => {
+        var params = this.props.navigation.state.params;
+
+        if (params) {
+            this.setState({
+                searchTerm: params.name
+            });
+        }
 
         var that = this;
         f.auth().onAuthStateChanged(function (user) {
@@ -98,7 +104,7 @@ class searchFood extends React.Component {
 
             }
         })
-        database.ref('recepies').orderByChild('posted').on('value', (function (snapshot) {
+        database.ref('recepies').orderByChild('posted').once('value').then(function (snapshot) {
             const exsist = (snapshot.val() != null);
             if (exsist) {
                 data = snapshot.val();
@@ -122,9 +128,7 @@ class searchFood extends React.Component {
                     loaded: true
                 })
             }
-        }), function (errorObject) {
-            console.log("The read failed: " + errorObject.code);
-        });
+        })
 
     }
 
@@ -160,6 +164,7 @@ class searchFood extends React.Component {
                                             onChangeText={(term) => { this.searchUpdated(term) }}
                                             style={styles.searchInput}
                                             placeholder="Search your Food"
+                                            value = {this.state.searchTerm}
                                         />
                                         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
                                             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>

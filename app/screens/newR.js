@@ -42,6 +42,24 @@ class newR extends React.Component {
         return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4();
     }
 
+    loginWithFacebook = async () => {
+        const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
+            '558501394651388',
+            { permissions: ['email', 'public_profile'] }
+        )
+        if (type == 'success') {
+            const credentials = f.auth.FacebookAuthProvider.credential(token);
+            f.auth().signInWithCredential(credentials).catch((error) => {
+                console.log(error)
+            });
+            this.setState({
+                photo: [],
+            });
+
+        }
+
+    }
+
     findNewIamge = async () => {
         this._checkPermissons();
 
@@ -291,7 +309,7 @@ class newR extends React.Component {
                             ) : (
                                 <View style={{flex:1 , justifyContent:'center' , alignItems:'center'}}>
                                     <Text style={{marginVertical:5}}>SignIn to Publish</Text>
-                                     <TouchableOpacity>
+                                     <TouchableOpacity onPress={this.loginWithFacebook}>
                                         <SocialIcon style={{width:200}} title='Sign In With Facebook'  button  type='facebook' />
                                      </TouchableOpacity>
 

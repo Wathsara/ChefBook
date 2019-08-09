@@ -62,29 +62,17 @@ const TabStack = createBottomTabNavigator(
                 )
             },
         },
-        
 
-        notification: {
-            screen: notification,
-            navigationOptions: {
-                tabBarLabel: "Notifications",
-                tabBarIcon: ({ tintColor }) => (
-                    <View>
-                        {1 != 0 ? (
-                            <View>
-                                <Badge status="error" />
-                                <Ionicons name="bell" size={25} color={tintColor} />
-                            </View>
-                        ) : (
-                                <View>
-                                    <Ionicons name="bell" size={25} color={tintColor} />
-                                </View>
-                            )}
-                    </View>
 
-                )
-            },
-        },
+        // notification: {
+        //     screen: notification,
+        //     navigationOptions: {
+        //         tabBarLabel: "Notifications",
+        //         tabBarIcon: ({ tintColor }) => (
+        //             <Ionicons name="bell" size={25} color={tintColor} />
+        //         )
+        //     },
+        // },
         chat: {
             screen: chat,
             navigationOptions: {
@@ -114,8 +102,8 @@ const TabStack = createBottomTabNavigator(
                 backgroundColor: '#2A363B',
             }
         },
-    } 
-    
+    }
+
 
 
 )
@@ -130,7 +118,7 @@ const MainStack = createStackNavigator(
         following: { screen: following },
         searchFood: { screen: searchFood },
         searchChefs: { screen: searchChefs },
-        serchImage : {screen: searchbyImage}
+        serchImage: { screen: searchbyImage }
 
     },
     {
