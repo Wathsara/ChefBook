@@ -7,6 +7,9 @@
     "packagerOpts": {
       "assetExts": ["pb", "txt"]
     },
+    "android": {
+      "package": "com.chefbook.chefbook"
+    },
     "platforms": [
       "ios",
       "android"

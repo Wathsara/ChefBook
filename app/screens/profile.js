@@ -16,7 +16,7 @@ class profile extends React.Component {
             loggedin: false,
             active: 0,
             photo: [],
-            loaded: false,
+            loaded: true,
             follow: [],
             following: [],
             saved: [],
@@ -245,7 +245,8 @@ class profile extends React.Component {
                     console.log(saved);
                 }
                 that.setState({
-                    loaded: true
+                    loaded: true,
+                    loggedin:true
                 })
             }
 

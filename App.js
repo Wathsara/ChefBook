@@ -18,6 +18,7 @@ import follow from './app/screens/follow.js';
 import following from './app/screens/following.js';
 import searchFood from './app/screens/searchFood.js';
 import searchChefs from './app/screens/searchChefs.js';
+import searchbyImage from './app/screens/searchByImage.js';
 import Ionicons from "react-native-vector-icons/FontAwesome";
 
 console.disableYellowBox = true;
@@ -128,7 +129,8 @@ const MainStack = createStackNavigator(
         follow: { screen: follow },
         following: { screen: following },
         searchFood: { screen: searchFood },
-        searchChefs: { screen: searchChefs }
+        searchChefs: { screen: searchChefs },
+        serchImage : {screen: searchbyImage}
 
     },
     {

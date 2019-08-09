@@ -49,7 +49,7 @@ class foodfind extends React.Component {
                             </ImageBackground>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('recipe')} style={{marginVertical:1}}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('serchImage')} style={{marginVertical:1}}>
                             <ImageBackground source={{ uri: 'https://ak1.picdn.net/shutterstock/videos/23368831/thumb/1.jpg' }} style={{ height: 275, width: '100%', resizeMode: 'cover' }}>
                                 <ImageBackground source={require('../data/black.jpg')} style={{ height: 275, width: '100%', resizeMode: 'cover', opacity: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                     <Text style={{ fontSize: 32, color: 'white', textAlign: 'center' }}>Find recipe By Image</Text>
